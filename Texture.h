@@ -15,10 +15,12 @@
 #include "..\DX11\Drawable.h"
 #include "WICImage.h"
 
-using namespace DirectX;			// ONLY in CPP files <- including this header will pollute global namespace
+//using namespace DirectX;			// ONLY in CPP files <- including this header will pollute global namespace
 using namespace Microsoft::WRL;
 using std::wstring;
 using std::make_unique;
+using std::unique_ptr;
+using std::vector;
 
 // user defined literal
 //unsigned char operator "" _uc( char in_uc ) { return static_cast< unsigned char >( in_uc ); }
@@ -103,13 +105,14 @@ class Texture : public Drawable
 
 		//texture_type m_type { texture_type::diffuse };
 		D3D11_USAGE m_usage { D3D11_USAGE::D3D11_USAGE_DYNAMIC }; // D3D11_USAGE_IMMUTABLE; 
-		DXGI_FORMAT m_format { DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM };
+		DXGI_FORMAT m_format { DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM }; //{ DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT };// 
+};
 
 		float m_width { };
 		float m_height { };
 
 		//unique_ptr <
-		std::vector< XMFLOAT4 > m_pixels;
+		vector< XMFLOAT4 > m_pixels;
 		// _int8
 		//XMFLOAT4 m_colour { };
 
@@ -125,7 +128,7 @@ class Texture : public Drawable
 		//ComPtr< ID3D11RenderTargetView >	mp_render_target_view;
 		ComPtr< ID3D11Texture2D >			m_texture_2D;
 
-		std::unique_ptr< WICImage >			m_image;
+		unique_ptr< WICImage >				m_image;
 
 		D3D11_MAPPED_SUBRESOURCE			m_mapped_subresource { };
 };

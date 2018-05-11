@@ -46,7 +46,7 @@ void Texture::create_buffer( const void * in_pixels ) // bool use_image_dimensio
 
 	if( FAILED( m_result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
 
-	m_view_description.Format					= m_format;// DXGI_FORMAT_R8G8B8A8_UNORM; // DXGI_FORMAT_R8G8B8A8_UINT
+	m_view_description.Format					 = m_format;// DXGI_FORMAT_R8G8B8A8_UNORM; // DXGI_FORMAT_R8G8B8A8_UINT
 	m_view_description.ViewDimension             = D3D11_SRV_DIMENSION_TEXTURE2D;
 	m_view_description.Texture2D.MostDetailedMip = 0u;	// number of mips - 1;
 	m_view_description.Texture2D.MipLevels       = 1u;
@@ -67,7 +67,7 @@ void Texture::create_buffer()
 	m_texture_2d_description.Height				= m_height;
 	m_texture_2d_description.MipLevels			= 1;
 	m_texture_2d_description.ArraySize			= 1;
-	m_texture_2d_description.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // passing in an array of unsigned int's
+	m_texture_2d_description.Format				= m_format;// DXGI_FORMAT_R8G8B8A8_UNORM; // passing in an array of unsigned int's
 	m_texture_2d_description.SampleDesc.Count	= 1;
 	m_texture_2d_description.SampleDesc.Quality	= 0;
 	m_texture_2d_description.Usage				= m_usage;
@@ -93,7 +93,7 @@ void Texture::create_buffer()
 
 	if( FAILED( m_result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
 
-	m_view_description.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R8G8B8A8_UNORM; // DXGI_FORMAT_R8G8B8A8_UINT
+	m_view_description.Format						= m_format;
 	m_view_description.ViewDimension				= D3D11_SRV_DIMENSION_TEXTURE2D;
 	m_view_description.Texture2D.MostDetailedMip	= 0u;	// number of mips - 1;
 	m_view_description.Texture2D.MipLevels			= 1u;
