@@ -64,11 +64,11 @@ void WICImage::load( const wstring in_filename )
 	m_imaging_factory.Reset();
 
 	m_result = m_format_converter->Initialize( m_bitmap_frame_decode.Get() ,
-												 GUID_WICPixelFormat32bppRGBA ,	// target format 	DXGI_FORMAT_R8G8B8A8_UNORM
-												 WICBitmapDitherTypeNone ,
-												 nullptr ,
-												 0.0f ,							// alphaThresholdPercent
-												 WICBitmapPaletteTypeCustom );
+											   GUID_WICPixelFormat32bppRGBA ,	// = DXGI_FORMAT_R8G8B8A8_UNORM
+											   WICBitmapDitherTypeNone ,
+											   nullptr ,
+											   0.0f ,							// alphaThresholdPercent
+											   WICBitmapPaletteTypeCustom );
 
 	if( FAILED( m_result ) ) ErrorExit( L"WICImage::load() error; Initialize" );
 
@@ -78,6 +78,10 @@ void WICImage::load( const wstring in_filename )
 	m_size_bytes		= m_row_byte_pitch * m_height;
 
 	m_pixels.reserve( m_size_bytes );
+
+	BOOL can_convert = false;
+
+	m_result = m_format_converter->CanConvert( m_pixel_format , GUID_WICPixelFormat32bppRGBA , & can_convert );
 
 	// copy pixels is where the image format conversion executes
 	m_result = m_format_converter->CopyPixels(	nullptr,					// The rectangle to copy. A NULL value specifies the entire bitmap

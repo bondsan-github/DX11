@@ -116,7 +116,7 @@ class DX11 //abstract
 		D3D_FEATURE_LEVEL			m_feature_level { D3D_FEATURE_LEVEL_9_1 };
 
 		unsigned int				m_swap_chain_count { 1 };
-		DXGI_FORMAT					m_swap_chain_format { DXGI_FORMAT_B8G8R8A8_UNORM };
+		DXGI_FORMAT					m_swap_chain_format { DXGI_FORMAT_R8G8B8A8_UNORM };
 		DXGI_SWAP_CHAIN_DESC		m_swap_chain_description { };
 		// 32 bit unsigned normalized integer format that supports 8 bits per channel including alpha.
 

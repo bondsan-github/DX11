@@ -29,16 +29,16 @@ using std::vector;
 //enum class texture_type { diffuse , alpha , specular , displacement };
 
 
-class Colour_8bit_rgba
+class Colour_r32g32b32a32_unorm
 {
 	public:
-		Colour_8bit_rgba() {}
+		Colour_32bit_rgba() {}
 		
 
-		Colour_8bit_rgba( const unsigned char in_red,  // ? change to unsigned float (PS input) + normalise ?
-			    const unsigned char in_green, 
-			    const unsigned char in_blue, 
-			    const unsigned char in_alpha) 
+		Colour_32bit_rgba( const unsigned char in_red,  // ? change to unsigned float (PS input) + normalise ?
+						   const unsigned char in_green,
+						   const unsigned char in_blue, 
+						   const unsigned char in_alpha) 
 			: m_red( in_red ) , m_green(in_green), m_blue(in_blue), m_alpha(in_alpha)
 		{		}
 
@@ -63,16 +63,16 @@ class Texture : public Drawable
 	public:
 		Texture();
 
-		Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_colour );
+		Texture( const XMFLOAT2 in_dimensions , const Colour_32bit_rgba in_colour );
 		//Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_rgba );
 
 		Texture( const wstring in_filename );
 
 		//void clear( const Colour in_colour ) {}
 
-		void plot( const float in_x , const float in_y , const XMFLOAT4 in_colour );
+		void plot( const float in_x , const float in_y , const Colour_32bit_rgba in_colour );
 
-		void line( const XMFLOAT4 in_points , const XMFLOAT4 in_colour );
+		void line( const XMFLOAT4 in_points , const Colour_32bit_rgba in_colour );
 
 		// elipse(center_x, center_y, width, height) 
 
@@ -105,14 +105,13 @@ class Texture : public Drawable
 
 		//texture_type m_type { texture_type::diffuse };
 		D3D11_USAGE m_usage { D3D11_USAGE::D3D11_USAGE_DYNAMIC }; // D3D11_USAGE_IMMUTABLE; 
-		DXGI_FORMAT m_format { DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM }; //{ DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT };// 
-};
+		DXGI_FORMAT m_format { DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UINT }; //{ DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT };//
 
 		float m_width { };
 		float m_height { };
 
 		//unique_ptr <
-		vector< XMFLOAT4 > m_pixels;
+		vector< Colour_32bit_rgba > m_pixels;
 		// _int8
 		//XMFLOAT4 m_colour { };
 

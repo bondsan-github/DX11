@@ -14,6 +14,18 @@ using namespace DirectX;
 using namespace Microsoft::WRL;
 using std::wstring;
 
+struct WIC_to_DXGI
+{
+	GUID		wic;
+	DXGI_FORMAT	format;
+};
+
+static WIC_to_DXGI WICFormats[]
+{
+	{ GUID_WICPixelFormat32bppRGBA,	DXGI_FORMAT_R8G8B8A8_UNORM },
+};
+
+
 class WICImage //: public Image
 {
 	public:
@@ -25,6 +37,8 @@ class WICImage //: public Image
 
 		unsigned int width( void ) const { return m_width; }
 		unsigned int height( void ) const { return m_height; }
+
+		//const DXGI_FORMAT format() const { return m_pixel_format; }
 
 		const unsigned char * pixels() const 
 		{ 

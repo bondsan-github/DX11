@@ -141,8 +141,8 @@ HWND DX11::create_window( const HINSTANCE in_h_instance , const UINT in_client_w
 									window_styles ,				// window style
 									center_x ,					// initial horizontal position 
 									center_y ,					// initial vertical position of the window.
-									rectangle_window.right - rectangle_window.left ,				// width, in device units, of the window
-									rectangle_window.bottom - rectangle_window.top ,				// height, in device units, of the window
+									rectangle_window.right - rectangle_window.left ,	// width, in device units, of the window
+									rectangle_window.bottom - rectangle_window.top ,	// height, in device units, of the window
 									nullptr ,					// handle to the parent or owner window 
 									nullptr ,					// handle to a menu - name of menu resource e.g. "MainMenu"
 									in_h_instance ,				// handle to the instance of the module to be associated with the window

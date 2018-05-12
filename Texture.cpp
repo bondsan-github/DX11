@@ -2,7 +2,7 @@
 
 Texture::Texture(){}
 
-Texture::Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_colour )
+Texture::Texture( const XMFLOAT2 in_dimensions , const Colour_32bit_rgba in_colour )
 	: m_width( in_dimensions.x ) , m_height( in_dimensions.y )
 {
 	m_pixels.clear();
@@ -18,6 +18,8 @@ Texture::Texture( const wstring in_filename )
 
 	m_width  = m_image->width();
 	m_height = m_image->height();
+
+	//m_format = m_image->format();
 
 	create_buffer( m_image->pixels() );
 }
@@ -37,10 +39,10 @@ void Texture::create_buffer( const void * in_pixels ) // bool use_image_dimensio
 	m_texture_2d_description.MiscFlags          = 0;
 
 	m_subresource_data.pSysMem					= in_pixels;
-	m_subresource_data.SysMemPitch				= m_width * sizeof( XMFLOAT4 ); //m_image->bpp()
-	m_subresource_data.SysMemSlicePitch			= ( m_width * sizeof( XMFLOAT4 ) ) * m_height;
+	m_subresource_data.SysMemPitch				= m_width * sizeof( Colour_32bit_rgba ); //m_image->bpp()
+	m_subresource_data.SysMemSlicePitch			= ( m_width * 4 ) * m_height;
 
-	m_result = get_video_device()->CreateTexture2D( &m_texture_2d_description ,
+	m_result = get_video_device()->CreateTexture2D( & m_texture_2d_description ,
 													& m_subresource_data ,	// initial data
 													m_texture_2D.ReleaseAndGetAddressOf() );
 
@@ -108,7 +110,7 @@ void Texture::create_buffer()
 	PSSetShaderResources();
 }
 
-void Texture::plot( const float in_x , const float in_y , const XMFLOAT4 in_colour )
+void Texture::plot( const float in_x , const float in_y , const Colour_32bit_rgba in_colour )
 {
 	if( in_x >= 0 && in_y >= 0 && in_x <= m_width && in_y <= m_height )
 	{
@@ -118,7 +120,7 @@ void Texture::plot( const float in_x , const float in_y , const XMFLOAT4 in_colo
 	}
 }
 
-void Texture::line( const XMFLOAT4 in_points , const XMFLOAT4 in_colour )
+void Texture::line( const XMFLOAT4 in_points , const Colour_32bit_rgba in_colour )
 {
 	int x1 = in_points.x;
 	int y1 = in_points.y;
