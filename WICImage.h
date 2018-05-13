@@ -9,6 +9,7 @@
 #include <string>
 
 #include "..\DX11\debugging.h"
+#include "..\DX11\Texture.h"
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
@@ -40,12 +41,14 @@ class WICImage //: public Image
 
 		//const DXGI_FORMAT format() const { return m_pixel_format; }
 
-		const unsigned char * pixels() const 
+		const uchar * pixels() const
 		{ 
 			return m_pixels.data();
 		}
 
 	private:
+
+		std::vector< uchar > m_pixels;
 
 		HRESULT	m_result { E_FAIL };
 
@@ -62,7 +65,5 @@ class WICImage //: public Image
 		unsigned int m_size_bytes { };
 
 		unsigned int m_width { };
-		unsigned int m_height { };
-
-		std::vector< unsigned char > m_pixels;
+		unsigned int m_height { };		
 };

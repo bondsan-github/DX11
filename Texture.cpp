@@ -2,7 +2,7 @@
 
 Texture::Texture(){}
 
-Texture::Texture( const XMFLOAT2 in_dimensions , const Colour_32bit_rgba in_colour )
+Texture::Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_colour )
 	: m_width( in_dimensions.x ) , m_height( in_dimensions.y )
 {
 	m_pixels.clear();
@@ -39,8 +39,8 @@ void Texture::create_buffer( const void * in_pixels ) // bool use_image_dimensio
 	m_texture_2d_description.MiscFlags          = 0;
 
 	m_subresource_data.pSysMem					= in_pixels;
-	m_subresource_data.SysMemPitch				= m_width * sizeof( Colour_32bit_rgba ); //m_image->bpp()
-	m_subresource_data.SysMemSlicePitch			= ( m_width * 4 ) * m_height;
+	m_subresource_data.SysMemPitch				= m_width * sizeof(  ); //m_image->bpp()
+	m_subresource_data.SysMemSlicePitch			= ( m_width * sizeof(  ) ) * m_height;
 
 	m_result = get_video_device()->CreateTexture2D( & m_texture_2d_description ,
 													& m_subresource_data ,	// initial data
@@ -48,7 +48,7 @@ void Texture::create_buffer( const void * in_pixels ) // bool use_image_dimensio
 
 	if( FAILED( m_result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
 
-	m_view_description.Format					 = m_format;// DXGI_FORMAT_R8G8B8A8_UNORM; // DXGI_FORMAT_R8G8B8A8_UINT
+	m_view_description.Format					 = m_format;// DXGI_FORMAT_R32G32B32A32_FLOAT
 	m_view_description.ViewDimension             = D3D11_SRV_DIMENSION_TEXTURE2D;
 	m_view_description.Texture2D.MostDetailedMip = 0u;	// number of mips - 1;
 	m_view_description.Texture2D.MipLevels       = 1u;
@@ -69,7 +69,7 @@ void Texture::create_buffer()
 	m_texture_2d_description.Height				= m_height;
 	m_texture_2d_description.MipLevels			= 1;
 	m_texture_2d_description.ArraySize			= 1;
-	m_texture_2d_description.Format				= m_format;// DXGI_FORMAT_R8G8B8A8_UNORM; // passing in an array of unsigned int's
+	m_texture_2d_description.Format				= m_format;// DXGI_FORMAT_R32G32B32A32_FLOAT; // passing in an array of floats
 	m_texture_2d_description.SampleDesc.Count	= 1;
 	m_texture_2d_description.SampleDesc.Quality	= 0;
 	m_texture_2d_description.Usage				= m_usage;
@@ -110,7 +110,7 @@ void Texture::create_buffer()
 	PSSetShaderResources();
 }
 
-void Texture::plot( const float in_x , const float in_y , const Colour_32bit_rgba in_colour )
+void Texture::plot( const float in_x , const float in_y , const XMFLOAT4 in_colour )
 {
 	if( in_x >= 0 && in_y >= 0 && in_x <= m_width && in_y <= m_height )
 	{
@@ -120,7 +120,7 @@ void Texture::plot( const float in_x , const float in_y , const Colour_32bit_rgb
 	}
 }
 
-void Texture::line( const XMFLOAT4 in_points , const Colour_32bit_rgba in_colour )
+void Texture::line( const XMFLOAT4 in_points , const XMFLOAT4 in_colour )
 {
 	int x1 = in_points.x;
 	int y1 = in_points.y;

@@ -16,7 +16,7 @@ class Quad : public Mesh
 
 
 
-		Quad( const XMFLOAT2 in_dimensions , const Colour_32bit_rgba in_vertex_colour )
+		Quad( const XMFLOAT2 in_dimensions , const Colour_rgba128bpp_float in_vertex_colour )
 			: m_vertex_colour( in_vertex_colour ) //Mesh( in_dimensions ),
 		{
 			m_dimension.x = in_dimensions.x * 0.5f;
@@ -84,7 +84,7 @@ class Quad : public Mesh
 
 	private:
 		XMFLOAT2 m_dimension { };
-		Colour_32bit_rgba m_vertex_colour { 1.0f , 0.0f , 0.0f , 1.0f };
+		Colour_rgba128bpp_float m_vertex_colour { 1.0f , 0.0f , 0.0f , 1.0f };
 
 		std::unique_ptr< Texture > m_diffuse = nullptr;
 

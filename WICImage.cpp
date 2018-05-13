@@ -43,7 +43,7 @@ void WICImage::load( const wstring in_filename )
 
 	// Retrieve the first frame of the image from the decoder
 	m_result = m_bitmap_decoder->GetFrame( 0 , // frame number
-											m_bitmap_frame_decode.ReleaseAndGetAddressOf() );
+										   m_bitmap_frame_decode.ReleaseAndGetAddressOf() );
 	
 	if( FAILED( m_result ) ) ErrorExit( L"WICImage::load() error; GetFrame" );
 
@@ -64,7 +64,7 @@ void WICImage::load( const wstring in_filename )
 	m_imaging_factory.Reset();
 
 	m_result = m_format_converter->Initialize( m_bitmap_frame_decode.Get() ,
-											   GUID_WICPixelFormat32bppRGBA ,	// = DXGI_FORMAT_R8G8B8A8_UNORM
+											   GUID_WICPixelFormat32bppRGBA ,	// = DXGI_FORMAT_R8G8B8A8_UINT
 											   WICBitmapDitherTypeNone ,
 											   nullptr ,
 											   0.0f ,							// alphaThresholdPercent
@@ -74,7 +74,7 @@ void WICImage::load( const wstring in_filename )
 
 	m_bitmap_frame_decode.Reset();
 
-	m_row_byte_pitch	= m_width * 4;
+	m_row_byte_pitch	= m_width * 4; // bpp
 	m_size_bytes		= m_row_byte_pitch * m_height;
 
 	m_pixels.reserve( m_size_bytes );
