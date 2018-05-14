@@ -30,7 +30,7 @@ void Mesh::create_buffer_vertices()
 
 	mul_total_vertices = static_cast< unsigned long >( m_vector_vertices.size() );
 
-	mh_result = mp_video_device->CreateBuffer( & buffer_description , & resource_data , mp_buffer_vertex.ReleaseAndGetAddressOf() );
+	mh_result = mp_video_device->CreateBuffer( & buffer_description , & resource_data , m_buffer_vertex.ReleaseAndGetAddressOf() );
 
 	//catch D3D11 errors
 	//if (DX11 error) throw ()
@@ -52,7 +52,7 @@ void Mesh::create_buffer_indices()
 
 	mul_total_indices = static_cast< unsigned long >( m_vector_indices.size() ); // change to ull
 
-	mh_result = mp_video_device->CreateBuffer( & buffer_description , & resource_data , & mp_buffer_index );
+	mh_result = mp_video_device->CreateBuffer( & buffer_description , & resource_data , & m_buffer_index );
 
 	if( FAILED( mh_result ) ) ErrorExit( L"Mesh error; create indices buffer" );
 }
@@ -95,11 +95,11 @@ void Mesh::update_buffer_matrix_world()
 {
 	//  ID3D11Buffer inherits from D3DResource 
 	mp_video_device_context->UpdateSubresource( mp_buffer_matrix_world.Get() , // ID3D11Resource destination
-												0 ,				// zero-based index of destination subresource
-												nullptr ,		// box that defines the portion of the destination subresource to copy the resource data into
+												0 ,				// destination subresource
+												nullptr ,		// destination subresource box to copy the resource data into
 												& m_matrix_world ,// source data
-												0 ,				// size of one row of the source data.
-												0 );			// size of one depth slice of source data.
+												0 ,				// source data row size
+												0 );			// source data depth slice.
 }
 
 // update_vertex_shader_buffer
@@ -107,17 +107,18 @@ void Mesh::update_buffer_matrix_world()
 void Mesh::VSSetConstantBuffers()
 {
 	// no need to re-bind the constant buffers unless the layout changes
-	mp_video_device_context->VSSetConstantBuffers( 0,	//VS_BUFFER_MESH ,// Index into the device's zero-based array 
-														//to begin setting constant buffers to
-												   1 ,	// Number of buffers to set
+	mp_video_device_context->VSSetConstantBuffers( 0,	//VS_BUFFER_MESH_WORLD ,// constant buffer index
+												   1 ,	// buffer count
 												   mp_buffer_matrix_world.GetAddressOf() ); // Array of constant buffers
 }
 
 void Mesh::update()
 {
 	update_matrix_world();
+	//VSSetConstantBuffers();
+	
 
-	update_buffer_matrix_world();
+	//update_buffer_matrix_world();
 	//update_VS_buffer_matrix_world();
 
 	
@@ -215,9 +216,7 @@ void Mesh::submit_draw()
 	// void draw_point_list()
 	//m_p_video_device_context->Draw( m_ul_total_vertices , 0 );	
 
-	mp_video_device_context->DrawIndexed( mul_total_indices ,	// Number of index's to draw.
-										  0 ,					// The location of the first index read by the GPU from the index buffer
-										  0 );					// A value added to each index before reading a vertex from the vertex buffer
+	
 }
 
 void Mesh::render()
@@ -227,10 +226,16 @@ void Mesh::render()
 	IASetVertexBuffers(); // update_VS_buffer_vertex
 	IASetIndexBuffer();	 // update_VS_buffer_index
 
+	VSSetConstantBuffers();
+
 	//set_PS_resources();
 	//update_VS_buffer();
 
-	submit_draw();	
+	//submit_draw();	
+
+	mp_video_device_context->DrawIndexed( mul_total_indices ,	// Number of index's to draw.
+										  0 ,					// The location of the first index read by the GPU from the index buffer
+										  0 );					// A value added to each index before reading a vertex from the vertex buffer
 }
 
 /*

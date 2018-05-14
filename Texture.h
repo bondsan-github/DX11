@@ -1,26 +1,22 @@
 #pragma once
 
 #include <vector>
-#include <Windows.h>
-#include <wrl/client.h>
-#include <wincodec.h>
-#include <memory>
+//#include <Windows.h>
+#include <wrl/client.h> // ComPtr
+#include <wincodec.h>	// WICImage
+#include <memory>		// unique_ptr
 
 #include <d3d11.h>
-#include <DirectXMath.h>
+#include <DirectXMath.h>// XM types
 
-#include "..\DX11\debugging.h"
+//#include "..\DX11\debugging.h"
 #include "..\DX11\types.h"
-//#include "..\DX11\File.h"
 #include "..\DX11\Drawable.h"
-#include "WICImage.h"
+#include "..\DX11\WICImage.h"
 
 //using namespace DirectX;			// ONLY in CPP files <- including this header will pollute global namespace
-using namespace Microsoft::WRL;
-using std::wstring;
-using std::make_unique;
-using std::unique_ptr;
-using std::vector;
+//using namespace Microsoft::WRL;
+
 
 // user defined literal
 //unsigned char operator "" _uc( char in_uc ) { return static_cast< unsigned char >( in_uc ); }
@@ -28,19 +24,17 @@ using std::vector;
 // material
 //enum class texture_type { diffuse , alpha , specular , displacement };
 
-
+/*
 class Colour_rgba128bpp_float
 {
 	public:
-		Colour_rgba128bpp_float() {}
-		
+		Colour_rgba128bpp_float() {}		
 
 		Colour_rgba128bpp_float( const float in_red,  // ? change to unsigned float (PS input) + normalise ?
 								 const float in_green,
 								 const float in_blue,
-								 const float in_alpha) 
-			: m_red( in_red ) , m_green(in_green), m_blue(in_blue), m_alpha(in_alpha)
-		{		}
+								 const float in_alpha ) 
+			: m_red( in_red ) , m_green( in_green ) , m_blue( in_blue ) , m_alpha( in_alpha ) { }
 
 		//operator *
 		// return int = m_red << 24 && 
@@ -53,26 +47,27 @@ class Colour_rgba128bpp_float
 		float m_blue { };	// 4 byte
 		float m_alpha { };	// 4 byte
 };
-
+*/
 //static Colour_8bit_rgba white( 1.0f , 1.0f , 1.0f , 1.0f ); #define white
 
 //void line( std::shared_pointer<Texture> in_texture, XMFLOAT4 in_points , colour in_colour );
 
+//template< typename pixel_format >
 class Texture : public Drawable
 {
 	public:
 		Texture();
 
-		Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_colour );
+		Texture( const uint in_width, const uint in_height , const DirectX::XMFLOAT4 in_colour );
 		//Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_rgba );
 
-		Texture( const wstring in_filename );
+		Texture( const std::wstring in_filename );
 
 		//void clear( const Colour in_colour ) {}
 
-		void plot( const float in_x , const float in_y , const XMFLOAT4 in_colour );
+		void plot( const uint in_x , const uint in_y , const  DirectX::XMFLOAT4 in_colour );
 
-		void line( const XMFLOAT4 in_points , const XMFLOAT4 in_colour );
+		void line( const  DirectX::XMFLOAT4 in_points , const  DirectX::XMFLOAT4 in_colour );
 
 		// elipse(center_x, center_y, width, height) 
 
@@ -80,11 +75,11 @@ class Texture : public Drawable
 		
 		//void load( const wstring filename ) { m_wic_image.load();	}
 
-		float width( void ) const	{ return m_width; }
-		float height( void ) const	{ return m_height; }
+		uint width( void ) const	{ return m_width; }
+		uint height( void ) const	{ return m_height; }
 
-		void width( const float in_width )		{ m_width = in_width; }
-		void height( const float in_height )	{ m_height = in_height; }
+		void width( const uint in_width )	{ m_width = in_width; }
+		void height( const uint in_height )	{ m_height = in_height; }
 
 		void update();
 
@@ -107,11 +102,11 @@ class Texture : public Drawable
 		D3D11_USAGE m_usage { D3D11_USAGE::D3D11_USAGE_DYNAMIC }; // D3D11_USAGE_IMMUTABLE; 
 		DXGI_FORMAT m_format { DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT }; //{ DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT };//
 
-		float m_width { };
-		float m_height { };
+		uint m_width { };
+		uint m_height { };
 
 		//unique_ptr <
-		vector< XMFLOAT4 > m_pixels;
+		std::vector< DirectX::XMFLOAT4 > m_pixels; // two input format types :(
 		// _int8
 		//XMFLOAT4 m_colour { };
 
@@ -122,12 +117,12 @@ class Texture : public Drawable
 		D3D11_SUBRESOURCE_DATA				m_subresource_data { };
 		
 		D3D11_SHADER_RESOURCE_VIEW_DESC		m_view_description { };
-		ComPtr< ID3D11ShaderResourceView >  m_shader_resource_view;
+		Microsoft::WRL::ComPtr< ID3D11ShaderResourceView >  m_shader_resource_view;
 
 		//ComPtr< ID3D11RenderTargetView >	mp_render_target_view;
-		ComPtr< ID3D11Texture2D >			m_texture_2D;
+		Microsoft::WRL::ComPtr< ID3D11Texture2D >	m_texture_2D;
 
-		unique_ptr< WICImage >				m_image;
+		std::unique_ptr< WICImage >			m_image;
 
 		D3D11_MAPPED_SUBRESOURCE			m_mapped_subresource { };
 };

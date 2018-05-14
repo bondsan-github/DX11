@@ -45,12 +45,24 @@ Camera::Camera( std::wstring name , XMVECTOR position , XMVECTOR target ) : m_v_
 											   m_p_buffer_matrix_projection.ReleaseAndGetAddressOf() ); // ID3D11Buffer target	
 
 	if( FAILED( h_result ) ) ErrorExit( L"Camera; CreateBuffer projection" );
+
+	//----------------update VS buffer view----------------
+	m_p_video_device_context->VSSetConstantBuffers( 1 ,//VS_BUFFER_CAMERA_VIEW , // Index into the device's zero-based array to begin setting constant buffers to
+													1 ,	// Number of buffers to set
+													m_p_buffer_matrix_view.GetAddressOf() ); // Array of constant buffers	
+
+																							 //----------------update VS buffer projection----------------
+	m_p_video_device_context->VSSetConstantBuffers( 2 ,//VS_BUFFER_CAMERA_PROJECTION , // Index into the device's zero-based array to begin setting constant buffers to
+													1 ,	// Number of buffers to set
+													m_p_buffer_matrix_projection.GetAddressOf() ); // Array of constant buffers	
 }
 
 Camera::~Camera() { }
 
 void Camera::render()
 {
+	
+
 	//----------------------update subresource----------------------// ie a buffer ( inherits from D3DResource )
 	m_p_video_device_context->UpdateSubresource( m_p_buffer_matrix_view.Get() , // ID3D11Resource destination
 												 0 ,				// zero-based index of destination subresource
@@ -67,15 +79,7 @@ void Camera::render()
 												 0 ,									// size of one row of the source data.
 												 0 );									// size of one depth slice of source data.
 
-	//----------------update VS buffer view----------------
-	m_p_video_device_context->VSSetConstantBuffers( 1,//VS_BUFFER_CAMERA_VIEW , // Index into the device's zero-based array to begin setting constant buffers to
-													1 ,	// Number of buffers to set
-													m_p_buffer_matrix_view.GetAddressOf() ); // Array of constant buffers	
-
-	//----------------update VS buffer projection----------------
-	m_p_video_device_context->VSSetConstantBuffers( 2,//VS_BUFFER_CAMERA_PROJECTION , // Index into the device's zero-based array to begin setting constant buffers to
-													1 ,	// Number of buffers to set
-													m_p_buffer_matrix_projection.GetAddressOf() ); // Array of constant buffers	
+	
 }
 
 //void Camera::update_matrix_buffer_view(){}

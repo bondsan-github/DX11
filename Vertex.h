@@ -42,8 +42,8 @@ struct vertex_rgba : public vertex
 struct vertex_rgba_uv : public vertex_rgba
 {
 	vertex_rgba_uv( const XMFLOAT3 in_xyz ,
-				   const XMFLOAT4 in_rgba ,
-				   const XMFLOAT2 in_texture_uv = XMFLOAT2( 0.0f , 0.0f ) )
+					const XMFLOAT4 in_rgba ,
+					const XMFLOAT2 in_texture_uv = XMFLOAT2( 0.0f , 0.0f ) )
 		
 		: vertex_rgba( in_xyz, in_rgba ) , texture_uv( in_texture_uv ) { }
 

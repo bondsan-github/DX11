@@ -60,14 +60,14 @@ class Mesh : public Drawable//, public Texture // abstract
 			
 			mp_video_device_context->IASetVertexBuffers( 0 ,								// The first input slot for binding.
 														 1 ,								// The number of vertex buffers in the array.
-														 mp_buffer_vertex.GetAddressOf() ,	// A pointer to an array of vertex buffers 
+														 m_buffer_vertex.GetAddressOf() ,	// A pointer to an array of vertex buffers 
 														 &stride ,							// Pointer to an array of stride values
 														 &offset );							// Pointer to an array of offset values
 		}
 
 		void IASetIndexBuffer()
 		{
-			mp_video_device_context->IASetIndexBuffer( mp_buffer_index.Get() ,	// A pointer to an ID3D11Buffer object   
+			mp_video_device_context->IASetIndexBuffer( m_buffer_index.Get() ,	// A pointer to an ID3D11Buffer object   
 													   DXGI_FORMAT_R16_UINT ,	// 16-bit or 32-bit unsigned integers 
 													   0 );						// Offset (in bytes) from the start of the index buffer to the first index to use.
 																				// short , unsigned short = 2 bytes = 8 * 2 = 16 bits
@@ -147,9 +147,9 @@ class Mesh : public Drawable//, public Texture // abstract
 			// theta = S / r
 
 			// 1s / 2π  = 0.1591549437
-			float fullrotation_1s = 1.0 / (2.0 * M_PI);
+			float fullrotation_1s = 1.0f / ( 2.0f * 3.1415927f ); //M_PI);
 
-			const float theta = 0.1;
+			const float theta = 0.1f;
 
 			//XMFLOAT2 pivot = current_pos - pivot;
 			XMFLOAT3 pivot { -150.0f, 0.0f, 0.0f };
@@ -203,10 +203,10 @@ class Mesh : public Drawable//, public Texture // abstract
 		vector< ushort >				m_vector_indices;
 
 		D3D11_PRIMITIVE_TOPOLOGY		m_primitive_topology;// = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		ComPtr< ID3D11Buffer >			mp_buffer_vertex;	// change name to m_p_buffer_vertices
+		ComPtr< ID3D11Buffer >			m_buffer_vertex;	// change name to m_p_buffer_vertices
 		unsigned long					mul_total_vertices {};
 
-		ComPtr< ID3D11Buffer >			mp_buffer_index;
+		ComPtr< ID3D11Buffer >			m_buffer_index;
 		unsigned long					mul_total_indices {};
 
 		XMFLOAT3						m_f3_position {};

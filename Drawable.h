@@ -1,6 +1,6 @@
 #pragma once
 
-#include <wrl/client.h>
+#include <wrl/client.h> // ComPtr
 #include <d3d11.h>
 
 class Drawable

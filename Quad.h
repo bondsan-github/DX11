@@ -2,33 +2,31 @@
 
 #include <wrl/client.h> // unique_pointer?
 
-#include "Mesh.h"
-#include "Texture.h"
-#include "WICImage.h"
+//#include "..\DX11\Mesh.h"
+#include "..\DX11\Texture.h"
+//#include "..\DX11\WICImage.h"
 
-using std::vector;
+//using std::vector;
 
-class Quad : public Mesh
+class Quad : public Mesh // make mesh a component
 {
 	public:
 
 		Quad() = delete;
-
-
-
-		Quad( const XMFLOAT2 in_dimensions , const Colour_rgba128bpp_float in_vertex_colour )
-			: m_vertex_colour( in_vertex_colour ) //Mesh( in_dimensions ),
+		
+		Quad( const uint in_width , const uint in_height , const XMFLOAT4 in_vertex_colour )
+			: m_width(in_width) , m_height( in_height ) , m_vertex_colour( in_vertex_colour ) //Mesh( in_dimensions ),
 		{
-			m_dimension.x = in_dimensions.x * 0.5f;
-			m_dimension.y = in_dimensions.y * 0.5f;
+			float width_half = in_width * 0.5f;
+			float height_half = in_height * 0.5f;
 
 			vector< vertex_rgba_uv > quad_vertices
 			{
 				//					   position																  texture u , v
-				vertex_rgba_uv( XMFLOAT3( -m_dimension.x , -m_dimension.y , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 1.0f ) ) ,// bottom left
-				vertex_rgba_uv( XMFLOAT3( -m_dimension.x ,  m_dimension.y , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 0.0f ) ) ,// top left
-				vertex_rgba_uv( XMFLOAT3(  m_dimension.x ,  m_dimension.y , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 0.0f ) ) ,// top right
-				vertex_rgba_uv( XMFLOAT3(  m_dimension.x , -m_dimension.y , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 1.0f ) )  // bottom right
+				vertex_rgba_uv( XMFLOAT3( -width_half , -height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 1.0f ) ) ,// bottom left
+				vertex_rgba_uv( XMFLOAT3( -width_half ,  height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 0.0f ) ) ,// top left
+				vertex_rgba_uv( XMFLOAT3(  width_half ,  height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 0.0f ) ) ,// top right
+				vertex_rgba_uv( XMFLOAT3(  width_half , -height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 1.0f ) )  // bottom right
 			};
 
 			vector< ushort > quad_indices { 0u,1u,2u, 0u,2u,3u };
@@ -38,26 +36,26 @@ class Quad : public Mesh
 			vertices( quad_vertices );
 			indices( quad_indices );
 
-			m_diffuse = make_unique< Texture >( in_dimensions , in_vertex_colour );
+			m_diffuse = make_unique< Texture >( m_width, m_height , m_vertex_colour );
 		}
 		
 		// from image
-		Quad( const wstring in_filename )// , const bool use_image_dimensions , const XMFLOAT2 in_dimensions )
+		Quad( const std::wstring in_filename )// , const bool use_image_dimensions , const XMFLOAT2 in_dimensions )
 			//: Mesh( in_dimensions )
 		{
 			// maps.diffuse->load( in_filename );
 			m_diffuse = make_unique< Texture >( in_filename );
 
-			m_dimension.x = 0.5 * m_diffuse->width();
-			m_dimension.y = 0.5 * m_diffuse->height();
+			float width_half = 0.5f * m_diffuse->width();
+			float height_half = 0.5f * m_diffuse->height();
 
 			vector< vertex_rgba_uv > quad_vertices
 			{
 				//					   position																  texture u , v
-				vertex_rgba_uv( XMFLOAT3( -m_dimension.x , -m_dimension.y , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 1.0f ) ) ,// bottom left
-				vertex_rgba_uv( XMFLOAT3( -m_dimension.x ,  m_dimension.y , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 0.0f ) ) ,// top left
-				vertex_rgba_uv( XMFLOAT3(  m_dimension.x ,  m_dimension.y , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 0.0f ) ) ,// top right
-				vertex_rgba_uv( XMFLOAT3(  m_dimension.x , -m_dimension.y , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 1.0f ) )  // bottom right
+				vertex_rgba_uv( XMFLOAT3( -width_half , -height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 1.0f ) ) ,// bottom left
+				vertex_rgba_uv( XMFLOAT3( -width_half ,  height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 0.0f ) ) ,// top left
+				vertex_rgba_uv( XMFLOAT3(  width_half ,  height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 0.0f ) ) ,// top right
+				vertex_rgba_uv( XMFLOAT3(  width_half , -height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 1.0f ) )  // bottom right
 			};
 
 			vector< ushort > quad_indices { 0u,1u,2u, 0u,2u,3u };
@@ -71,24 +69,31 @@ class Quad : public Mesh
 			//float ½height = static_cast< float >( m_diffuse_map.height() ) / 2.0f;
 		}
 
-		const float width() { return m_dimension.x;	}
-		const float height() { return m_dimension.y; }
+		const uint width() { return m_width; }
+		const uint height() { return m_height; }
 
 		//void line( const XMFLOAT4 in_points , const Colour in_colour )	{ m_texture->line( in_points , in_colour );	}
 
 		void update()
 		{
-			Mesh::update();
+			Mesh::update();			
+		}
+
+		void render()
+		{
 			m_diffuse->update();
+			Mesh::render();
 		}
 
 	private:
-		XMFLOAT2 m_dimension { };
-		Colour_rgba128bpp_float m_vertex_colour { 1.0f , 0.0f , 0.0f , 1.0f };
+		//XMFLOAT2 m_dimension { };
+		uint m_width { };
+		uint m_height { };
+		XMFLOAT4 m_vertex_colour { 1.0f , 0.0f , 0.0f , 1.0f };
 
 		std::unique_ptr< Texture > m_diffuse = nullptr;
 
-		//Mesh m_mesh;	
+		// Mesh m_mesh;	
 };
 
 //normals required ?

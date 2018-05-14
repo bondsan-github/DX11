@@ -1,15 +1,23 @@
 #include "Texture.h"
 
+using std::wstring;
+using std::make_unique;
+using std::unique_ptr;
+using std::vector;
+
+using DirectX::XMFLOAT4;
+using Microsoft::WRL::ComPtr;
+
 Texture::Texture(){}
 
-Texture::Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_colour )
-	: m_width( in_dimensions.x ) , m_height( in_dimensions.y )
+Texture::Texture( const uint in_width , const uint in_height , const XMFLOAT4 in_colour )
+	: m_width( in_width ) , m_height( in_height )
 {
 	m_pixels.clear();
 
 	m_pixels.resize( m_width * m_height , in_colour );
 
-	create_buffer();
+	create_buffer(); // m_pixels );
 }
 
 Texture::Texture( const wstring in_filename )
@@ -30,7 +38,7 @@ void Texture::create_buffer( const void * in_pixels ) // bool use_image_dimensio
 	m_texture_2d_description.Height             = m_height;
 	m_texture_2d_description.MipLevels          = 1;
 	m_texture_2d_description.ArraySize          = 1;
-	m_texture_2d_description.Format				= m_format;// DXGI_FORMAT_R8G8B8A8_UNORM; // switch on image bpp
+	m_texture_2d_description.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R8G8B8A8_UINT;// DXGI_FORMAT_R8G8B8A8_UNORM; // switch on image bpp
 	m_texture_2d_description.SampleDesc.Count   = 1;
 	m_texture_2d_description.SampleDesc.Quality = 0;
 	m_texture_2d_description.Usage              = m_usage;
@@ -39,8 +47,8 @@ void Texture::create_buffer( const void * in_pixels ) // bool use_image_dimensio
 	m_texture_2d_description.MiscFlags          = 0;
 
 	m_subresource_data.pSysMem					= in_pixels;
-	m_subresource_data.SysMemPitch				= m_width * sizeof(  ); //m_image->bpp()
-	m_subresource_data.SysMemSlicePitch			= ( m_width * sizeof(  ) ) * m_height;
+	m_subresource_data.SysMemPitch				= m_width * 16; //m_image->bytepp()
+	m_subresource_data.SysMemSlicePitch			= ( m_width * 4 ) * m_height;
 
 	m_result = get_video_device()->CreateTexture2D( & m_texture_2d_description ,
 													& m_subresource_data ,	// initial data
@@ -48,7 +56,7 @@ void Texture::create_buffer( const void * in_pixels ) // bool use_image_dimensio
 
 	if( FAILED( m_result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
 
-	m_view_description.Format					 = m_format;// DXGI_FORMAT_R32G32B32A32_FLOAT
+	m_view_description.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R8G8B8A8_UINT;// 
 	m_view_description.ViewDimension             = D3D11_SRV_DIMENSION_TEXTURE2D;
 	m_view_description.Texture2D.MostDetailedMip = 0u;	// number of mips - 1;
 	m_view_description.Texture2D.MipLevels       = 1u;
@@ -69,7 +77,7 @@ void Texture::create_buffer()
 	m_texture_2d_description.Height				= m_height;
 	m_texture_2d_description.MipLevels			= 1;
 	m_texture_2d_description.ArraySize			= 1;
-	m_texture_2d_description.Format				= m_format;// DXGI_FORMAT_R32G32B32A32_FLOAT; // passing in an array of floats
+	m_texture_2d_description.Format				= DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R32G32B32A32_FLOAT; // passing in an array of floats
 	m_texture_2d_description.SampleDesc.Count	= 1;
 	m_texture_2d_description.SampleDesc.Quality	= 0;
 	m_texture_2d_description.Usage				= m_usage;
@@ -91,11 +99,11 @@ void Texture::create_buffer()
 
 	m_result = Drawable::get_video_device()->CreateTexture2D( & m_texture_2d_description ,
 															  & m_subresource_data ,	// initial data
-															    m_texture_2D.ReleaseAndGetAddressOf() );
+															  m_texture_2D.ReleaseAndGetAddressOf() );
 
 	if( FAILED( m_result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
 
-	m_view_description.Format						= m_format;
+	m_view_description.Format						= DXGI_FORMAT_R32G32B32A32_FLOAT;// m_format;
 	m_view_description.ViewDimension				= D3D11_SRV_DIMENSION_TEXTURE2D;
 	m_view_description.Texture2D.MostDetailedMip	= 0u;	// number of mips - 1;
 	m_view_description.Texture2D.MipLevels			= 1u;
@@ -110,7 +118,7 @@ void Texture::create_buffer()
 	PSSetShaderResources();
 }
 
-void Texture::plot( const float in_x , const float in_y , const XMFLOAT4 in_colour )
+void Texture::plot( const uint in_x , const uint in_y , const XMFLOAT4 in_colour )
 {
 	if( in_x >= 0 && in_y >= 0 && in_x <= m_width && in_y <= m_height )
 	{
