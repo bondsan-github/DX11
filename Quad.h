@@ -44,18 +44,20 @@ class Quad : public Mesh // make mesh a component
 			//: Mesh( in_dimensions )
 		{
 			// maps.diffuse->load( in_filename );
-			m_diffuse = make_unique< Texture >( in_filename );
+			m_diffuse = make_unique< Texture >( in_filename ); //copy / move constructor required
 
-			float width_half = 0.5f * m_diffuse->width();
-			float height_half = 0.5f * m_diffuse->height();
+			// bool use_image_dimensions / if in_width > 0
+
+			float ½width  = 0.5f * m_diffuse->width();
+			float ½height = 0.5f * m_diffuse->height();
 
 			vector< vertex_rgba_uv > quad_vertices
 			{
 				//					   position																  texture u , v
-				vertex_rgba_uv( XMFLOAT3( -width_half , -height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 1.0f ) ) ,// bottom left
-				vertex_rgba_uv( XMFLOAT3( -width_half ,  height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 0.0f ) ) ,// top left
-				vertex_rgba_uv( XMFLOAT3(  width_half ,  height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 0.0f ) ) ,// top right
-				vertex_rgba_uv( XMFLOAT3(  width_half , -height_half , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 1.0f ) )  // bottom right
+				vertex_rgba_uv( XMFLOAT3( -½width , -½height , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 1.0f ) ) ,// bottom left
+				vertex_rgba_uv( XMFLOAT3( -½width ,  ½height , 0.0f ) , m_vertex_colour , XMFLOAT2( 0.0f , 0.0f ) ) ,// top left
+				vertex_rgba_uv( XMFLOAT3(  ½width ,  ½height , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 0.0f ) ) ,// top right
+				vertex_rgba_uv( XMFLOAT3(  ½width , -½height , 0.0f ) , m_vertex_colour , XMFLOAT2( 1.0f , 1.0f ) )  // bottom right
 			};
 
 			vector< ushort > quad_indices { 0u,1u,2u, 0u,2u,3u };
@@ -63,10 +65,6 @@ class Quad : public Mesh // make mesh a component
 			topology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 			vertices( quad_vertices );
 			indices( quad_indices );
-
-			// bool use_image_dimensions
-			//float ½width = static_cast< float >( m_diffuse_map.width() ) / 2.0f;
-			//float ½height = static_cast< float >( m_diffuse_map.height() ) / 2.0f;
 		}
 
 		const uint width() { return m_width; }
