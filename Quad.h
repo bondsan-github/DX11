@@ -13,6 +13,21 @@ class Quad : public Mesh // make mesh a component
 	public:
 
 		Quad() = delete;
+
+		// copy constructor
+		Quad( const Quad & ) = delete;					// unique_pointer cannot be copied
+		// copy assignment constructor
+		Quad & operator = ( const Quad & ) = delete;	// unique_pointer cannot be copied
+
+		Quad( Quad&& in_quad ) // move constructor
+		{
+			m_diffuse = move( in_quad.m_diffuse );
+			in_quad.m_diffuse = nullptr;
+
+			m_width = in_quad.m_width;
+			m_height = in_quad.m_height;
+			m_vertex_colour = in_quad.m_vertex_colour;
+		}
 		
 		Quad( const uint in_width , const uint in_height , const XMFLOAT4 in_vertex_colour )
 			: m_width(in_width) , m_height( in_height ) , m_vertex_colour( in_vertex_colour ) //Mesh( in_dimensions ),
