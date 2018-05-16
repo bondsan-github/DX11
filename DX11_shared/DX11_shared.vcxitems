@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{aad56127-650a-4125-bb2c-68db768517d6}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Bitmap.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Camera.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\debugging.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Drawable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\DX11_base.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\File.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Graphics_manager.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\icosahedron.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Image.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Input.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Keyboard.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Mesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Sphere.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Texture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\WICImage.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="$(MSBuildThisFileDirectory)..\Shaders\PS_colour.hlsl">
+      <EntryPointName>PS_Main</EntryPointName>
+      <ShaderType>Pixel</ShaderType>
+      <ShaderModel>4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="$(MSBuildThisFileDirectory)..\Shaders\VS_colour.hlsl">
+      <EntryPointName>VS_Main</EntryPointName>
+      <ShaderType>Vertex</ShaderType>
+      <ShaderModel>4.0</ShaderModel>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Camera.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Cube.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\debugging.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Drawable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\DX11_base.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\File.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\font.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Graphics_manager.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\icosahedron.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Includes.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Input.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\input_layouts.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Keyboard.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Mesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Quad.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Texture.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Timer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Triangle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\types.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Vertex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\WICImage.h" />
+  </ItemGroup>
+</Project>

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX11", "DX11.vcxproj", "{976DFDAB-F208-4DE1-852E-83C5681CAFF8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX11_shared", "..\DX11_shared\DX11_shared.vcxitems", "{AAD56127-650A-4125-BB2C-68DB768517D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,16 +11,6 @@ Global
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{976DFDAB-F208-4DE1-852E-83C5681CAFF8}.Debug|x64.ActiveCfg = Debug|x64
-		{976DFDAB-F208-4DE1-852E-83C5681CAFF8}.Debug|x64.Build.0 = Debug|x64
-		{976DFDAB-F208-4DE1-852E-83C5681CAFF8}.Debug|x86.ActiveCfg = Debug|Win32
-		{976DFDAB-F208-4DE1-852E-83C5681CAFF8}.Debug|x86.Build.0 = Debug|Win32
-		{976DFDAB-F208-4DE1-852E-83C5681CAFF8}.Release|x64.ActiveCfg = Release|x64
-		{976DFDAB-F208-4DE1-852E-83C5681CAFF8}.Release|x64.Build.0 = Release|x64
-		{976DFDAB-F208-4DE1-852E-83C5681CAFF8}.Release|x86.ActiveCfg = Release|Win32
-		{976DFDAB-F208-4DE1-852E-83C5681CAFF8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
