@@ -22,6 +22,9 @@
     <Filter Include="Reference sources\Header files">
       <UniqueIdentifier>{eb5762da-6659-41aa-b850-c18cd7c44101}</UniqueIdentifier>
     </Filter>
+    <Filter Include="HLSL">
+      <UniqueIdentifier>{628493f4-60de-4741-88fd-614ad0bc8285}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Header files\Cube.h">
@@ -134,5 +137,13 @@
     <ClCompile Include="..\Source files\WICImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shaders\VS_colour.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\PS_colour.hlsl">
+      <Filter>HLSL</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

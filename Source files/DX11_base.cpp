@@ -554,7 +554,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	//------------ create VS ------------//
 	
 	ID3DBlob * d3dBlob;
-	h_result = D3DReadFileToBlob( L"shaders/VS_colour.cso" , & d3dBlob );
+	h_result = D3DReadFileToBlob( L".\\shaders\\VS_colour.cso" , & d3dBlob );
 	
 	m_video_device->CreateVertexShader( d3dBlob->GetBufferPointer(),
 										d3dBlob->GetBufferSize(),
@@ -597,7 +597,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	//-------------------------------------------------------------------------//
 	
 	//------------ create PS  ------------//
-	h_result = D3DReadFileToBlob( L"shaders/PS_colour.cso" , & d3dBlob );
+	h_result = D3DReadFileToBlob( L".\\shaders\\PS_colour.cso" , & d3dBlob );
 
 	h_result = m_video_device->CreatePixelShader( d3dBlob->GetBufferPointer() ,
 												  d3dBlob->GetBufferSize() ,
