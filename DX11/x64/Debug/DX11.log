@@ -1,0 +1,20 @@
+﻿  Camera.cpp
+  debugging.cpp
+  Drawable.cpp
+  DX11_base.cpp
+d:\programming\projects\games\dx11\source files\dx11_base.cpp(178): warning C4244: 'argument': conversion from '__int64' to 'const double', possible loss of data
+  File.cpp
+  Keyboard.cpp
+  Mesh.cpp
+  Texture.cpp
+d:\programming\projects\games\dx11\source files\texture.cpp(133): warning C4244: 'initializing': conversion from 'const float' to 'int', possible loss of data
+d:\programming\projects\games\dx11\source files\texture.cpp(134): warning C4244: 'initializing': conversion from 'const float' to 'int', possible loss of data
+d:\programming\projects\games\dx11\source files\texture.cpp(135): warning C4244: 'initializing': conversion from 'const float' to 'int', possible loss of data
+d:\programming\projects\games\dx11\source files\texture.cpp(136): warning C4244: 'initializing': conversion from 'const float' to 'int', possible loss of data
+d:\programming\projects\games\dx11\source files\texture.cpp(152): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+d:\programming\projects\games\dx11\source files\texture.cpp(152): warning C4244: 'initializing': conversion from 'int' to 'const float', possible loss of data
+d:\programming\projects\games\dx11\source files\texture.cpp(153): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\programming\projects\games\dx11\source files\texture.cpp(153): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
+  WICImage.cpp
+  Generating Code...
+LINK : fatal error LNK1561: entry point must be defined

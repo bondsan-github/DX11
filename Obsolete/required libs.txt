@@ -1,0 +1,92 @@
+Visual Studio 2013 (v120)
+
+$(VC_IncludePath);$(WindowsSDK_IncludePath);
+
+$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);
+
+$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuild_ExecutablePath);$(VC_LibraryPath_x86);
+
+
+d3d11.lib;d3dcompiler.lib;dxguid.lib;winmm.lib;comctl32.lib;%(AdditionalDependencies)
+
+? d3d11_1.h = C:\Program Files (x86)\Windows Kits\8.1\Include\um
+
+C/C++ Preprocessor Definitions
+WIN32
+_DEBUG
+DEBUG
+PROFILE
+_WINDOWS
+_WIN32_WINNT=0x0600
+
+Multi-threaded Debug DLL (/MDd)
+
+Streaming SIMD Extensions 2 (/arch:SSE2)
+
+No (/openmp-)
+
+Yes (/LARGEADDRESSAWARE)
+
+-------------------------------------
+
+$(DXSKD_DIR)
+D:\Programming\sdk\DXSDK_Jun10\Include
+
+D:\Programming\sdk\DXSDK_Jun10\Lib\x86
+
+---------------------------------
+
+&(WindowsSDK_LibraryPath_x86) = C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86 = D3DCompiler.dll
+
+
+D3DCompiler.dll = C:\Program Files (x86)\Windows Kits\8.0\Lib\win8\um\x86
+
+-------------------------------------
+
+Windows7.1SDK
+
+$(DXSDK_DIR)Include$;(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include
+
+$(DXSDK_DIR)Lib\x86;$(VCInstallDir)lib;$(VCInstallDir)atlmfc\lib;$(WindowsSdkDir)lib;$(FrameworkSDKDir)\lib
+
+dxerr.lib
+d3d11.lib
+d3dx11.lib
+d3dcompiler.lib
+kernel32.lib
+user32.lib
+gdi32.lib
+winspool.lib
+comdlg32.lib
+advapi32.lib
+shell32.lib
+ole32.lib
+oleaut32.lib
+uuid.lib
+odbc32.lib
+odbccp32.lib
+
+----------------------------------------------------------------------------------
+$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);
+
+$(VC_IncludePath);$(WindowsSDK_IncludePath);
+
+$(VC_ReferencesPath_x86);
+
+$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);
+
+$(WindowsSDK_MetadataPath);
+
+$(VC_SourcePath);
+
+$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuild_ExecutablePath);$(VC_LibraryPath_x86);
+
+
+On the Linker tab, click Input to display the input properties of the project.
+From there, in the Additional Dependencies 
+
+d3d11.lib, d3dx11.lib, and dxerr.lib.
+
+#pragma comment(lib,"d3d11.lib")
+#pragma comment(lib,"d3dx11.lib")
+#pragma comment(lib,"dxerr.lib")

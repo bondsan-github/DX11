@@ -13,133 +13,125 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{fb840b27-1728-4dd8-b090-f26071838b6d}</UniqueIdentifier>
+    <Filter Include="Reference sources">
+      <UniqueIdentifier>{39a5be29-e494-4b41-b3a0-d72c42c4f342}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Reference sources\Source files">
+      <UniqueIdentifier>{0e7f7302-556e-4e86-a64d-88f40447b77a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Reference sources\Header files">
+      <UniqueIdentifier>{eb5762da-6659-41aa-b850-c18cd7c44101}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Camera.h">
+    <ClInclude Include="..\Header files\Cube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Clock.h">
+    <ClInclude Include="..\Header files\Drawable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Cube.h">
+    <ClInclude Include="..\Header files\DX11_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\debugging.h">
+    <ClInclude Include="..\Header files\File.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Drawable.h">
+    <ClInclude Include="..\Header files\font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\DX11_base.h">
+    <ClInclude Include="..\Header files\Graphics_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\DX11_derived.h">
+    <ClInclude Include="..\Header files\icosahedron.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\File.h">
+    <ClInclude Include="..\Header files\Includes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\font.h">
+    <ClInclude Include="..\Header files\Input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Graphics_manager.h">
+    <ClInclude Include="..\Header files\input_layouts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\icosahedron.h">
+    <ClInclude Include="..\Header files\Keyboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\input_layouts.h">
+    <ClInclude Include="..\Header files\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Keyboard.h">
+    <ClInclude Include="..\Header files\Quad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Mesh.h">
+    <ClInclude Include="..\Header files\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Quad.h">
+    <ClInclude Include="..\Header files\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Sprite.h">
+    <ClInclude Include="..\Header files\Triangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Texture.h">
+    <ClInclude Include="..\Header files\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Timer.h">
+    <ClInclude Include="..\Header files\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Triangle.h">
+    <ClInclude Include="..\Header files\WICImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\types.h">
+    <ClInclude Include="..\Header files\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\utilities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\WICImage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\window.h">
+    <ClInclude Include="..\Header files\debugging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\DX11_2D\shaders\PS_colour.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\DX11_2D\shaders\VS_colour.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Bitmap.cpp">
+    <ClCompile Include="..\Source files\Bitmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Camera.cpp">
+    <ClCompile Include="..\Source files\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\debugging.cpp">
+    <ClCompile Include="..\Source files\debugging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Drawable.cpp">
+    <ClCompile Include="..\Source files\Drawable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\DX11_base.cpp">
+    <ClCompile Include="..\Source files\DX11_base.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\File.cpp">
+    <ClCompile Include="..\Source files\File.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Graphics_manager.cpp">
+    <ClCompile Include="..\Source files\Graphics_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\icosahedron.cpp">
+    <ClCompile Include="..\Source files\icosahedron.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Keyboard.cpp">
+    <ClCompile Include="..\Source files\Image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Mesh.cpp">
+    <ClCompile Include="..\Source files\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Texture.cpp">
+    <ClCompile Include="..\Source files\Keyboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\utilities.cpp">
+    <ClCompile Include="..\Source files\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\WICImage.cpp">
+    <ClCompile Include="..\Source files\Sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\window.cpp">
+    <ClCompile Include="..\Source files\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source files\WICImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
