@@ -12,7 +12,7 @@
 //--------------------------------------------------------------------------------------
 
 //#include "pch.h"
-#include "..\Header files\Keyboard.h"
+#include "Keyboard.h"
 
 //#include "PlatformHelpers.h"
 

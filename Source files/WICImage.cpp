@@ -1,4 +1,4 @@
-#include "..\Header files\WICImage.h"
+#include "WICImage.h"
 
 using std::wstring;
 

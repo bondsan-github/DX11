@@ -1,4 +1,4 @@
-#include "..\Header files\Mesh.h"
+#include "Mesh.h"
 
 //template< typename vertex_t >
 //Mesh< vertex_t >::Mesh(  ) 

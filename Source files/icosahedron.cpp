@@ -1,4 +1,4 @@
-﻿//#include "..\Header files\icosahedron.h"
+﻿//#include "icosahedron.h"
 
 //Icosahedron< Tvertex >::Icosahedron( ID3D11Device * const p_video_device, unsigned char tessalation ) : Mesh< Tvertex >( p_video_device )
 

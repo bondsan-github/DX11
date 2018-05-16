@@ -1,4 +1,4 @@
-#include "..\Header files\debugging.h"
+#include "debugging.h"
 
 void debug_out(const char * format, ...)
 {

@@ -1,4 +1,4 @@
-#include "..\Header files\Graphics_manager.h"
+#include "Graphics_manager.h"
 
 Graphics_manager::Graphics_manager( Microsoft::WRL::ComPtr< ID3D11Device > const p_video_device )
 	: m_p_video_device( p_video_device )

@@ -70,20 +70,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>.\Header files;$(IncludePath)</IncludePath>
-    <SourcePath>.\Source files;$(SourcePath)</SourcePath>
+    <IncludePath>D:\programming\Projects\Games\DX11\Header files;$(IncludePath)</IncludePath>
+    <SourcePath>D:\programming\Projects\Games\DX11\Source files;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>.\Header files;$(IncludePath)</IncludePath>
-    <SourcePath>.\Source files;$(SourcePath)</SourcePath>
+    <IncludePath>D:\programming\Projects\Games\DX11\Header files;$(IncludePath)</IncludePath>
+    <SourcePath>D:\programming\Projects\Games\DX11\Source files;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>.\Header files;$(IncludePath)</IncludePath>
-    <SourcePath>.\Source files;$(SourcePath)</SourcePath>
+    <IncludePath>D:\programming\Projects\Games\DX11\Header files;$(IncludePath)</IncludePath>
+    <SourcePath>D:\programming\Projects\Games\DX11\Source files;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>.\Header files;$(IncludePath)</IncludePath>
-    <SourcePath>.\Source files;$(SourcePath)</SourcePath>
+    <IncludePath>D:\programming\Projects\Games\DX11\Header files;$(IncludePath)</IncludePath>
+    <SourcePath>D:\programming\Projects\Games\DX11\Source files;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
