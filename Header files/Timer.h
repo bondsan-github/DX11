@@ -65,5 +65,14 @@ class Timer
 		LARGE_INTEGER	m_current {};
 		LARGE_INTEGER	m_delta { };
 
+		// frames_last_main_loop
+
+		/*
+		int framesThisSecond;
+		static long long totalTicks;
+		static long long ticksThisSecond;
+		static int framesSkipped;
+		*/
+
 		bool			m_paused = true;
 };

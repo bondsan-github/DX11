@@ -1,20 +1,26 @@
 #pragma once
 
+//#include "..\DX11\debugging.h"
+#include "types.h"
+#include "Drawable.h"
+#include "WICImage.h"
+
+#include <d3d11.h>
+#include <DirectXMath.h>// XM types
+
 #include <vector>
 //#include <Windows.h>
 #include <wrl/client.h> // ComPtr
 #include <wincodec.h>	// WICImage
 #include <memory>		// unique_ptr
 
-#include <d3d11.h>
-#include <DirectXMath.h>// XM types
+using std::vector;
+using DirectX::XMFLOAT4;
+using Microsoft::WRL::ComPtr;
+using std::unique_ptr;
+using std::wstring;
 
-//#include "..\DX11\debugging.h"
-#include "types.h"
-#include "Drawable.h"
-#include "WICImage.h"
-
-//using namespace DirectX;			// ONLY in CPP files <- including this header will pollute global namespace
+//using namespace DirectX;			// ONLY in CPP files <- ? include in header will pollute global namespace
 //using namespace Microsoft::WRL;
 
 
@@ -58,73 +64,66 @@ class Texture : public Drawable
 	public:
 		Texture();
 
-		Texture( const uint in_width, const uint in_height , const DirectX::XMFLOAT4 in_colour );
+		Texture( const uint in_width, const uint in_height , const XMFLOAT4 in_colour );
 		//Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_rgba );
 
-		Texture( const std::wstring in_filename );
+		Texture( const wstring in_filename );
 
 		//void clear( const Colour in_colour ) {}
 
-		void plot( const uint in_x , const uint in_y , const  DirectX::XMFLOAT4 in_colour );
+		void plot( const uint in_x , const uint in_y , const  XMFLOAT4 in_colour );
 
-		void line( const  DirectX::XMFLOAT4 in_points , const  DirectX::XMFLOAT4 in_colour );
+		void line( const  XMFLOAT4 in_points , const  XMFLOAT4 in_colour );
 
-		// elipse(center_x, center_y, width, height) 
+		// elipse( center_x, center_y, width, height, [pen] ) 
 
 		//const void * ptr_rgba() const { return m_rgba.data(); }
 		
 		//void load( const wstring filename ) { m_wic_image.load();	}
 
-		uint width( void ) const	{ return m_width; }
-		uint height( void ) const	{ return m_height; }
+		uint width( void ) const	{ return _width; }
+		uint height( void ) const	{ return _height; }
 
-		void width( const uint in_width )	{ m_width = in_width; }
-		void height( const uint in_height )	{ m_height = in_height; }
+		void width( const uint in_width )	{ _width = in_width; }
+		void height( const uint in_height )	{ _height = in_height; }
 
-		void update();
+		void update( const double time_delta );
 
 	private:
 
-		HRESULT m_result { E_FAIL };
+		HRESULT result { E_FAIL };
 		
 		void create_buffer();
-		void create_buffer( const void * ptr_memory );
+		void create_buffer( const void * ptr_memory , DXGI_FORMAT pixel_format );// pixel_format format );
 		void PSSetShaderResources();
-
-		/*
-		#if defined(_DEBUG) || defined(DEBUG)
-		m_p_texture2D_diffuse->SetPrivateData( WKPDID_D3DDebugObjectName , sizeof( "Texture difuse map" ) - 1 , "Texture difuse map" );
-		#endif	*/
-		
+				
 		void update_PS_buffer();
 
-		//texture_type m_type { texture_type::diffuse };
-		D3D11_USAGE m_usage { D3D11_USAGE::D3D11_USAGE_DYNAMIC }; // D3D11_USAGE_IMMUTABLE; 
-		DXGI_FORMAT m_format { DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT }; //{ DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT };//
+		//type use { diffuse };
+		D3D11_USAGE write_access	{ D3D11_USAGE_DYNAMIC }; // _DEFAULT, _IMMUTABLE, _STAGING; 
+		//DXGI_FORMAT layout	{ DXGI_FORMAT_R8G8B8A8_UNORM }; 
 
-		uint m_width { };
-		uint m_height { };
+		uint _width {};
+		uint _height {};
+		uchar bytespp {};
 
 		//unique_ptr <
-		std::vector< DirectX::XMFLOAT4 > m_pixels; // two input format types :(
-		// _int8
-		//XMFLOAT4 m_colour { };
+		vector< XMFLOAT4 > pixels {}; //_128bpp // two input format types :( // _int8
 
-		//unsigned char m_bpp = 8;
-		//DXGI_FORMAT a8r8g8b8 m_format;
-			
-		D3D11_TEXTURE2D_DESC				m_texture_2d_description { };
-		D3D11_SUBRESOURCE_DATA				m_subresource_data { };
+		//XMFLOAT4 m_colour { };	
+					
+		D3D11_TEXTURE2D_DESC				description_2d {};
+		D3D11_SUBRESOURCE_DATA				subresource_data {};
 		
-		D3D11_SHADER_RESOURCE_VIEW_DESC		m_view_description { };
-		Microsoft::WRL::ComPtr< ID3D11ShaderResourceView >  m_shader_resource_view;
+		D3D11_SHADER_RESOURCE_VIEW_DESC		view_description {};
+		ComPtr< ID3D11ShaderResourceView >  view_shader_resource {};
 
-		//ComPtr< ID3D11RenderTargetView >	mp_render_target_view;
-		Microsoft::WRL::ComPtr< ID3D11Texture2D >	m_texture_2D;
+		//ComPtr< ID3D11RenderTargetView >	render_target_view;
+		ComPtr< ID3D11Texture2D >			texture_2d {};
 
-		std::unique_ptr< WICImage >			m_image;
+		unique_ptr< WICImage >				image {};
 
-		D3D11_MAPPED_SUBRESOURCE			m_mapped_subresource { };
+		D3D11_MAPPED_SUBRESOURCE			subresource_mapped {};
 };
 
 //Pixel( x,y, const & Pixel ) { }

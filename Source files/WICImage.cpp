@@ -1,116 +1,132 @@
 #include "WICImage.h"
 
-using std::wstring;
-
 WICImage::WICImage( const wstring in_filename ) // std::string
 {
 	load( in_filename );
 }
 
-void WICImage::load( const wstring in_filename )
+void WICImage::load( const wstring filename )
 {
+	// HRESULT WICCreateImagingFactory_Proxy( _In_ UINT SDKVersion , _Out_ IWICImagingFactory **ppIImagingFactory );
+
+	result = CoCreateInstance( CLSID_WICImagingFactory , nullptr , CLSCTX_INPROC_SERVER , IID_PPV_ARGS( & imaging_factory ) );
+	if( FAILED( result ) ) ErrorExit( L"Quad_textured() error; CoCreateInstance" );	
+	
+
+	result = imaging_factory->CreateDecoderFromFilename( filename.data(), // Image to be decoded
+														 nullptr , // Do not prefer a particular vendor
+														 GENERIC_READ , // Desired read access to the file
+														 WICDecodeMetadataCacheOnDemand , // Cache metadata when needed // WICDecodeMetadataCacheOnLoad
+														 & bitmap_decoder ); // Pointer to the decoder  
+
+	if( FAILED( result ) ) ErrorExit( L"WICImage::load() error; CreateDecoderFromFilename" );
+
+	result = bitmap_decoder->GetFrameCount( & frame_count );
+
+	//for( uint i = 0; i < frame_count; i++ )	
+	result = bitmap_decoder->GetFrame( 0 , & bitmap_frame_decode );
+
+	// image information
+	bitmap_frame_decode->GetSize( & _width , & _height );	
+
+	uchar pitch_padding = 0;
+
+	if( 4 % _width != 0 )
+	{
+		pitch_padding = _width % 4;
+	}
+	
+	bitmap_frame_decode->GetPixelFormat( & wic_pixel_format_guid );
+	
+	imaging_factory->CreateComponentInfo( wic_pixel_format_guid , & component_info );
+	component_info->QueryInterface( & pixel_format_info );
+
+	pixel_format_info->GetFormatGUID( & format_guid );
+	pixel_format_info->GetBitsPerPixel( & bits_per_pixel );
+	pixel_format_info->GetChannelCount( & channel_count );
+	pixel_format_info->GetFriendlyName( 128 , format_name , & chars_read );
+		
+	switch( bits_per_pixel ) 
+	{
+		case 24:
+		{
+		}
+		case 32:
+		{
+		}
+		default: {}
+	}
+	
+	// _pixel_format.dxgi_format = pixel_format_wic;
+	
+	result = imaging_factory->CreateFormatConverter( & format_converter );
+	
+	result = imaging_factory.Reset();
+
+	result = format_converter->CanConvert( wic_pixel_format_guid , GUID_WICPixelFormat32bppRGBA , &can_convert );
+
+	result = format_converter->Initialize( bitmap_frame_decode.Get() ,
+										   GUID_WICPixelFormat8bppRGBA ,//guid_wic_pixel_format ,// GUID_WICPixelFormat128bppRGBAFloat,//GUID_WICPixelFormat32bppRGBA ,// = DXGI_FORMAT_R8G8B8A8_UINT
+										   WICBitmapDitherTypeNone ,
+										   nullptr ,
+										   0.0f , // alphaThresholdPercent
+										   WICBitmapPaletteTypeCustom );
+
+	if( FAILED( result ) ) ErrorExit( L"WICImage::load() error; Initialize" );
+
 	/*
-	HRESULT WICCreateImagingFactory_Proxy(
-		_In_  UINT               SDKVersion ,
-		_Out_ IWICImagingFactory **ppIImagingFactory
-	);
+	int bitsPerPixel = ((int)format & 0xff00) >> 8;
+	int bytesPerPixel = (bitsPerPixel + 7) / 8;
+	int stride = 4 * ((width * bytesPerPixel + 3) / 4);
 	*/
 
-	m_result = CoCreateInstance( CLSID_WICImagingFactory ,
-								  nullptr ,
-								  CLSCTX_INPROC_SERVER ,
-								  IID_PPV_ARGS( & m_imaging_factory ) );
+	row_byte_pitch = _width * (bits_per_pixel / 8);// (_width * bits_per_pixel + 7 )/ 8 ; // ? must be padded or multiple of 4 , row_pitch = ( width * bitspp + 7 ) / 8;
+	size_bytes		= row_byte_pitch * _height;
 
-	if( FAILED( m_result ) ) ErrorExit( L"Quad_textured() error; CoCreateInstance" );
-	
-	
+	_pixels.reserve( size_bytes );	
+
+	// copy pixels is where the image format conversion executes
+	result = format_converter->CopyPixels(	nullptr, // rectangle to copy, null = entire bitmap
+											row_byte_pitch, // bitmap stride
+											size_bytes, // size buffer
+										   _pixels.data() ); // buffer pointer // BYTE == uchar
+
+	if( FAILED( result ) ) ErrorExit( L"WICImage::load() error; CopyPixels" );
+
+	bitmap_frame_decode.Reset();
+	bitmap_decoder.Reset();
+	format_converter.Reset();
+}
+
+//DXGI_FORMAT _WICToDXGI( const GUID& guid )
+//{
+//	// for all wic formats
+//	for( size_t i = 0; i < _countof( g_WICFormats ); ++i )
+//	{
+//
+		// if 
+//		if( memcmp( &g_WICFormats[ i ].wic , &guid , sizeof( GUID ) ) == 0 )
+//			return g_WICFormats[ i ].format;
+//	}
+//
+//#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
+//	if( g_WIC2 )
+//	{
+//		if( memcmp( &GUID_WICPixelFormat96bppRGBFloat , &guid , sizeof( GUID ) ) == 0 )
+//			return DXGI_FORMAT_R32G32B32_FLOAT;
+//	}
+//#endif
+//
+//	return DXGI_FORMAT_UNKNOWN;
+//}
+
+	////if( FAILED( result ) ) ErrorExit( L"WICImage::load() error; CreateFormatConverter" );
+
+
 	//size_t charsize = strlen( in_filename ) + 1;
 	//const size_t newsize = 100;
 	//size_t convertedChars = 0;
 	//wchar_t wcstring[ newsize ];// receive wide? string
 
-	//mbstowcs_s( &convertedChars , wcstring , charsize , in_filename , _TRUNCATE );
-	
-	
-	//mh_result = mp_WICFactory->CreateDecoderFromFilename( wcstring ,							// Image to be decoded
-
-	m_result = m_imaging_factory->CreateDecoderFromFilename( in_filename.data(),			// Image to be decoded
-															 nullptr ,						// Do not prefer a particular vendor
-															 GENERIC_READ ,					// Desired read access to the file
-															 WICDecodeMetadataCacheOnDemand ,// Cache metadata when needed // WICDecodeMetadataCacheOnLoad
-															 m_bitmap_decoder.ReleaseAndGetAddressOf() );	// Pointer to the decoder
-
-	if( FAILED( m_result ) ) ErrorExit( L"WICImage::load() error; CreateDecoderFromFilename" );
-
-	m_bitmap_decoder->GetFrameCount( & m_frame_count );
-
-
-	// Retrieve the first frame of the image from the decoder
-	m_result = m_bitmap_decoder->GetFrame( 0 , // frame number
-										   m_bitmap_frame_decode.ReleaseAndGetAddressOf() );
-	
-	if( FAILED( m_result ) ) ErrorExit( L"WICImage::load() error; GetFrame" );
-
-	m_bitmap_decoder.Reset();
-
-	// get frame image dimensions
-	m_result = m_bitmap_frame_decode->GetSize( & m_width , & m_height );
-
-	if( FAILED( m_result ) ) ErrorExit( L"WICImage::load() error; GetSize" );
-		
-	m_result = m_bitmap_frame_decode->GetPixelFormat( & m_pixel_format );
-
-	if( FAILED( m_result ) ) ErrorExit( L"Quad_textured() error; GetPixelFormat" );
-
-	IWICComponentInfo* pComponentInfo = NULL;
-	m_result = m_imaging_factory->CreateComponentInfo( m_pixel_format , &pComponentInfo );
-
-	IWICPixelFormatInfo* pPixelFormatInfo = NULL;
-	m_result = pComponentInfo->QueryInterface( &pPixelFormatInfo );
-
-	unsigned int bits_per_pixel = 0;
-	m_result = pPixelFormatInfo->GetBitsPerPixel( &bits_per_pixel );
-
-	unsigned int channelCount = 0;
-	m_result = pPixelFormatInfo->GetChannelCount( &channelCount );
-
-	wchar_t format_name[ 128 ]{};
-	unsigned int chars_read = 0;
-	pPixelFormatInfo->GetFriendlyName( 128 , format_name , &chars_read );
-
-	m_result = m_imaging_factory->CreateFormatConverter( m_format_converter.ReleaseAndGetAddressOf() );
-
-	if( FAILED( m_result ) ) ErrorExit( L"WICImage::load() error; CreateFormatConverter" );
-
-	m_imaging_factory.Reset();
-
-	m_result = m_format_converter->Initialize( m_bitmap_frame_decode.Get() ,
-											   GUID_WICPixelFormat128bppRGBAFloat,//GUID_WICPixelFormat32bppRGBA ,	// = DXGI_FORMAT_R8G8B8A8_UINT
-											   WICBitmapDitherTypeNone ,
-											   nullptr ,
-											   0.0f ,							// alphaThresholdPercent
-											   WICBitmapPaletteTypeCustom );
-
-	if( FAILED( m_result ) ) ErrorExit( L"WICImage::load() error; Initialize" );
-
-	m_bitmap_frame_decode.Reset();
-
-	m_row_byte_pitch	= m_width * 16u; // bytes_per_pixel // uint rowPitch = ( width * bitspp + 7 ) / 8;
-	m_size_bytes		= m_row_byte_pitch * m_height;
-
-	m_pixels.reserve( m_size_bytes );
-
-	BOOL can_convert = false;
-
-	m_result = m_format_converter->CanConvert( m_pixel_format , GUID_WICPixelFormat128bppRGBAFloat , & can_convert );
-
-	// copy pixels is where the image format conversion executes
-	m_result = m_format_converter->CopyPixels(	nullptr,					// The rectangle to copy. A NULL value specifies the entire bitmap
-												m_row_byte_pitch,			// The stride of the bitmap
-												m_size_bytes,				// The size of the buffer
-												m_pixels.data() );			// A pointer to the buffer // BYTE == uchar
-
-	if( FAILED( m_result ) ) ErrorExit( L"WICImage::load() error; CopyPixels" );
-
-	m_format_converter.Reset();
-}
+	//mbstowcs_s( &convertedChars , wcstring , charsize , in_filename , _TRUNCATE ); 
+	//mh_result = mp_WICFactory->CreateDecoderFromFilename( wcstring , // Image to be decoded

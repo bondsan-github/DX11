@@ -26,23 +26,21 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 /*
-class Game_DX11
+class DX11Game
 {
 	private:
+
+		DX11Window m_window
+		DX11Swap_chain m_swap_chain
 		
 		class graphics_manager
 			DX11_Device;
 			DX11_setup;
 			
 		class sound_manager
-
-		class windows_message_handler
-			create window
-			message_loop;
 };
 */
 
-//template< typename vertex_t >
 class DX11 //abstract
 {
 	public:
@@ -74,10 +72,8 @@ class DX11 //abstract
 		//virtual void unload_content( );
 
 		//ID3D11Device * const get_p_video_device( void ) { return m_p_video_device; }; 
-
-		//Microsoft::WRL::ComPtr<ID3D11Device> & get_p_video_device()	{ return m_p_video_device; };
-
-		//Microsoft::WRL::ComPtr<ID3D11DeviceContext> & get_p_video_device_context() { return m_p_video_device_context; }
+		//ComPtr<ID3D11Device> & get_p_video_device()	{ return m_p_video_device; };
+		//ComPtr<ID3D11DeviceContext> & get_p_video_device_context() { return m_p_video_device_context; }
 
 		void clear();
 		void clear( const XMFLOAT4 in_colour );
@@ -92,7 +88,7 @@ class DX11 //abstract
 
 		std::unique_ptr< Keyboard > m_keyboard = std::make_unique< Keyboard >();
 
-		//m_mouse = std::make_unique<Mouse>();
+		//m_mouse = make_unique<Mouse>();
 		//m_mouse->SetWindow( window );
 
 	private:
@@ -103,9 +99,9 @@ class DX11 //abstract
 		void create_depth_stencil();
 		void create_depth_stencil_view();
 
-		HINSTANCE					m_instance { };
-		HWND						m_window { };
-		int							m_window_display_options { };
+		HINSTANCE					m_instance {};
+		HWND						m_window {};
+		int							m_window_display_options {};
 		unsigned long				m_window_styles {};
 		unsigned int				m_window_width { 800 };
 		unsigned int				m_window_height { 600 };		
@@ -117,11 +113,11 @@ class DX11 //abstract
 
 		unsigned int				m_swap_chain_count { 1 };
 		DXGI_FORMAT					m_swap_chain_format { DXGI_FORMAT_R8G8B8A8_UNORM };
-		DXGI_SWAP_CHAIN_DESC		m_swap_chain_description { };
+		DXGI_SWAP_CHAIN_DESC		m_swap_chain_description {};
 		// 32 bit unsigned normalized integer format that supports 8 bits per channel including alpha.
 
 		DXGI_FORMAT					m_depth_buffer_format { DXGI_FORMAT_D24_UNORM_S8_UINT };
-		D3D11_TEXTURE2D_DESC		m_depth_texture_description { };
+		D3D11_TEXTURE2D_DESC		m_depth_texture_description {};
 
 		// directxtk.codeplex.com/wikipage?title=ComPtr
 
@@ -131,14 +127,14 @@ class DX11 //abstract
 
 		ComPtr< ID3D11Debug >				m_DX_debug;
 
-		//DXGI_SWAP_CHAIN_DESC				m_struct_swap_chain_description{};
+		//DXGI_SWAP_CHAIN_DESC				m_struct_swap_chain_description {};
 		ComPtr< IDXGISwapChain >			m_swap_chain;
 
 		ComPtr< ID3D11Texture2D >			m_render_target_texture;
 		ComPtr< ID3D11RenderTargetView >	m_render_target_view;
 		float								m_back_clear_colour[ 4 ] { 0.0f , 0.0f , 0.5f , 1.0f };
 
-		D3D11_DEPTH_STENCIL_VIEW_DESC		m_depth_stencil_view_description { };
+		D3D11_DEPTH_STENCIL_VIEW_DESC		m_depth_stencil_view_description {};
 		//D3D11_TEXTURE2D_DESC				m_struct_depth_texture_description {};
 		ComPtr< ID3D11Texture2D >			m_depth_stencil_texture;
 		ComPtr< ID3D11DepthStencilView >	m_depth_stencil_view;
@@ -155,15 +151,13 @@ class DX11 //abstract
 		D3D11_SAMPLER_DESC					m_struct_sampler_description {};
 		ComPtr< ID3D11SamplerState >		m_sampler_state;
 
-		D3D11_BLEND_DESC					m_blend_descripton { };
+		D3D11_BLEND_DESC					m_blend_descripton {};
 		ComPtr< ID3D11BlendState >			m_blend_state;
 
 		float								m_blend_factor[ 4 ] { 1.0f , 1.0f , 1.0f , 1.0f };
 		unsigned int						m_sample_mask = 0xffffffff;
 
 		Timer m_timer;
-
-
 };
 
 /*

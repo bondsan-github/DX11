@@ -81,8 +81,8 @@ class Quad : public Mesh // make mesh a component
 			indices( quad_indices );
 		}
 
-		const uint width() { return m_width; }
-		const uint height() { return m_height; }
+		const uint width() { return m_diffuse->width(); }
+		const uint height() { return  m_diffuse->height(); }
 
 		//void line( const XMFLOAT4 in_points , const Colour in_colour )	{ m_texture->line( in_points , in_colour );	}
 
@@ -93,7 +93,7 @@ class Quad : public Mesh // make mesh a component
 
 		void render()
 		{
-			m_diffuse->update();
+			m_diffuse->update(0.0);
 			Mesh::render();
 		}
 

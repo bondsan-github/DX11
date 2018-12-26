@@ -4,7 +4,7 @@ using Microsoft::WRL::ComPtr;
 
 DX11 * g_dx11 = nullptr;
 
-DX11::DX11( const HINSTANCE h_win_instance , const UINT window_width , const UINT window_height ) // int window_display_options )
+DX11::DX11( const HINSTANCE h_win_instance , const uint window_width , const uint window_height ) // int window_display_options )
 	:	m_instance( h_win_instance ) ,
 		m_window_width( window_width ),
 		m_window_height( window_height )
@@ -28,14 +28,14 @@ DX11::DX11( const HINSTANCE h_win_instance , const UINT window_width , const UIN
 
 //void DX11::load_content() {	OutputDebugString( L"\nbase load content\n" ); }
 
-LRESULT CALLBACK global_window_messaging( HWND hwnd , UINT message , WPARAM wParam , LPARAM lParam )
+LRESULT CALLBACK global_window_messaging( HWND hwnd , uint message , WPARAM wParam , LPARAM lParam )
 {
 	// Forward hwnd on because we can get messages (e.g., WM_CREATE)
 	// before CreateWindow returns, and thus before mhMainWnd is valid.
 	return g_dx11->window_messaging( hwnd , message , wParam , lParam );
 }
 
-LRESULT DX11::window_messaging( HWND hwnd , UINT message , WPARAM wParam , LPARAM lParam )
+LRESULT DX11::window_messaging( HWND hwnd , uint message , WPARAM wParam , LPARAM lParam )
 {
 	//PAINTSTRUCT paint_struct;
 	//HDC hDC;

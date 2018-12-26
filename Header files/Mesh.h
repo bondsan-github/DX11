@@ -39,12 +39,12 @@ class Mesh : public Drawable//, public Texture // abstract
 
 		//void create_buffer_vertices( vertex_t * vertices , UINT number_of_vertcies );
 		//void set_vertices( std::vector< vertex_t > & new_vertices )
-		void vertices( const std::vector< vertex_rgba_uv > & new_vertices )
+		void vertices( const vector< vertex_rgba_uv > & new_vertices )
 		{
 			m_vector_vertices = new_vertices;
 			create_buffer_vertices();
 		}
-		void indices( const std::vector< unsigned short > & vector_indices )
+		void indices( const  vector< unsigned short > & vector_indices )
 		{
 			m_vector_indices = vector_indices;
 			create_buffer_indices();
@@ -124,7 +124,7 @@ class Mesh : public Drawable//, public Texture // abstract
 
 		//XMMATRIX get_matrix_world() const { return m_matrix_world; }	
 
-		void rotate_point_z( const XMFLOAT2 in_pivot , const float in_angle_z )
+		void rotate_point_z( const XMFLOAT3 in_pivot , const float in_angle_z )
 		{
 			// capture current position
 
@@ -147,12 +147,12 @@ class Mesh : public Drawable//, public Texture // abstract
 			// theta = S / r
 
 			// 1s / 2π  = 0.1591549437
-			float fullrotation_1s = 1.0f / ( 2.0f * 3.1415927f ); //M_PI);
+			float fullrotation_1s = 1.0f / ( 2.0f * 3.1415926535f );// M_PI);
 
 			const float theta = 0.1f;
 
 			//XMFLOAT2 pivot = current_pos - pivot;
-			XMFLOAT3 pivot { -150.0f, 0.0f, 0.0f };
+			XMFLOAT3 pivot { in_pivot.x , in_pivot.y , in_pivot.z };
 
 			XMFLOAT3 current_postion = m_f3_position;
 

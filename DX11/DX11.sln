@@ -5,6 +5,34 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DX11_shared", "..\DX11_shared\DX11_shared.vcxitems", "{AAD56127-650A-4125-BB2C-68DB768517D6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "headers", "headers", "{2DFFDAC1-C56C-4FE7-8491-43EE8A3D7B83}"
+	ProjectSection(SolutionItems) = preProject
+		..\Header files\Camera.h = ..\Header files\Camera.h
+		..\Header files\Cube.h = ..\Header files\Cube.h
+		..\Header files\debugging.h = ..\Header files\debugging.h
+		..\Header files\Drawable.h = ..\Header files\Drawable.h
+		..\Header files\DX11_base.h = ..\Header files\DX11_base.h
+		..\Header files\File.h = ..\Header files\File.h
+		..\Header files\font.h = ..\Header files\font.h
+		..\Header files\Graphics_manager.h = ..\Header files\Graphics_manager.h
+		..\Header files\icosahedron.h = ..\Header files\icosahedron.h
+		..\Header files\Includes.h = ..\Header files\Includes.h
+		..\Header files\input_layouts.h = ..\Header files\input_layouts.h
+		..\DX11_shared\Input_manager.h = ..\DX11_shared\Input_manager.h
+		..\Header files\Keyboard.h = ..\Header files\Keyboard.h
+		..\Header files\Mesh.h = ..\Header files\Mesh.h
+		..\Header files\Quad.h = ..\Header files\Quad.h
+		..\Header files\sprite.h = ..\Header files\sprite.h
+		..\Header files\Texture.h = ..\Header files\Texture.h
+		..\Header files\Timer.h = ..\Header files\Timer.h
+		..\Header files\Triangle.h = ..\Header files\Triangle.h
+		..\Header files\types.h = ..\Header files\types.h
+		..\Header files\Vertex.h = ..\Header files\Vertex.h
+		..\Header files\WICImage.h = ..\Header files\WICImage.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sources", "sources", "{EA517668-2F90-492D-A543-87AA2C98B95F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

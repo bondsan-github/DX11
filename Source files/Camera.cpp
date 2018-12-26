@@ -5,14 +5,14 @@
 Camera::Camera( std::wstring name , XMVECTOR position , XMVECTOR target ) : m_v_position( position ) , m_v_target( target ) , m_string_name( name )
 {
 
-	m_p_video_device = get_video_device();
+	video_device = get_video_device();
 
-	m_p_video_device->GetImmediateContext( m_p_video_device_context.ReleaseAndGetAddressOf() );
+	video_device->GetImmediateContext( device_context_video.ReleaseAndGetAddressOf() );
 
 	HRESULT h_result { E_FAIL };
 
-	m_matrix_view = XMMatrixLookAtLH( position , target , m_v_up );
-	m_matrix_view = XMMatrixTranspose( m_matrix_view );
+	view_matrix = XMMatrixLookAtLH( position , target , m_v_up );
+	view_matrix = XMMatrixTranspose( view_matrix );
 
 	projection( Projection::perspective );
 	
@@ -32,29 +32,29 @@ Camera::Camera( std::wstring name , XMVECTOR position , XMVECTOR target ) : m_v_
 	// In this case the constant buffer is 28 bytes with 4 bytes padding to make it 32.
 
 	//----------------create buffer world----------------//
-	h_result = m_p_video_device->CreateBuffer( & m_buffer_description ,	// buffer description
+	h_result = video_device->CreateBuffer( & m_buffer_description ,	// buffer description
 											   nullptr ,						// subresource data description
-											   m_p_buffer_matrix_view.ReleaseAndGetAddressOf() ); // ID3D11Buffer target
+											   buffer_matrix_view.ReleaseAndGetAddressOf() ); // ID3D11Buffer target
 
-	if( FAILED( h_result ) ) ErrorExit( L"Camera; CreateBuffer world" );
+	
 
 
 	//----------------create buffer projection---------------//
-	h_result = m_p_video_device->CreateBuffer( & m_buffer_description ,	// buffer description
+	h_result = video_device->CreateBuffer( & m_buffer_description ,	// buffer description
 											   nullptr ,						// subresource data description
-											   m_p_buffer_matrix_projection.ReleaseAndGetAddressOf() ); // ID3D11Buffer target	
+											   buffer_matrix_projection.ReleaseAndGetAddressOf() ); // ID3D11Buffer target	
 
-	if( FAILED( h_result ) ) ErrorExit( L"Camera; CreateBuffer projection" );
+	
 
 	//----------------update VS buffer view----------------
-	m_p_video_device_context->VSSetConstantBuffers( 1 ,//VS_BUFFER_CAMERA_VIEW , // Index into the device's zero-based array to begin setting constant buffers to
+	device_context_video->VSSetConstantBuffers( 1 ,//VS_BUFFER_CAMERA_VIEW , // Index into the device's zero-based array to begin setting constant buffers to
 													1 ,	// Number of buffers to set
-													m_p_buffer_matrix_view.GetAddressOf() ); // Array of constant buffers	
+													buffer_matrix_view.GetAddressOf() ); // Array of constant buffers	
 
 																							 //----------------update VS buffer projection----------------
-	m_p_video_device_context->VSSetConstantBuffers( 2 ,//VS_BUFFER_CAMERA_PROJECTION , // Index into the device's zero-based array to begin setting constant buffers to
+	device_context_video->VSSetConstantBuffers( 2 ,//VS_BUFFER_CAMERA_PROJECTION , // Index into the device's zero-based array to begin setting constant buffers to
 													1 ,	// Number of buffers to set
-													m_p_buffer_matrix_projection.GetAddressOf() ); // Array of constant buffers	
+													buffer_matrix_projection.GetAddressOf() ); // Array of constant buffers	
 }
 
 Camera::~Camera() { }
@@ -64,18 +64,18 @@ void Camera::render()
 	
 
 	//----------------------update subresource----------------------// ie a buffer ( inherits from D3DResource )
-	m_p_video_device_context->UpdateSubresource( m_p_buffer_matrix_view.Get() , // ID3D11Resource destination
+	device_context_video->UpdateSubresource( buffer_matrix_view.Get() , // ID3D11Resource destination
 												 0 ,				// zero-based index of destination subresource
 												 nullptr ,			// box that defines the portion of the destination subresource to copy the resource data into
-												 & m_matrix_view ,	// source data
+												 & view_matrix ,	// source data
 												 0 ,				// size of one row of the source data.
 												 0 );				// size of one depth slice of source data.
 
 	//----------------------update subresource----------------------// ie a buffer ( inherits from D3DResource )
-	m_p_video_device_context->UpdateSubresource( m_p_buffer_matrix_projection.Get() ,	// ID3D11Resource destination
+	device_context_video->UpdateSubresource( buffer_matrix_projection.Get() ,	// ID3D11Resource destination
 												 0 ,									// zero-based index of destination subresource
 												 nullptr ,								// box portion of destination subresource to copy the resource data into
-												 & m_matrix_projection ,				// source data
+												 & projection_matrix ,				// source data
 												 0 ,									// size of one row of the source data.
 												 0 );									// size of one depth slice of source data.
 
@@ -88,9 +88,9 @@ void Camera::position( XMVECTOR v_position_new )
 {
 	m_v_position = v_position_new;
 
-	m_matrix_view = XMMatrixLookAtLH( v_position_new , m_v_target , m_v_up );
+	view_matrix = XMMatrixLookAtLH( v_position_new , m_v_target , m_v_up );
 
-	m_matrix_view = XMMatrixTranspose( m_matrix_view );
+	view_matrix = XMMatrixTranspose( view_matrix );
 }
 
 void Camera::z( float new_z )
@@ -100,9 +100,9 @@ void Camera::z( float new_z )
 	
 	m_v_position = XMVectorSetZ( m_v_position , new_z );
 
-	m_matrix_view = XMMatrixLookAtLH( m_v_position , m_v_target , m_v_up );
+	view_matrix = XMMatrixLookAtLH( m_v_position , m_v_target , m_v_up );
 
-	m_matrix_view = XMMatrixTranspose( m_matrix_view );
+	view_matrix = XMMatrixTranspose( view_matrix );
 }
 
 void Camera::delta_z( float delta_z )
@@ -114,9 +114,14 @@ void Camera::target( XMVECTOR target_new )
 {
 	m_v_target = target_new;
 
-	m_matrix_view = XMMatrixLookAtLH( m_v_position , target_new , m_v_up );
+	view_matrix = XMMatrixLookAtLH( m_v_position , target_new , m_v_up );
 
-	m_matrix_view = XMMatrixTranspose( m_matrix_view );
+	view_matrix = XMMatrixTranspose( view_matrix );
 }
 
 //XMMATRIX Camera::get_matrix_view() const { return m_matrix_view; }
+
+/*
+if( FAILED( h_result ) ) ErrorExit( L"Camera; CreateBuffer world" );
+if( FAILED( h_result ) ) ErrorExit( L"Camera; CreateBuffer projection" );
+*/

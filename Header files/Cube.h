@@ -2,7 +2,7 @@
 
 #include "..\Header files\Mesh.h"
 
-//template< typename vertex_t >
+template< typename vertex_t >
 class Cube_colour : public Mesh//< vertex_colour_texture >
 {
     public:
@@ -14,18 +14,18 @@ class Cube_colour : public Mesh//< vertex_colour_texture >
 			XMFLOAT2 texture_coord( 0.0f , 0.0f );
 
 			// set vertex buffer
-			std::vector< vertex_colour_diffuse > cube_vertices
+			std::vector< vertex_t > cube_vertices
 			{
 				//				position	 x		y	   z,		colour    r		g	  b		a
-				vertex_colour_diffuse( XMFLOAT3( -0.5f,  0.5f, -0.5f ) , XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) , texture_coord ),	// ftl // 0
-				vertex_colour_diffuse( XMFLOAT3(  0.5f,  0.5f, -0.5f ) , XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) , texture_coord ),	// ftr // 1
-				vertex_colour_diffuse( XMFLOAT3( -0.5f, -0.5f, -0.5f ) , XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) , texture_coord ),	// fbl // 2
-				vertex_colour_diffuse( XMFLOAT3(  0.5f, -0.5f, -0.5f ) , XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) , texture_coord ),	// fbr // 3
+				vertex_t( XMFLOAT3( -0.5f,  0.5f, -0.5f ) , XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) , texture_coord ),	// ftl // 0
+				vertex_t( XMFLOAT3(  0.5f,  0.5f, -0.5f ) , XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) , texture_coord ),	// ftr // 1
+				vertex_t( XMFLOAT3( -0.5f, -0.5f, -0.5f ) , XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) , texture_coord ),	// fbl // 2
+				vertex_t( XMFLOAT3(  0.5f, -0.5f, -0.5f ) , XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) , texture_coord ),	// fbr // 3
 
-				vertex_colour_diffuse( XMFLOAT3( -0.5f,  0.5f,  0.5f ) , XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) , texture_coord ),	// btl // 4
-				vertex_colour_diffuse( XMFLOAT3(  0.5f,  0.5f,  0.5f ) , XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) , texture_coord ),	// btr // 5
-				vertex_colour_diffuse( XMFLOAT3( -0.5f, -0.5f,  0.5f ) , XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) , texture_coord ),	// bbl // 6
-				vertex_colour_diffuse( XMFLOAT3(  0.5f, -0.5f,  0.5f ) , XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) , texture_coord )	// bbr // 7
+				vertex_t( XMFLOAT3( -0.5f,  0.5f,  0.5f ) , XMFLOAT4( 1.0f, 0.0f, 0.0f, 1.0f ) , texture_coord ),	// btl // 4
+				vertex_t( XMFLOAT3(  0.5f,  0.5f,  0.5f ) , XMFLOAT4( 0.0f, 1.0f, 0.0f, 1.0f ) , texture_coord ),	// btr // 5
+				vertex_t( XMFLOAT3( -0.5f, -0.5f,  0.5f ) , XMFLOAT4( 0.0f, 0.0f, 1.0f, 1.0f ) , texture_coord ),	// bbl // 6
+				vertex_t( XMFLOAT3(  0.5f, -0.5f,  0.5f ) , XMFLOAT4( 1.0f, 1.0f, 1.0f, 1.0f ) , texture_coord )	// bbr // 7
 			};
 
 			// set index buffer

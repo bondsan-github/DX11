@@ -8,17 +8,17 @@ cbuffer cm_matrix_WVP : register( b0 )
 */
 cbuffer cb_world			: register( b0 )// VS_BUFFER_MESH
 {
-	matrix m_world;
+	matrix matrix_world;
 };
 
 cbuffer cb_view			: register( b1 )// VS_BUFFER_VIEW
 {
-	matrix m_view;	
+	matrix matrix_view;
 };
 
 cbuffer cb_projection    : register( b2 ) // VS_BUFFER_PROJECTION
 {
-    matrix m_projection;
+    matrix matrix_projection;
 };
 
 struct VS_input //VS_XYZ_RGBA_UV
@@ -46,10 +46,10 @@ VS_output VS_Main( VS_input input )
 	//output.position = vertex.position;
 	//output.position = mul( vertex.position , matrix_WVP );
 
-	output.position = mul( input.position , m_world );		// float4( vertex.position , 1.0f );
+	output.position = mul( input.position , matrix_world );		// float4( vertex.position , 1.0f );
 
-	output.position = mul( output.position , m_view );
-	output.position = mul( output.position , m_projection );
+	output.position = mul( output.position , matrix_view );
+	output.position = mul( output.position , matrix_projection );
 
     output.texture_uv_0 = input.texture_uv_0;
 

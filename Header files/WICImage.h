@@ -2,13 +2,21 @@
 
 //#include <Windows.h>
 #include <vector>
+using std::vector;
+
 #include <wrl/client.h>
 #include <wincodec.h>
 //#include <d3d11.h>
 //#include <DirectXMath.h>
+
+using Microsoft::WRL::ComPtr;
+
 #include <string>
+using std::wstring;
+
 
 #include "debugging.h"
+#include "types.h"
 
 /*
 struct WIC_to_DXGI
@@ -28,40 +36,56 @@ class WICImage //: public Image
 	public:
 
 		WICImage() { }
-		WICImage( const std::wstring in_filename );
+		WICImage( const wstring in_filename );
 
-		void load( const std::wstring in_filename );
+		void load( const wstring in_filename );
 
-		unsigned int width( void ) const { return m_width; }
-		unsigned int height( void ) const { return m_height; }
+		uint width() const { return _width; }
+		uint height() const { return _height; }
 
-		//const DXGI_FORMAT format() const { return m_pixel_format; }
+		//const DXGI_FORMAT pixel_format() const { return wic_pixel_format_guid; }
 
-		const unsigned char * pixels() const
+		uchar * pixels()
 		{ 
-			return m_pixels.data();
+			return _pixels.data();
 		}
+
+		//const Pixel_format pixel_format() const { return _pixel_format; }
 
 	private:
 
-		std::vector< unsigned char > m_pixels;
+		vector< uchar > _pixels;
 
-		HRESULT	m_result { E_FAIL };
+		HRESULT	result { E_FAIL };
 
-		Microsoft::WRL::ComPtr< IWICImagingFactory >		m_imaging_factory;
-		Microsoft::WRL::ComPtr< IWICBitmapDecoder >			m_bitmap_decoder;
-		Microsoft::WRL::ComPtr< IWICBitmapFrameDecode >		m_bitmap_frame_decode;
+		ComPtr< IWICImagingFactory >		imaging_factory {};
+		ComPtr< IWICBitmapDecoder >			bitmap_decoder {};
+		ComPtr< IWICBitmapFrameDecode >		bitmap_frame_decode {};
 
-		WICPixelFormatGUID m_pixel_format { };
+		WICPixelFormatGUID wic_pixel_format_guid {};
 
-		Microsoft::WRL::ComPtr< IWICFormatConverter > m_format_converter;
+		ComPtr< IWICFormatConverter >		format_converter {};
 		//GUID m_WIC_guid_target_format;
+		BOOL can_convert = false;
 
-		unsigned int m_row_byte_pitch { };
-		unsigned int m_size_bytes { };
+		IWICComponentInfo * component_info {};
+		IWICPixelFormatInfo * pixel_format_info {};
+		GUID format_guid {};
 
-		unsigned int m_frame_count { };
+		wchar_t format_name[ 128 ] {};
+		uint chars_read {};
 
-		unsigned int m_width { };
-		unsigned int m_height { };		
+		//Pixel_format _pixel_format {};
+
+		uint bits_per_pixel {};
+
+		uint row_byte_pitch {};
+		uint size_bytes {};
+
+		uint channel_count {};
+
+		uint frame_count {};
+
+		uint _width {};
+		uint _height {};		
 };

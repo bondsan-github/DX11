@@ -11,61 +11,85 @@ using Microsoft::WRL::ComPtr;
 Texture::Texture(){}
 
 Texture::Texture( const uint in_width , const uint in_height , const XMFLOAT4 in_colour )
-	: m_width( in_width ) , m_height( in_height )
+	: _width( in_width ) , _height( in_height )
 {
-	m_pixels.clear();
 
-	m_pixels.resize( m_width * m_height , in_colour );
+#if defined(_DEBUG) || defined(DEBUG)
+	//texture_2d->SetPrivateData( WKPDID_D3DDebugObjectName , sizeof( "Texture 2d" ) - 1 , "Texture 2d" );
+	//D3D_SET_OBJECT_NAME_A( texture_2d , "Texture 2d" );
+#endif	
+
+	pixels.clear();
+
+	pixels.resize( _width * _height , in_colour );
 
 	create_buffer(); // m_pixels );
 }
 
 Texture::Texture( const wstring in_filename )
 {
-	m_image = make_unique< WICImage >( in_filename );
+	image = make_unique< WICImage >( in_filename );
 
-	m_width  = m_image->width();
-	m_height = m_image->height();
+	_width  = image->width();
+	_height = image->height();
 
-	//m_format = m_image->format();
+	//pixel_format = image->format();
 
-	create_buffer( m_image->pixels() );
+	//create_buffer( image->pixels(), image->format() );
+	create_buffer( image->pixels() , DXGI_FORMAT_R8G8B8A8_UNORM );
 }
 
-void Texture::create_buffer( const void * in_pixels ) // bool use_image_dimensions
+void Texture::create_buffer( const void * in_pixels , DXGI_FORMAT pixel_format )
 {
-	m_texture_2d_description.Width              = m_width;
-	m_texture_2d_description.Height             = m_height;
-	m_texture_2d_description.MipLevels          = 1;
-	m_texture_2d_description.ArraySize          = 1;
-	m_texture_2d_description.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R8G8B8A8_UINT;// DXGI_FORMAT_R8G8B8A8_UNORM; // switch on image bpp
-	m_texture_2d_description.SampleDesc.Count   = 1;
-	m_texture_2d_description.SampleDesc.Quality = 0;
-	m_texture_2d_description.Usage              = m_usage;
-	m_texture_2d_description.BindFlags          = D3D11_BIND_SHADER_RESOURCE;
-	m_texture_2d_description.CPUAccessFlags     = D3D11_CPU_ACCESS_WRITE;
-	m_texture_2d_description.MiscFlags          = 0;
+	description_2d.Width				= _width;
+	description_2d.Height				= _height;
+	description_2d.MipLevels			= 1;
+	description_2d.ArraySize			= 1;
+	description_2d.Format = DXGI_FORMAT_R8G8B8A8_UNORM;// format.dxgi_format;// DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R8G8B8A8_UINT;// DXGI_FORMAT_R8G8B8A8_UNORM; // switch on image bpp
+	description_2d.SampleDesc.Count		= 1;
+	description_2d.SampleDesc.Quality	= 0;
+	description_2d.Usage				= write_access; // D3D11_USAGE_IMMUTABLE, _DYNAMIC, _STAGING
+	description_2d.BindFlags			= D3D11_BIND_SHADER_RESOURCE;
+	description_2d.CPUAccessFlags		= D3D11_CPU_ACCESS_WRITE;
+	description_2d.MiscFlags			= 0;
+	
+	subresource_data.pSysMem					= in_pixels;
+	subresource_data.SysMemPitch = _width * 4;// format.bytes_per_pixel;//* 16; //bytespp - 32bits = 4bytes ; 4 * components=16
+	subresource_data.SysMemSlicePitch			= _height * ( _width * 4 );
 
-	m_subresource_data.pSysMem					= in_pixels;
-	m_subresource_data.SysMemPitch				= m_width * 16; //m_image->bytepp()
-	m_subresource_data.SysMemSlicePitch			= ( m_width * 4 ) * m_height;
+	/*
+	rowPitch = ( width * bitspp + 7 ) / 8;
 
-	m_result = get_video_device()->CreateTexture2D( & m_texture_2d_description ,
-													& m_subresource_data ,	// initial data
-													m_texture_2D.ReleaseAndGetAddressOf() );
 
-	if( FAILED( m_result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
+	( 100 * 32 + 7 ) / 8
+	( 200 * 32 + 7 ) / 8
+	( 800 * 32 + 7 ) / 8
+	( 600 * 32 + 7 ) / 8
 
-	m_view_description.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R8G8B8A8_UINT;// 
-	m_view_description.ViewDimension             = D3D11_SRV_DIMENSION_TEXTURE2D;
-	m_view_description.Texture2D.MostDetailedMip = 0u;	// number of mips - 1;
-	m_view_description.Texture2D.MipLevels       = 1u;
+	10 * 10 + 7
+	10 + 7 * 10
 
-	m_result = Drawable::get_video_device()->CreateShaderResourceView( m_texture_2D.Get() ,
-																	   & m_view_description ,
-																	   m_shader_resource_view.ReleaseAndGetAddressOf() );
 
-	if( FAILED( m_result ) ) ErrorExit( L"Texture::create_buffer() error; CreateShaderResourceView" );
+	24+7
+	7/8
+	*/
+
+	result = get_video_device()->CreateTexture2D( & description_2d ,
+												  & subresource_data ,	// initial data
+												  & texture_2d );// .ReleaseAndGetAddressOf() );
+
+	if( FAILED( result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
+
+	view_description.Format						= DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R8G8B8A8_UINT;// 
+	view_description.ViewDimension				= D3D11_SRV_DIMENSION_TEXTURE2D;  // ARRAY
+	view_description.Texture2D.MostDetailedMip	= 0u;	// number of mips - 1;
+	view_description.Texture2D.MipLevels		= 1u;
+	
+	result = Drawable::get_video_device()->CreateShaderResourceView( texture_2d.Get() ,
+																	 & view_description ,
+																	 view_shader_resource.ReleaseAndGetAddressOf() );
+
+	if( FAILED( result ) ) ErrorExit( L"Texture::create_buffer() error; CreateShaderResourceView" );
 
 	PSSetShaderResources();
 }
@@ -73,18 +97,18 @@ void Texture::create_buffer( const void * in_pixels ) // bool use_image_dimensio
 void Texture::create_buffer()
 {
 	// render target texture
-	m_texture_2d_description.Width				= m_width;
-	m_texture_2d_description.Height				= m_height;
-	m_texture_2d_description.MipLevels			= 1;
-	m_texture_2d_description.ArraySize			= 1;
-	m_texture_2d_description.Format				= DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R32G32B32A32_FLOAT; // passing in an array of floats
-	m_texture_2d_description.SampleDesc.Count	= 1;
-	m_texture_2d_description.SampleDesc.Quality	= 0;
-	m_texture_2d_description.Usage				= m_usage;
-	m_texture_2d_description.BindFlags			= D3D11_BIND_SHADER_RESOURCE;
-	// if( m_usage == D3D11_USAGE::D3D11_USAGE_DYNAMIC )
-	m_texture_2d_description.CPUAccessFlags		= D3D11_CPU_ACCESS_WRITE;
-	m_texture_2d_description.MiscFlags			= 0;
+	description_2d.Width				= _width;
+	description_2d.Height				= _height;
+	description_2d.MipLevels			= 1;
+	description_2d.ArraySize			= 1;
+	description_2d.Format				= DXGI_FORMAT_R8G8B8A8_UNORM;// DXGI_FORMAT_R32G32B32A32_FLOAT; // passing in an array of floats
+	description_2d.SampleDesc.Count		= 1;
+	description_2d.SampleDesc.Quality	= 0;
+	description_2d.Usage				= write_access;
+	description_2d.BindFlags			= D3D11_BIND_SHADER_RESOURCE;
+	// if( usage == D3D11_USAGE::D3D11_USAGE_DYNAMIC )
+	description_2d.CPUAccessFlags		= D3D11_CPU_ACCESS_WRITE;
+	description_2d.MiscFlags			= 0;
 
 	// 2D : You set SysMemPitch to the distance between any two adjacent pixels on different lines. 
 	//		You set SysMemSlicePitch to the size of the entire 2D surface in bytes. 
@@ -93,72 +117,72 @@ void Texture::create_buffer()
 	//unsigned int array_rgba[ 100 * 100 * 4 ] = { 255u , 0u , 0u , 0u };
 	//memset( array_rgba , 255 , 100 * 100 * 4 );  // 255+255+255+255
 
-	m_subresource_data.pSysMem				= m_pixels.data();
-	m_subresource_data.SysMemPitch			= m_width * sizeof( XMFLOAT4 ); // m_bpp
-	m_subresource_data.SysMemSlicePitch		= ( m_width * sizeof( XMFLOAT4 ) ) * m_height;
+	subresource_data.pSysMem				= pixels.data();
+	subresource_data.SysMemPitch			= _width * sizeof( XMFLOAT4 ); // m_bytespp
+	subresource_data.SysMemSlicePitch		= ( _width * sizeof( XMFLOAT4 ) ) * _height;
 
-	m_result = Drawable::get_video_device()->CreateTexture2D( & m_texture_2d_description ,
-															  & m_subresource_data ,	// initial data
-															  m_texture_2D.ReleaseAndGetAddressOf() );
+	result = Drawable::get_video_device()->CreateTexture2D( & description_2d ,
+															& subresource_data ,	// initial data
+															texture_2d.ReleaseAndGetAddressOf() );
 
-	if( FAILED( m_result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
+	if( FAILED( result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
 
-	m_view_description.Format						= DXGI_FORMAT_R32G32B32A32_FLOAT;// m_format;
-	m_view_description.ViewDimension				= D3D11_SRV_DIMENSION_TEXTURE2D;
-	m_view_description.Texture2D.MostDetailedMip	= 0u;	// number of mips - 1;
-	m_view_description.Texture2D.MipLevels			= 1u;
+	view_description.Format						= DXGI_FORMAT_R32G32B32A32_FLOAT;// m_format;
+	view_description.ViewDimension				= D3D11_SRV_DIMENSION_TEXTURE2D;
+	view_description.Texture2D.MostDetailedMip	= 0u;	// number of mips - 1;
+	view_description.Texture2D.MipLevels		= 1u;
 
 	//
-	m_result = Drawable::get_video_device()->CreateShaderResourceView( m_texture_2D.Get() ,
-																	   &m_view_description ,
-																	   m_shader_resource_view.ReleaseAndGetAddressOf() );
+	result = Drawable::get_video_device()->CreateShaderResourceView( texture_2d.Get() ,
+																	 &view_description ,
+																	 view_shader_resource.ReleaseAndGetAddressOf() );
 
-	if( FAILED( m_result ) ) ErrorExit( L"Texture::create_buffer() error; CreateShaderResourceView" );
+	if( FAILED( result ) ) ErrorExit( L"Texture::create_buffer() error; CreateShaderResourceView" );
 
 	PSSetShaderResources();
 }
 
 void Texture::plot( const uint in_x , const uint in_y , const XMFLOAT4 in_colour )
 {
-	if( in_x >= 0 && in_y >= 0 && in_x <= m_width && in_y <= m_height )
+	if( in_x >= 0 && in_y >= 0 && in_x <= _width && in_y <= _height )
 	{
-		int index = ( in_y * m_width ) + in_x;
+		int index = ( in_y * _width ) + in_x;
 
-		m_pixels.at( index ) = in_colour;
+		pixels.at( index ) = in_colour;
 	}
 }
 
 void Texture::line( const XMFLOAT4 in_points , const XMFLOAT4 in_colour )
 {
-	int x1 = in_points.x;
-	int y1 = in_points.y;
-	int x2 = in_points.z;
-	int y2 = in_points.w;
+	int x_1 = in_points.x;
+	int y_1 = in_points.y;
+	int x_2 = in_points.z;
+	int y_2 = in_points.w;
 
 	// Bresenham's line algorithm
-	const bool steep = ( fabs( y2 - y1 ) > fabs( x2 - x1 ) );
+	const bool steep = ( fabs( y_2 - y_1 ) > fabs( x_2 - x_1 ) );
 	if( steep )
 	{
-		std::swap( x1 , y1 );
-		std::swap( x2 , y2 );
+		std::swap( x_1 , y_1 );
+		std::swap( x_2 , y_2 );
 	}
 
-	if( x1 > x2 )
+	if( x_1 > x_2 )
 	{
-		std::swap( x1 , x2 );
-		std::swap( y1 , y2 );
+		std::swap( x_1 , x_2 );
+		std::swap( y_1 , y_2 );
 	}
 
-	const float dx = x2 - x1;
-	const float dy = fabs( y2 - y1 );
+	const float dx = x_2 - x_1;
+	const float dy = fabs( y_2 - y_1 );
 
 	float error = dx / 2.0f;
-	const int ystep = ( y1 < y2 ) ? 1 : -1;
-	int y = y1;
+	const int y_step = ( y_1 < y_2 ) ? 1 : -1;
+	int y = y_1;
 
-	const int maxX = x2;
+	const int max_x = x_2;
 
-	for( int x = x1; x < maxX; x++ )
+	for( int x = x_1; x < max_x; x++ )
 	{
 		if( steep )
 		{
@@ -172,7 +196,7 @@ void Texture::line( const XMFLOAT4 in_points , const XMFLOAT4 in_colour )
 
 		if( error < 0 )
 		{
-			y += ystep;
+			y += y_step;
 			error += dx;
 		}
 	}
@@ -188,10 +212,10 @@ void Texture::PSSetShaderResources()
 	// void set_diffuse_map( ComPtr< ID3D11Texture2D >& diffuse_map );
 	p_video_device_context->PSSetShaderResources( 0 ,					// PS resource slot
 												  1 ,					// count of resources
-												  m_shader_resource_view.GetAddressOf() );	// shader resource view
+												  view_shader_resource.GetAddressOf() );	// shader resource view
 }
 
-void Texture::update()
+void Texture::update( const double time_delta )
 {
 	PSSetShaderResources();
 }
@@ -201,21 +225,21 @@ void Texture::update_PS_buffer()//_PS_buffer()
 	ComPtr< ID3D11DeviceContext > p_video_device_context;
 	get_video_device()->GetImmediateContext( &p_video_device_context );
 
-	p_video_device_context->Map( m_texture_2D.Get() , 0 , D3D11_MAP_WRITE_DISCARD , 0 , & m_mapped_subresource );
+	p_video_device_context->Map( texture_2d.Get() , 0 , D3D11_MAP_WRITE_DISCARD , 0 , & subresource_mapped );
 	//D3D11_MAP_FLAG_DO_NOT_WAIT 
 
-	unsigned int pitch_row		= m_mapped_subresource.RowPitch;
-	unsigned int pitch_height	= m_mapped_subresource.DepthPitch;
+	unsigned int pitch_row		= subresource_mapped.RowPitch;
+	unsigned int pitch_height	= subresource_mapped.DepthPitch;
 
-	unsigned char * ptr_dest = reinterpret_cast< unsigned char * >( m_mapped_subresource.pData );
+	unsigned char * ptr_dest = reinterpret_cast< unsigned char * >( subresource_mapped.pData );
 	//Colour * ptr_dest = reinterpret_cast< Colour * >( m_mapped_subresource.pData );
 	// ? memcpy( ptr_dest + ( row * pitch_row ) , m_rgba.data() + ( row * m_width ) , m_width );
 
 	// for each row
-	for( unsigned int row = 0; row < m_height; ++row )
+	for( unsigned int row = 0; row < _height; ++row )
 	{							
-		memcpy( ptr_dest + ( row * pitch_row ) , m_pixels.data() + ( row * static_cast<int>(m_width) ) , static_cast<int>(m_width) * 4 );
+		memcpy( ptr_dest + ( row * pitch_row ) , pixels.data() + ( row * static_cast<int>(_width) ) , static_cast<int>(_width) * 4 ); // bytespp
 	}
 
-	p_video_device_context->Unmap( m_texture_2D.Get() , 0 );
+	p_video_device_context->Unmap( texture_2d.Get() , 0 );
 }

@@ -31,9 +31,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Image.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Input.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Keyboard.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Mesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Sphere.cpp">
@@ -77,16 +74,17 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Includes.h">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Input.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\input_layouts.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Keyboard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Mesh.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Quad.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\sprite.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Texture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Timer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Triangle.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\types.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Vertex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\WICImage.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Input_manager.h" />
   </ItemGroup>
 </Project>
