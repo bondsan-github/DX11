@@ -54,13 +54,10 @@ class Quad : public Mesh // make mesh a component
 		}
 		
 		// from image
-		Quad( const std::wstring in_filename )// , const bool use_image_dimensions , const XMFLOAT2 in_dimensions )
-			//: Mesh( in_dimensions )
+		Quad( const std::wstring in_filename )
 		{
 			// maps.diffuse->load( in_filename );
 			m_diffuse = make_unique< Texture >( in_filename ); //copy / move constructor required
-
-			// bool use_image_dimensions / if in_width > 0
 
 			float ½width  = 0.5f * m_diffuse->width();
 			float ½height = 0.5f * m_diffuse->height();

@@ -75,7 +75,7 @@ class WICImage //: public Image
 		wchar_t format_name[ 128 ] {};
 		uint chars_read {};
 
-		//Pixel_format _pixel_format {};
+		//Pixel_format pixel_format {};
 
 		uint bits_per_pixel {};
 

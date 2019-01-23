@@ -36,7 +36,7 @@ Texture::Texture( const wstring in_filename )
 	//pixel_format = image->format();
 
 	//create_buffer( image->pixels(), image->format() );
-	create_buffer( image->pixels() , DXGI_FORMAT_R8G8B8A8_UNORM );
+	create_buffer( image->pixels() , dxgi_format );
 }
 
 void Texture::create_buffer( const void * in_pixels , DXGI_FORMAT pixel_format )
@@ -45,7 +45,7 @@ void Texture::create_buffer( const void * in_pixels , DXGI_FORMAT pixel_format )
 	description_2d.Height				= _height;
 	description_2d.MipLevels			= 1;
 	description_2d.ArraySize			= 1;
-	description_2d.Format = DXGI_FORMAT_R8G8B8A8_UNORM;// format.dxgi_format;// DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R8G8B8A8_UINT;// DXGI_FORMAT_R8G8B8A8_UNORM; // switch on image bpp
+	description_2d.Format				= dxgi_format;// _UNORM; // switch on image bpp
 	description_2d.SampleDesc.Count		= 1;
 	description_2d.SampleDesc.Quality	= 0;
 	description_2d.Usage				= write_access; // D3D11_USAGE_IMMUTABLE, _DYNAMIC, _STAGING
@@ -54,12 +54,11 @@ void Texture::create_buffer( const void * in_pixels , DXGI_FORMAT pixel_format )
 	description_2d.MiscFlags			= 0;
 	
 	subresource_data.pSysMem					= in_pixels;
-	subresource_data.SysMemPitch = _width * 4;// format.bytes_per_pixel;//* 16; //bytespp - 32bits = 4bytes ; 4 * components=16
-	subresource_data.SysMemSlicePitch			= _height * ( _width * 4 );
+	subresource_data.SysMemPitch				= _width * bytes_per_pixel;// format.bytes_per_pixel;//* 16; //bytespp - 32bits = 4bytes ; 4 * components=16
+	subresource_data.SysMemSlicePitch			= _height * ( _width * bytes_per_pixel );
 
 	/*
 	rowPitch = ( width * bitspp + 7 ) / 8;
-
 
 	( 100 * 32 + 7 ) / 8
 	( 200 * 32 + 7 ) / 8
@@ -68,7 +67,6 @@ void Texture::create_buffer( const void * in_pixels , DXGI_FORMAT pixel_format )
 
 	10 * 10 + 7
 	10 + 7 * 10
-
 
 	24+7
 	7/8
@@ -80,7 +78,7 @@ void Texture::create_buffer( const void * in_pixels , DXGI_FORMAT pixel_format )
 
 	if( FAILED( result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
 
-	view_description.Format						= DXGI_FORMAT_R32G32B32A32_FLOAT;// DXGI_FORMAT_R8G8B8A8_UINT;// 
+	view_description.Format						= dxgi_format;// _UINT;// 
 	view_description.ViewDimension				= D3D11_SRV_DIMENSION_TEXTURE2D;  // ARRAY
 	view_description.Texture2D.MostDetailedMip	= 0u;	// number of mips - 1;
 	view_description.Texture2D.MipLevels		= 1u;
@@ -101,7 +99,7 @@ void Texture::create_buffer()
 	description_2d.Height				= _height;
 	description_2d.MipLevels			= 1;
 	description_2d.ArraySize			= 1;
-	description_2d.Format				= DXGI_FORMAT_R8G8B8A8_UNORM;// DXGI_FORMAT_R32G32B32A32_FLOAT; // passing in an array of floats
+	description_2d.Format				= dxgi_format;
 	description_2d.SampleDesc.Count		= 1;
 	description_2d.SampleDesc.Quality	= 0;
 	description_2d.Usage				= write_access;
@@ -117,9 +115,9 @@ void Texture::create_buffer()
 	//unsigned int array_rgba[ 100 * 100 * 4 ] = { 255u , 0u , 0u , 0u };
 	//memset( array_rgba , 255 , 100 * 100 * 4 );  // 255+255+255+255
 
-	subresource_data.pSysMem				= pixels.data();
-	subresource_data.SysMemPitch			= _width * sizeof( XMFLOAT4 ); // m_bytespp
-	subresource_data.SysMemSlicePitch		= ( _width * sizeof( XMFLOAT4 ) ) * _height;
+	subresource_data.pSysMem			= pixels.data();
+	subresource_data.SysMemPitch		= _width * bytes_per_pixel; //sizeof( uint ); 
+	subresource_data.SysMemSlicePitch	= _height * ( _width * bytes_per_pixel );
 
 	result = Drawable::get_video_device()->CreateTexture2D( & description_2d ,
 															& subresource_data ,	// initial data
@@ -127,7 +125,7 @@ void Texture::create_buffer()
 
 	if( FAILED( result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
 
-	view_description.Format						= DXGI_FORMAT_R32G32B32A32_FLOAT;// m_format;
+	view_description.Format						= dxgi_format;// m_format;
 	view_description.ViewDimension				= D3D11_SRV_DIMENSION_TEXTURE2D;
 	view_description.Texture2D.MostDetailedMip	= 0u;	// number of mips - 1;
 	view_description.Texture2D.MipLevels		= 1u;

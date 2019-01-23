@@ -101,11 +101,11 @@ class Texture : public Drawable
 
 		//type use { diffuse };
 		D3D11_USAGE write_access	{ D3D11_USAGE_DYNAMIC }; // _DEFAULT, _IMMUTABLE, _STAGING; 
-		//DXGI_FORMAT layout	{ DXGI_FORMAT_R8G8B8A8_UNORM }; 
+		DXGI_FORMAT dxgi_format { DXGI_FORMAT_R8G8B8A8_UNORM }; //layout
 
 		uint _width {};
 		uint _height {};
-		uchar bytespp {};
+		uchar bytes_per_pixel { 4 };
 
 		//unique_ptr <
 		vector< XMFLOAT4 > pixels {}; //_128bpp // two input format types :( // _int8

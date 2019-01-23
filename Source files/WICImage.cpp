@@ -10,7 +10,7 @@ void WICImage::load( const wstring filename )
 	// HRESULT WICCreateImagingFactory_Proxy( _In_ UINT SDKVersion , _Out_ IWICImagingFactory **ppIImagingFactory );
 
 	result = CoCreateInstance( CLSID_WICImagingFactory , nullptr , CLSCTX_INPROC_SERVER , IID_PPV_ARGS( & imaging_factory ) );
-	if( FAILED( result ) ) ErrorExit( L"Quad_textured() error; CoCreateInstance" );	
+	if( FAILED( result ) ) ErrorExit( L"WICImage::load error; CoCreateInstance" );	
 	
 
 	result = imaging_factory->CreateDecoderFromFilename( filename.data(), // Image to be decoded
@@ -66,7 +66,7 @@ void WICImage::load( const wstring filename )
 	result = format_converter->CanConvert( wic_pixel_format_guid , GUID_WICPixelFormat32bppRGBA , &can_convert );
 
 	result = format_converter->Initialize( bitmap_frame_decode.Get() ,
-										   GUID_WICPixelFormat8bppRGBA ,//guid_wic_pixel_format ,// GUID_WICPixelFormat128bppRGBAFloat,//GUID_WICPixelFormat32bppRGBA ,// = DXGI_FORMAT_R8G8B8A8_UINT
+										   GUID_WICPixelFormat32bppRGBA ,//wic_pixel_format_guid ,// GUID_WICPixelFormat128bppRGBAFloat,// ,// = DXGI_FORMAT_R8G8B8A8_UINT
 										   WICBitmapDitherTypeNone ,
 										   nullptr ,
 										   0.0f , // alphaThresholdPercent
@@ -80,7 +80,7 @@ void WICImage::load( const wstring filename )
 	int stride = 4 * ((width * bytesPerPixel + 3) / 4);
 	*/
 
-	row_byte_pitch = _width * (bits_per_pixel / 8);// (_width * bits_per_pixel + 7 )/ 8 ; // ? must be padded or multiple of 4 , row_pitch = ( width * bitspp + 7 ) / 8;
+	row_byte_pitch = _width * 4;//(bits_per_pixel / 8);// (_width * bits_per_pixel + 7 )/ 8 ; // ? must be padded or multiple of 4 , row_pitch = ( width * bitspp + 7 ) / 8;
 	size_bytes		= row_byte_pitch * _height;
 
 	_pixels.reserve( size_bytes );	
