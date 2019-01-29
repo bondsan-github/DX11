@@ -19,7 +19,8 @@ enum class Projection { perspective , orthographic };
 class Camera : public Drawable
 {
 	public:
-		//Camera();
+		//Camera() = delete;
+
 		Camera( wstring name	= L"main",
 				XMVECTOR position	= XMVectorSet( 0.0f , 0.0f , -1.0f , 0.0f ) ,
 				XMVECTOR target		= XMVectorSet( 0.0f , 0.0f ,  0.0f , 0.0f ) );

@@ -193,7 +193,7 @@ class Mesh : public Drawable//, public Texture // abstract
 
 	private:
 
-		HRESULT							mh_result { E_FAIL };
+		HRESULT							mh_result { E_FAIL }; // result
 				
 		ComPtr< ID3D11Device >			mp_video_device;
 		ComPtr< ID3D11DeviceContext >	mp_video_device_context;

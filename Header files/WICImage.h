@@ -62,18 +62,18 @@ class WICImage //: public Image
 		ComPtr< IWICBitmapDecoder >			bitmap_decoder {};
 		ComPtr< IWICBitmapFrameDecode >		bitmap_frame_decode {};
 
-		WICPixelFormatGUID wic_pixel_format_guid {};
+		WICPixelFormatGUID					wic_pixel_format_guid {};
 
 		ComPtr< IWICFormatConverter >		format_converter {};
 		//GUID m_WIC_guid_target_format;
-		BOOL can_convert = false;
+		BOOL								can_convert = false;
 
-		IWICComponentInfo * component_info {};
+		IWICComponentInfo	* component_info {};
 		IWICPixelFormatInfo * pixel_format_info {};
-		GUID format_guid {};
+		GUID				format_guid {};
 
-		wchar_t format_name[ 128 ] {};
-		uint chars_read {};
+		wchar_t	format_name[ 128 ] {};
+		uint	chars_read {};
 
 		//Pixel_format pixel_format {};
 

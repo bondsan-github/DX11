@@ -10,34 +10,8 @@ using Microsoft::WRL::ComPtr;
 
 Texture::Texture(){}
 
-Texture::Texture( const uint in_width , const uint in_height , const XMFLOAT4 in_colour )
-	: _width( in_width ) , _height( in_height )
-{
-
-#if defined(_DEBUG) || defined(DEBUG)
-	//texture_2d->SetPrivateData( WKPDID_D3DDebugObjectName , sizeof( "Texture 2d" ) - 1 , "Texture 2d" );
-	//D3D_SET_OBJECT_NAME_A( texture_2d , "Texture 2d" );
-#endif	
-
-	pixels.clear();
-
-	pixels.resize( _width * _height , in_colour );
-
-	create_buffer(); // m_pixels );
-}
-
-Texture::Texture( const wstring in_filename )
-{
-	image = make_unique< WICImage >( in_filename );
-
-	_width  = image->width();
-	_height = image->height();
-
-	//pixel_format = image->format();
-
-	//create_buffer( image->pixels(), image->format() );
-	create_buffer( image->pixels() , dxgi_format );
-}
+//Texture::Texture( const uint in_width , const uint in_height , const XMFLOAT4 in_colour ) : _width( in_width ) , _height( in_height ) {}
+//Texture::Texture( const wstring in_filename ) {}
 
 void Texture::create_buffer( const void * in_pixels , DXGI_FORMAT pixel_format )
 {

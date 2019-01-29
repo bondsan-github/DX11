@@ -62,12 +62,39 @@ class Colour_rgba128bpp_float
 class Texture : public Drawable
 {
 	public:
+
 		Texture();
 
-		Texture( const uint in_width, const uint in_height , const XMFLOAT4 in_colour );
+		//Texture( const uint in_width, const uint in_height , const XMFLOAT4 in_colour );
 		//Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_rgba );
 
-		Texture( const wstring in_filename );
+		//Texture( const wstring in_filename );
+
+		void create_blank( const uint in_width , const uint in_height , const XMFLOAT4 in_colour )
+		{
+
+			#if defined(_DEBUG) || defined(DEBUG)
+				//texture_2d->SetPrivateData( WKPDID_D3DDebugObjectName , sizeof( "Texture 2d" ) - 1 , "Texture 2d" );
+				//D3D_SET_OBJECT_NAME_A( texture_2d , "Texture 2d" );
+			#endif	
+
+			pixels.clear();
+
+			pixels.resize( _width * _height , in_colour );
+
+			create_buffer();
+		}
+
+		void load( const wstring in_filename )
+		{
+			image.load( in_filename );
+
+			_width = image.width();
+			_height = image.height();
+			//pixel_format = image.format();
+
+			create_buffer( image.pixels() , dxgi_format );  //image.format()
+		}
 
 		//void clear( const Colour in_colour ) {}
 
@@ -121,7 +148,8 @@ class Texture : public Drawable
 		//ComPtr< ID3D11RenderTargetView >	render_target_view;
 		ComPtr< ID3D11Texture2D >			texture_2d {};
 
-		unique_ptr< WICImage >				image {};
+		//unique_ptr< WICImage >			image {};
+		WICImage							image;
 
 		D3D11_MAPPED_SUBRESOURCE			subresource_mapped {};
 };
