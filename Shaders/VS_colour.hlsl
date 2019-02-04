@@ -1,57 +1,56 @@
 /*
-cbuffer cm_matrix_WVP : register( b0 )
+cbuffer matrix_WVP_cb : register( b0 )
 {
 	matrix m_mesh;
 	matrix m_view;
 	matrix m_projection;
 };
 */
-cbuffer cb_world			: register( b0 )// VS_BUFFER_MESH
+cbuffer world : register( b0 )// VS_BUFFER_MESH
 {
-	matrix matrix_world;
+	matrix world;
 };
 
-cbuffer cb_view			: register( b1 )// VS_BUFFER_VIEW
+cbuffer view : register( b1 )// VS_BUFFER_VIEW
 {
-	matrix matrix_view;
+	matrix view;
 };
 
-cbuffer cb_projection    : register( b2 ) // VS_BUFFER_PROJECTION
+cbuffer projection : register( b2 ) // VS_BUFFER_PROJECTION
 {
-    matrix matrix_projection;
+    matrix projection;
 };
 
-struct VS_input //VS_XYZ_RGBA_UV
+struct input_VS //VS_XYZ_RGBA_UV
 {
-	float4 position				: POSITION;
-    float4 colour               : COLOR;
-    float2 texture_uv_0         : TEXCOORD;
+	float4 position	: POSITION;
+    float4 colour	: COLOR;
+    float2 uv		: TEXCOORD;
 };
 
-// struct VS_XYZ_UV
+// struct XYZ_UV
 
-struct VS_output // Pixel shader input
+struct output_VS // Pixel shader input
 {
-	float4 position				: SV_POSITION;
-    float4 colour               : COLOR;
-    float2 texture_uv_0         : TEXCOORD;
-
+	float4 position	: SV_POSITION;
+    float4 colour	: COLOR;
+    float2 uv		: TEXCOORD;
 };
 
-// Vertex shader outputs data to Pixel shader using VS_output structure
-VS_output VS_Main( VS_input input )
+// Vertex shader outputs data to Pixel shader using 'output_VS' structure
+output_VS main_VS( input_VS input )
 {
-	VS_output output = ( VS_output ) 0;
+	output_VS output = ( output_VS ) 0;
 
 	//output.position = vertex.position;
 	//output.position = mul( vertex.position , matrix_WVP );
 
-	output.position = mul( input.position , matrix_world );		// float4( vertex.position , 1.0f );
+	output.position = mul( input.position , world );		// float4( vertex.position , 1.0f );
 
-	output.position = mul( output.position , matrix_view );
-	output.position = mul( output.position , matrix_projection );
+	output.position = mul( output.position , view );
+	output.position = mul( output.position , projection );
 
-    output.texture_uv_0 = input.texture_uv_0;
+    output.uv = input.uv;
 
     output.colour = input.colour;
 

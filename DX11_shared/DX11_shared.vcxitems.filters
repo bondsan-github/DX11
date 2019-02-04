@@ -33,9 +33,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Drawable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\DX11_base.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\File.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,6 +60,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\WICImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\DX11.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)..\Shaders\PS_colour.hlsl">
@@ -83,9 +81,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Drawable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\DX11_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\File.h">
@@ -139,5 +134,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\DX11.h" />
   </ItemGroup>
 </Project>

@@ -20,7 +20,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Camera.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\debugging.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Drawable.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\DX11_base.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\DX11.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\File.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Graphics_manager.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -41,12 +41,12 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)..\Shaders\PS_colour.hlsl">
-      <EntryPointName>PS_Main</EntryPointName>
+      <EntryPointName>main_PS</EntryPointName>
       <ShaderType>Pixel</ShaderType>
       <ShaderModel>4.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="$(MSBuildThisFileDirectory)..\Shaders\VS_colour.hlsl">
-      <EntryPointName>VS_Main</EntryPointName>
+      <EntryPointName>main_VS</EntryPointName>
       <ShaderType>Vertex</ShaderType>
       <ShaderModel>4.0</ShaderModel>
     </FxCompile>
@@ -58,7 +58,7 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\debugging.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Drawable.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\DX11_base.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\DX11.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\File.h">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>

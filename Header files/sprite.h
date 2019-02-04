@@ -35,18 +35,18 @@ class Sprite
 
 	}
 
-			void add_animation( wstring name, const wstring filename )
-			{
-				// if(frames.last) or linked list 
-				//vector< frames > anim_frames;
+	void add_animation( wstring name, const wstring filename )
+	{
+		// if(frames.last) or linked list 
+		//vector< frames > anim_frames;
 
-				Texture anim( filename );
+		//Texture anim( filename );
 
-			}
+	}
 
-			void update( const double time_delta );
+	void update( const double time_delta );
 		
-			void draw();
+	void draw();
 };
 
 

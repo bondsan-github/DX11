@@ -1,13 +1,11 @@
-
-
-struct PS_Input
+struct input_PS
 {
-	float4 position			: SV_POSITION;
-    float4 vertex_colour    : COLOR;
-	float2 texture_uv_0    	: TEXCOORD;
+	float4 position	: SV_POSITION;
+    float4 colour	: COLOR;
+	float2 uv		: TEXCOORD;
 };
 
-Texture2D		in_texture		: register( t0 );
+Texture2D in_texture : register( t0 );
 
 /*
  SamplerType [in] The sampler type, which is one of the following: 
@@ -15,7 +13,7 @@ Texture2D		in_texture		: register( t0 );
  Direct3D 10 and later supports: SamplerComparisonState. 
 */
 
-SamplerState	sampler0 : register( s0 );
+//SamplerState sampler0 : register( s0 );
 /*{
 	Filter = ANISOTROPIC;
 	MaxAnisotropy = 4;
@@ -23,14 +21,16 @@ SamplerState	sampler0 : register( s0 );
 	AddressV = WRAP; }
 */
 
-float4 PS_Main( PS_Input input ) : SV_TARGET
+float4 main_PS( input_PS input ) : SV_TARGET
 {
-    float4 texture0 = in_texture.Sample( sampler0, input.texture_uv_0 );
+    //float4 texture0 = in_texture.Sample( sampler0, input.uv );
 
-    //texture0 += input.vertex_colour;
+    //float4 texture0 = input.colour;
     //texture0.a = 0.3;
     
-    return texture0;
+	//return input.colour;
+    //return texture0;
+	return float4( 1.0f, 1.0f, 1.0f, 0.0f );
 }
 
 /*

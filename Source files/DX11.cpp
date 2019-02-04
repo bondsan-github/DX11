@@ -1,18 +1,18 @@
-﻿#include "DX11_base.h"
+﻿#include "DX11.h"
 
 using Microsoft::WRL::ComPtr;
 
 DX11 * g_dx11 = nullptr;
 
 DX11::DX11( const HINSTANCE h_win_instance , const uint window_width , const uint window_height ) // int window_display_options )
-	:	m_instance( h_win_instance ) ,
-		m_window_width( window_width ),
-		m_window_height( window_height )
+	:	instance( h_win_instance ) ,
+		window_width( window_width ),
+		window_height( window_height )
 		//m_i_window_display_options( window_display_options )
 {
 	g_dx11 = this;
 	//							**** receive as constants ****
-	m_window = create_window( m_instance , window_width , window_height, & m_client_area ); // , window_display_options );
+	window = create_window( instance , window_width , window_height, & client_area ); // , window_display_options );
 	create_dx11_device( );
 	window_size_update();
 		
@@ -24,7 +24,6 @@ DX11::DX11( const HINSTANCE h_win_instance , const uint window_width , const uin
 	//m_p_DX_debug->ReportLiveDeviceObjects( D3D11_RLDO_DETAIL );
 	//m_p_DX_debug.Reset();
 }*/
-
 
 //void DX11::load_content() {	OutputDebugString( L"\nbase load content\n" ); }
 
@@ -185,14 +184,14 @@ WPARAM DX11::message_loop()
 
 void DX11::create_dx11_device()
 {
-	HRESULT		 h_result { E_FAIL };
+	HRESULT		 result { E_FAIL };
 
 	/*
 	//------------------------------------------------------------------------------
 	IDXGIFactory * pFactory = NULL;
-	h_result = CreateDXGIFactory( __uuidof( IDXGIFactory ) , ( void** ) &pFactory );
+	result = CreateDXGIFactory( __uuidof( IDXGIFactory ) , ( void** ) &pFactory );
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; CreateDXGIFactory" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; CreateDXGIFactory" );
 
 	IDXGIAdapter * pAdapter;
 	std::vector <IDXGIAdapter*> vAdapters;
@@ -206,25 +205,25 @@ void DX11::create_dx11_device()
 
 	IDXGIOutput* pOutput = nullptr;
 
-	h_result = vAdapters.at(0)->EnumOutputs( 0 , &pOutput );
+	result = vAdapters.at(0)->EnumOutputs( 0 , &pOutput );
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; EnumOutputs" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; EnumOutputs" );
 
 	UINT numModes = 0;
 	DXGI_MODE_DESC * displayModes = nullptr;
 	DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;// DXGI_FORMAT_UNKNOWN;// ;
 
 													// Get the number of elements
-	h_result = pOutput->GetDisplayModeList( format , 0 , &numModes , nullptr );
+	result = pOutput->GetDisplayModeList( format , 0 , &numModes , nullptr );
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; GetDisplayModeList" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; GetDisplayModeList" );
 
 	displayModes = new DXGI_MODE_DESC[ numModes ];
 
 	// Get the list
-	h_result = pOutput->GetDisplayModeList( format , 0 , &numModes , displayModes );
+	result = pOutput->GetDisplayModeList( format , 0 , &numModes , displayModes );
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; GetDisplayModeList" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; GetDisplayModeList" );
 
 	vAdapters.clear();
 
@@ -248,7 +247,7 @@ void DX11::create_dx11_device()
 	creation_flags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-//	HRESULT		 h_result{ E_FAIL };
+//	HRESULT		 result{ E_FAIL };
 	unsigned int driver{ 0 };
 
 	static const D3D_FEATURE_LEVEL feature_levels[ ]
@@ -275,27 +274,27 @@ void DX11::create_dx11_device()
 	//int numfeatures = _countof( feature_levels );
 	//int numfeatures2 = sizeof( * feature_levels );
 
-	h_result = D3D11CreateDevice( nullptr ,								// A pointer to the video adapter to use when creating a device
-								  D3D_DRIVER_TYPE_HARDWARE ,			// The D3D_DRIVER_TYPE, which represents the driver type to create
-								  nullptr ,								// A handle to a DLL that implements a software rasterizer
-								  creation_flags ,						// The runtime layers to enable
-								  feature_levels ,						// A pointer to an array of D3D_FEATURE_LEVELs
-								  _countof( feature_levels ) ,			// The number of elements in D3D_FEATURE_LEVEL []
-								  D3D11_SDK_VERSION ,					// The SDK version; use D3D11_SDK_VERSION
-								  m_video_device.ReleaseAndGetAddressOf() , // Returns the address of a pointer to an ID3D11Device
-								  & m_feature_level ,					// Returns a pointer to a D3D_FEATURE_LEVEL
-								  m_video_device_context.ReleaseAndGetAddressOf() ); // Returns the address of a pointer to an ID3D11DeviceContext
+	result = D3D11CreateDevice( nullptr ,						// A pointer to the video adapter to use when creating a device
+								  D3D_DRIVER_TYPE_HARDWARE ,	// The D3D_DRIVER_TYPE, which represents the driver type to create
+								  nullptr ,						// A handle to a DLL that implements a software rasterizer
+								  creation_flags ,				// The runtime layers to enable
+								  feature_levels ,				// pointer to D3D_FEATURE_LEVELs array
+								  _countof( feature_levels ) ,	// The number of elements in D3D_FEATURE_LEVEL []
+								  D3D11_SDK_VERSION ,			// The SDK version; use D3D11_SDK_VERSION
+								  & video_device ,				// Returns the address of a pointer to an ID3D11Device
+								  & feature_level ,				// Returns a pointer to a D3D_FEATURE_LEVEL
+								  & video_device_context );		// Returns the address of a pointer to an ID3D11DeviceContext
 
-	if( FAILED( h_result ) ) ErrorExit( L"D3D11CreateDevice error" );
+	if( FAILED( result ) ) ErrorExit( L"D3D11CreateDevice error" );
 
-	Drawable::set_video_device( m_video_device );
+	Drawable::set_video_device( video_device );
 
 
 #ifndef GPU_DEBUG // <- *********************
-	if( SUCCEEDED( m_video_device.As( &m_DX_debug ) ) )
+	if( SUCCEEDED( video_device.As( & DX_debug ) ) )
 	{
 		ComPtr<ID3D11InfoQueue> d3d_info_queue;
-		if( SUCCEEDED( m_DX_debug.As( &d3d_info_queue ) ) )
+		if( SUCCEEDED( DX_debug.As( & d3d_info_queue ) ) )
 		{
 #ifdef _DEBUG
 			d3d_info_queue->SetBreakOnSeverity( D3D11_MESSAGE_SEVERITY_CORRUPTION , true );
@@ -318,25 +317,23 @@ void DX11::create_dx11_device()
 		
 void DX11::create_swap_chain()
 {
-	HRESULT h_result{ E_FAIL };
-
 	//------------ get dxgi factory 1 interface pointer ------------//
 	ComPtr< IDXGIDevice1 > dxgi_device1;
-	h_result = m_video_device.As( & dxgi_device1 ); // Retrieve the underlying DXGI Device from the D3D Device.
+	result = video_device.As( & dxgi_device1 ); // Retrieve the underlying DXGI Device from the D3D Device.
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; cannot retrived GXGI device from video device" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; cannot retrived GXGI device from video device" );
 
 
 	ComPtr< IDXGIAdapter > dxgi_adapter;
-	h_result = dxgi_device1->GetAdapter( dxgi_adapter.GetAddressOf() ); // Identify the physical adapter (GPU or card) this device is running on.
+	result = dxgi_device1->GetAdapter( dxgi_adapter.GetAddressOf() ); // Identify the physical adapter (GPU or card) this device is running on.
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; cannot retrived device adaptor" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; cannot retrived device adaptor" );
 
 
 	ComPtr< IDXGIFactory1 > dxgi_factory1;
-	h_result = dxgi_adapter->GetParent( IID_PPV_ARGS( dxgi_factory1.GetAddressOf() ) ); // Obtain the factory object that created it.
+	result = dxgi_adapter->GetParent( IID_PPV_ARGS( dxgi_factory1.GetAddressOf() ) ); // Obtain the factory object that created it.
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; cannot obtain a factory object" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; cannot obtain a factory object" );
 	
 	/*UINT m4xMsaaQuality;
 	HR( md3dDevice->CheckMultisampleQualityLevels(
@@ -349,43 +346,43 @@ void DX11::create_swap_chain()
 
 	//------------ create swap chain ------------//
 	
-	m_swap_chain_description.BufferCount						= m_swap_chain_count;
+	swap_chain_description.BufferCount						= swap_chain_count;
 
-	m_swap_chain_description.BufferDesc.Width					= m_window_width;	// Width and height of the back buffer
-	m_swap_chain_description.BufferDesc.Height					= m_window_height;
-	m_swap_chain_description.BufferDesc.Format					= m_swap_chain_format; //DXGI_FORMAT_B8G8R8A8_UNORM; //DXGI_FORMAT_R8G8B8A8_UINT;
+	swap_chain_description.BufferDesc.Width					= window_width;	// Width and height of the back buffer
+	swap_chain_description.BufferDesc.Height				= window_height;
+	swap_chain_description.BufferDesc.Format				= swap_chain_format; //DXGI_FORMAT_B8G8R8A8_UNORM; //DXGI_FORMAT_R8G8B8A8_UINT;
 
 	//enumerate display modes -> if( v_sync ) Numerator = monitor refresh rate;
-	m_swap_chain_description.BufferDesc.RefreshRate.Numerator	= 60;					// 60hz refresh rate
-	m_swap_chain_description.BufferDesc.RefreshRate.Denominator	= 1;
+	swap_chain_description.BufferDesc.RefreshRate.Numerator	= 60;	// 60hz refresh rate
+	swap_chain_description.BufferDesc.RefreshRate.Denominator = 1;
 
-	//m_swap_chain_description.BufferDesc.Scaling = DXGI_MODE_SCALING_STRETCHED;
-	//m_swap_chain_description.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UPPER_FIELD_FIRST;
+	//swap_chain_description.BufferDesc.Scaling				= DXGI_MODE_SCALING_STRETCHED;
+	//swap_chain_description.BufferDesc.ScanlineOrdering	= DXGI_MODE_SCANLINE_ORDER_UPPER_FIELD_FIRST;
 
-	m_swap_chain_description.BufferUsage						= DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	m_swap_chain_description.OutputWindow						= m_window;
-	m_swap_chain_description.Windowed							= true;
+	swap_chain_description.BufferUsage						= DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swap_chain_description.OutputWindow						= window;
+	swap_chain_description.Windowed							= true;
 
-	m_swap_chain_description.SampleDesc.Count					= 1;
-	m_swap_chain_description.SampleDesc.Quality					= 0; // No multisampling
-	//m_swap_chain_description.SwapEffect						= DXGI_SWAP_EFFECT_SEQUENTIAL  // DXGI_SWAP_EFFECT_DISCARD; // 
+	swap_chain_description.SampleDesc.Count					= 1;
+	swap_chain_description.SampleDesc.Quality				= 0; // No multisampling
+	//swap_chain_description.SwapEffect						= DXGI_SWAP_EFFECT_SEQUENTIAL /_DISCARD;
 
 	//On DirectX 11.1 or later systems you can use IDXGIFactory2::CreateSwapChainForHwnd.
-	h_result = dxgi_factory1->CreateSwapChain( m_video_device.Get() , & m_swap_chain_description , m_swap_chain.ReleaseAndGetAddressOf() );
+	result = dxgi_factory1->CreateSwapChain( video_device.Get() , & swap_chain_description , & swap_chain );
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; cannot create swap chain" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; cannot create swap chain" );
 
 	// This template does not support exclusive fullscreen mode and prevents DXGI from responding to the ALT+ENTER shortcut.
-	h_result = dxgi_factory1->MakeWindowAssociation( m_window , DXGI_MWA_NO_ALT_ENTER );
+	result = dxgi_factory1->MakeWindowAssociation( window , DXGI_MWA_NO_ALT_ENTER );
 	// DXGI_MWA_NO_ALT_ENTER - Prevent DXGI from responding to an alt-enter sequence. 
 	// ensures that DXGI will not interfere with application's handling of window mode changes or Alt+Enter.
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; MakeWindowAssociation()" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; MakeWindowAssociation()" );
 }
 
 void DX11::create_render_target_view()
 {
-	HRESULT h_result{ E_FAIL };
+	HRESULT result{ E_FAIL };
 
 	//------------ GetBuffer swap_chain 0 ------------//
 
@@ -393,7 +390,7 @@ void DX11::create_render_target_view()
 	// Textures cannot be bound directly to the pipeline; instead, a view must be created and bound.
 
 	// ComPtr< ID3D11Texture2D > swap_chain_texture;
-	h_result = m_swap_chain->GetBuffer( 0 , IID_PPV_ARGS( m_render_target_texture.ReleaseAndGetAddressOf() ) );
+	result = swap_chain->GetBuffer( 0 , IID_PPV_ARGS( & render_target_texture ) );
 
 	// IID_PPV_ARGS macro
 	// Used to retrieve an interface pointer, 
@@ -401,7 +398,7 @@ void DX11::create_render_target_view()
 	// based on the type of the interface pointer used. 
 	// This avoids a common coding error by checking the type of the value passed at compile time.
 
-	if( FAILED( h_result ) ) ErrorExit( L"Failed to get a swap chain buffer" );
+	if( FAILED( result ) ) ErrorExit( L"Failed to get a swap chain buffer" );
 
 
 	//------------ Create Render Target View ---------//
@@ -413,77 +410,77 @@ void DX11::create_render_target_view()
 	// A render-target-view interface identifies the render-target subresources that can be accessed during rendering.
 	// Each render-target should also have a corresponding depth-stencil view.
 
-	h_result = m_video_device->CreateRenderTargetView( m_render_target_texture.Get(),	// ID3D11Resource * that represents a render target
-														 nullptr,							// D3D11_RENDER_TARGET_VIEW_DESC *
-														 m_render_target_view.ReleaseAndGetAddressOf() );	// ID3D11RenderTargetView &* 
+	result = video_device->CreateRenderTargetView( render_target_texture.Get(),	// ID3D11Resource * that represents a render target
+												   nullptr,						// D3D11_RENDER_TARGET_VIEW_DESC *
+												   & render_target_view );		// ID3D11RenderTargetView &* 
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; CreateRenderTargetView()" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; CreateRenderTargetView()" );
 }
 
 void DX11::create_depth_stencil()
 {
-	HRESULT h_result { E_FAIL };
+	HRESULT result { E_FAIL };
 	//------------ Create depth/stencil texture ---------//
 
 	// Allocate a 2-D surface as the depth/stencil buffer and
 	// create a DepthStencil view on this surface to use on bind.
 
-	m_depth_texture_description.Width				= m_window_width;
-	m_depth_texture_description.Height				= m_window_height;
-	m_depth_texture_description.MipLevels			= 1;
-	m_depth_texture_description.ArraySize			= 1;
-	m_depth_texture_description.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
-	m_depth_texture_description.SampleDesc.Count	= 1;
-	m_depth_texture_description.SampleDesc.Quality	= 0;
-	m_depth_texture_description.Usage				= D3D11_USAGE_DEFAULT;
-	m_depth_texture_description.BindFlags			= D3D11_BIND_DEPTH_STENCIL;
-	m_depth_texture_description.CPUAccessFlags		= 0;
-	m_depth_texture_description.MiscFlags			= 0;
+	depth_texture_description.Width				= window_width;
+	depth_texture_description.Height			= window_height;
+	depth_texture_description.MipLevels			= 1;
+	depth_texture_description.ArraySize			= 1;
+	depth_texture_description.Format			= DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depth_texture_description.SampleDesc.Count	= 1;
+	depth_texture_description.SampleDesc.Quality= 0;
+	depth_texture_description.Usage				= D3D11_USAGE_DEFAULT;
+	depth_texture_description.BindFlags			= D3D11_BIND_DEPTH_STENCIL;
+	depth_texture_description.CPUAccessFlags	= 0;
+	depth_texture_description.MiscFlags			= 0;
 
-	h_result = m_video_device->CreateTexture2D( & m_depth_texture_description ,
-												  nullptr ,
-												  m_depth_stencil_texture.ReleaseAndGetAddressOf() );
+	result = video_device->CreateTexture2D( & depth_texture_description ,
+											nullptr ,
+											& depth_stencil_texture );
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; creating depth texture" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; creating depth texture" );
 }
 
 void DX11::create_depth_stencil_view()
 {
-	HRESULT h_result { E_FAIL };
+	HRESULT result { E_FAIL };
 	
 	//------------ create the depth stencil view ------------//
-	m_depth_stencil_view_description.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;//depth_texture_description.Format;
-	m_depth_stencil_view_description.ViewDimension		= D3D11_DSV_DIMENSION_TEXTURE2D;
-	m_depth_stencil_view_description.Texture2D.MipSlice	= 0;
+	depth_stencil_view_description.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;//depth_texture_description.Format;
+	depth_stencil_view_description.ViewDimension		= D3D11_DSV_DIMENSION_TEXTURE2D;
+	depth_stencil_view_description.Texture2D.MipSlice	= 0;
 
-	h_result = m_video_device->CreateDepthStencilView( m_depth_stencil_texture.Get() ,
-													   & m_depth_stencil_view_description ,
-													   m_depth_stencil_view.ReleaseAndGetAddressOf() );
+	result = video_device->CreateDepthStencilView( depth_stencil_texture.Get() ,
+												   & depth_stencil_view_description ,
+												   & depth_stencil_view );
 
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() error; CreateDepthStencilView()" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; CreateDepthStencilView()" );
 
 	//D3D11_DSV_DIMENSION_TEXTURE2DMS		The resource will be accessed as a 2D texture with multisampling.	
 }
 
 void DX11::window_size_update() // Allocate all memory resources that change on a window SizeChanged event.
 {
-	HRESULT h_result { E_FAIL };
+	HRESULT result { E_FAIL };
 
 	// Clear the previous window size specific context.
 	ID3D11RenderTargetView * null_target_views[ ] { nullptr };
-	m_video_device_context->OMSetRenderTargets( _countof( null_target_views ) , null_target_views , nullptr );
+	video_device_context->OMSetRenderTargets( _countof( null_target_views ) , null_target_views , nullptr ); // ARRAYSIZE
 
-	m_render_target_view.Reset();	// Release all pointer references to the associated interface
-	m_depth_stencil_view.Reset();	// Release all pointer references to the associated interface
+	render_target_view.Reset();	// Release all pointer references to the associated interface
+	depth_stencil_view.Reset();	// Release all pointer references to the associated interface
 
-	m_video_device_context->Flush(); // send buffered commands GPU
+	video_device_context->Flush(); // send buffered commands GPU
 
 	// If the swap chain already exists, resize it, otherwise create one.
-	if( m_swap_chain ) // .get()?
+	if( swap_chain ) // .get()?
 	{
-		h_result = m_swap_chain->ResizeBuffers( m_swap_chain_count , m_window_width , m_window_height , m_swap_chain_format , 0 );
+		result = swap_chain->ResizeBuffers( swap_chain_count , window_width , window_height , swap_chain_format , 0 );
 
-		if( h_result == DXGI_ERROR_DEVICE_REMOVED || h_result == DXGI_ERROR_DEVICE_RESET )
+		if( result == DXGI_ERROR_DEVICE_REMOVED || result == DXGI_ERROR_DEVICE_RESET )
 		{
 			// If the device was removed for any reason, a new device and swap chain will need to be created.
 			gpu_device_lost();
@@ -511,25 +508,24 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 
 	//------------ attach the render target view to the output merger state ------------//
 	// Bind the render target view and depth/stencil texture view to the Output Merger pipeline.
-	m_video_device_context->OMSetRenderTargets( 1 ,										// number of render targets to bind 
-												m_render_target_view.GetAddressOf() ,	// array of ID3D11RenderTargetView pointer , RTV[8]
-												m_depth_stencil_view.Get() );			// ID3D11DepthStencilView pointer
+	video_device_context->OMSetRenderTargets( 1 ,									// number of render targets to bind 
+											  render_target_view.GetAddressOf() ,	// array of ID3D11RenderTargetView pointer , RTV[8]
+											  depth_stencil_view.Get() );			// ID3D11DepthStencilView pointer
 
-	m_rasteriser_description.FillMode				= D3D11_FILL_SOLID;	// D3D11_FILL_WIREFRAME
-	m_rasteriser_description.CullMode				= D3D11_CULL_NONE; //D3D11_CULL_BACK; //  D3D11_CULL_FRONT
-	m_rasteriser_description.FrontCounterClockwise	= false;
-	m_rasteriser_description.DepthBias				= 0;
-	m_rasteriser_description.DepthBiasClamp			= 0.0f;
-	m_rasteriser_description.SlopeScaledDepthBias	= 0.0f;
-	m_rasteriser_description.DepthClipEnable		= true; //false; //
-	m_rasteriser_description.ScissorEnable			= false; //true;//
-	m_rasteriser_description.MultisampleEnable		= false; //true;
-	m_rasteriser_description.AntialiasedLineEnable	= false; //true;	// Only applies if doing line drawing and MultisampleEnable is FALSE. 
+	rasteriser_description.FillMode					= D3D11_FILL_SOLID;	// D3D11_FILL_WIREFRAME
+	rasteriser_description.CullMode					= D3D11_CULL_NONE; //D3D11_CULL_BACK /  _FRONT
+	rasteriser_description.FrontCounterClockwise	= false;
+	rasteriser_description.DepthBias				= 0;
+	rasteriser_description.DepthBiasClamp			= 0.0f;
+	rasteriser_description.SlopeScaledDepthBias		= 0.0f;
+	rasteriser_description.DepthClipEnable			= true; //false; //
+	rasteriser_description.ScissorEnable			= false; //true;//
+	rasteriser_description.MultisampleEnable		= false; //true;
+	rasteriser_description.AntialiasedLineEnable	= false; //true;	// Only applies if doing line drawing and MultisampleEnable is FALSE. 
 
-	m_video_device->CreateRasterizerState( & m_rasteriser_description , m_rasteriser_state.ReleaseAndGetAddressOf() );
+	video_device->CreateRasterizerState( & rasteriser_description , & rasteriser_state );
 
-	m_video_device_context->RSSetState( m_rasteriser_state.Get() );
-
+	video_device_context->RSSetState( rasteriser_state.Get() );
 	
 	// A viewport is a way of translating pixel coordinates to normalized coordinates.
 	// pixel coordinates start at 0, 0 in the upper-left corner, and increase one pixel at a time. 
@@ -540,71 +536,57 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	D3D11_VIEWPORT		  viewport { };
 	viewport.TopLeftX	= 0.0f;
 	viewport.TopLeftY	= 0.0f;
-	viewport.Width		= static_cast< float >( m_window_width );
-	viewport.Height		= static_cast< float >( m_window_height );
+	viewport.Width		= static_cast< float >( window_width );
+	viewport.Height		= static_cast< float >( window_height );
 	viewport.MinDepth	= 0.0f; // Range between 0..1
 	viewport.MaxDepth	= 1.0f; // Range between 0..1
 
 	// Bind an array of viewports to the rasterizer stage of the pipeline.
-	m_video_device_context->RSSetViewports( 1 ,           // number of viewports to bind
-											& viewport );	// D3D11_VIEWPORT structures array to bind to device
+	video_device_context->RSSetViewports( 1 ,           // number of viewports to bind
+										  & viewport );	// D3D11_VIEWPORT structures array to bind to device
 	
 	// * Initialise windows-size dependent objects here. * 
 
-	//------------ create VS ------------//
-	
+	//------------ create VS ------------//	
 	ID3DBlob * d3dBlob;
-	h_result = D3DReadFileToBlob( L".\\shaders\\VS_colour.cso" , & d3dBlob );
+	result = D3DReadFileToBlob( L".\\shaders\\VS_colour.cso" , & d3dBlob );
 	
-	m_video_device->CreateVertexShader( d3dBlob->GetBufferPointer(),
-										d3dBlob->GetBufferSize(),
-										nullptr,
-										m_vertex_shader.ReleaseAndGetAddressOf() );
+	video_device->CreateVertexShader( d3dBlob->GetBufferPointer(),
+									  d3dBlob->GetBufferSize(),
+									  nullptr,
+									  & vertex_shader );
 
-	/*
-	File vertex_shader( L"shaders/VS_diffuse_map.hlsl" );
-
-	m_p_video_device->CreateVertexShader( vertex_shader.content()->data() ,
-	vertex_shader.content()->size() ,
-	nullptr ,
-	m_p_vertex_shader.ReleaseAndGetAddressOf() );
-
-	debug_out( "\n vector size : %d \n" , vertex_shader.content()->size() );
-	debug_out( "\n data size : %d \n" , sizeof( vertex_shader.content()->data() ) );
-	*/
-
-	
 	// ****  MOVE TO MESH ***** -> need VS shader compiled cso blob
 	//------------ create input layout ------------
 	// * * * * * * * * * * * * * * * * * * * * *
 	unsigned int total_layout_elements = ARRAYSIZE( input_layout_xyz_rgba_uv );
 	// * * * * * * * * * * * * * * * * * * * * *
 
-	h_result = m_video_device->CreateInputLayout( input_layout_xyz_rgba_uv ,		// input-assembler stage input data types array
-												  total_layout_elements ,			// Total input-data types in array of input-elements
-												  d3dBlob->GetBufferPointer() ,	// compiled shader pointer
-												  d3dBlob->GetBufferSize() ,		// size of compiled shader
-												  m_input_layout.ReleaseAndGetAddressOf() ); // output pointer to created input-layout object
+	result = video_device->CreateInputLayout( input_layout_xyz_rgba_uv ,	// input-assembler stage input data types array
+											  total_layout_elements ,		// Total input-data types in array of input-elements
+											  d3dBlob->GetBufferPointer() ,	// compiled shader pointer
+											  d3dBlob->GetBufferSize() ,	// size of compiled shader
+											  & input_layout );				// output pointer to created input-layout object
 
-	if( FAILED( h_result ) ) ErrorExit( L"CreateInputLayout error" );
+	if( FAILED( result ) ) ErrorExit( L"CreateInputLayout error" );
 
 	
 	// *** MOVE TO MESH::Render()
 	// Set the input layout
 	// Bind an input-layout object to the input-assembler stage
-	m_video_device_context->IASetInputLayout( m_input_layout.Get() );
+	video_device_context->IASetInputLayout( input_layout.Get() );
 
 	//-------------------------------------------------------------------------//
 	
 	//------------ create PS  ------------//
-	h_result = D3DReadFileToBlob( L".\\shaders\\PS_colour.cso" , & d3dBlob );
+	result = D3DReadFileToBlob( L".\\shaders\\PS_colour.cso" , & d3dBlob );
 
-	h_result = m_video_device->CreatePixelShader( d3dBlob->GetBufferPointer() ,
-												  d3dBlob->GetBufferSize() ,
-												  nullptr ,
-												  m_pixel_shader.ReleaseAndGetAddressOf() );
+	result = video_device->CreatePixelShader( d3dBlob->GetBufferPointer() ,
+											  d3dBlob->GetBufferSize() ,
+											  nullptr ,
+											  & pixel_shader );
 
-	if( FAILED( h_result ) ) ErrorExit( L"CreatePixelShader error" );
+	if( FAILED( result ) ) ErrorExit( L"CreatePixelShader error" );
 
 	/*
 	File pixel_shader( L"shaders/PS_diffuse_map.hlsl" );
@@ -612,35 +594,35 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	m_p_video_device->CreatePixelShader( pixel_shader.content()->data() ,
 										 pixel_shader.content()->size() ,
 										 nullptr ,
-										 m_p_pixel_shader.ReleaseAndGetAddressOf() );
+										 & m_p_pixel_shader );
 	*/
 		
-	m_video_device_context->VSSetShader( m_vertex_shader.Get() , nullptr , 0 );
-	m_video_device_context->PSSetShader( m_pixel_shader.Get() , nullptr , 0 );
+	video_device_context->VSSetShader( vertex_shader.Get() , nullptr , 0 );
+	video_device_context->PSSetShader( pixel_shader.Get() , nullptr , 0 );
 
 	// move to Texture
 	//------------ create the sample state ------------
-	m_struct_sampler_description.Filter				= D3D11_FILTER_MIN_MAG_MIP_LINEAR;//_ANISOTROPIC; //_MIN_MAG_MIP_POINT;// ;//
-	m_struct_sampler_description.AddressU			= D3D11_TEXTURE_ADDRESS_CLAMP;// _WRAP;// ;// _BORDER;
-	m_struct_sampler_description.AddressV			= D3D11_TEXTURE_ADDRESS_BORDER;//_CLAMP;//;// _WRAP;
-	m_struct_sampler_description.AddressW			= D3D11_TEXTURE_ADDRESS_BORDER;// _CLAMP;//;// _WRAP;//
-	m_struct_sampler_description.MipLODBias			= 0.0f;
-	m_struct_sampler_description.MaxAnisotropy		= 1u;
-	m_struct_sampler_description.ComparisonFunc		= D3D11_COMPARISON_LESS;//pixels closest to the camera will overwrite the pixels behind them // _NEVER;
-	m_struct_sampler_description.BorderColor[ 0 ]	= 1.0f;
-	m_struct_sampler_description.BorderColor[ 1 ]	= 0.0f;
-	m_struct_sampler_description.BorderColor[ 2 ]	= 0.0f;
-	m_struct_sampler_description.BorderColor[ 3 ]	= 1.0f;
-	m_struct_sampler_description.MinLOD				= 0.0f;
-	m_struct_sampler_description.MaxLOD				= D3D11_FLOAT32_MAX;// 0.0f;
+	sampler_description.Filter				= D3D11_FILTER_MIN_MAG_MIP_LINEAR;	// _ANISOTROPIC /_MIN_MAG_MIP_POINT
+	sampler_description.AddressU			= D3D11_TEXTURE_ADDRESS_CLAMP;		// _WRAP / _BORDER
+	sampler_description.AddressV			= D3D11_TEXTURE_ADDRESS_BORDER;		// _CLAMP / _WRAP
+	sampler_description.AddressW			= D3D11_TEXTURE_ADDRESS_BORDER;		// _CLAMP / _WRAP
+	sampler_description.MipLODBias			= 0.0f;
+	sampler_description.MaxAnisotropy		= 1u;
+	sampler_description.ComparisonFunc		= D3D11_COMPARISON_LESS;	// _NEVER // pixels closest to the camera will overwrite the pixels behind them
+	sampler_description.BorderColor[ 0 ]	= 1.0f;
+	sampler_description.BorderColor[ 1 ]	= 0.0f;
+	sampler_description.BorderColor[ 2 ]	= 0.0f;
+	sampler_description.BorderColor[ 3 ]	= 1.0f;
+	sampler_description.MinLOD				= 0.0f;
+	sampler_description.MaxLOD				= D3D11_FLOAT32_MAX;// 0.0f;
 	
-	h_result = m_video_device->CreateSamplerState( & m_struct_sampler_description , m_sampler_state.ReleaseAndGetAddressOf() );
-	if( FAILED( h_result ) ) ErrorExit( L"window_size_update() CreateSamplerState error" );
+	result = video_device->CreateSamplerState( & sampler_description , & sampler_state );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() CreateSamplerState error" );
 		
 	//------------ set pixel shader sampler/s ------------
-	m_video_device_context->PSSetSamplers( 0,			// start sampler/s slot // enum class { SAMPLER_SLOT0 , ... }
-										   1,			// count of smaplers
-										   m_sampler_state.GetAddressOf() );	// sampler state
+	video_device_context->PSSetSamplers( 0,									// start sampler/s slot // enum class { SAMPLER_SLOT0 , ... }
+										 1,									// count of smaplers
+										 sampler_state.GetAddressOf() );	// sampler state
 
 	/*
 		If building an array of Direct3D interface pointers ,
@@ -651,21 +633,20 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	*/
 
 	//------------ render target 0 blend state ------------
-	m_blend_descripton.AlphaToCoverageEnable	= false;
-	m_blend_descripton.IndependentBlendEnable	= false; //FALSE, only the RenderTarget[0] members are used; RenderTarget[1..7] are ignored. 
+	blend_descripton.AlphaToCoverageEnable	= false;
+	blend_descripton.IndependentBlendEnable	= false; //FALSE, only the RenderTarget[0] members are used; RenderTarget[1..7] are ignored. 
 
-	m_blend_descripton.RenderTarget[ 0 ].BlendEnable			= true;
-	m_blend_descripton.RenderTarget[ 0 ].SrcBlend				= D3D11_BLEND_SRC_ALPHA; // The blend factor is (As, As, As, As) , that is alpha data (A) from a pixel shader
-	m_blend_descripton.RenderTarget[ 0 ].DestBlend				= D3D11_BLEND_DEST_ALPHA; //****The blend factor is (Ad, Ad, Ad, Ad), that is alpha data from a render target.
-	m_blend_descripton.RenderTarget[ 0 ].BlendOp				= D3D11_BLEND_OP_ADD; //Add source 1 and source 2.
-	m_blend_descripton.RenderTarget[ 0 ].SrcBlendAlpha			= D3D11_BLEND_ZERO; //The blend factor is (0, 0, 0, 0)
-	m_blend_descripton.RenderTarget[ 0 ].DestBlendAlpha			= D3D11_BLEND_ZERO;
-	m_blend_descripton.RenderTarget[ 0 ].BlendOpAlpha			= D3D11_BLEND_OP_ADD;
-	m_blend_descripton.RenderTarget[ 0 ].RenderTargetWriteMask	= D3D11_COLOR_WRITE_ENABLE_ALL;
+	blend_descripton.RenderTarget[ 0 ].BlendEnable			= true;
+	blend_descripton.RenderTarget[ 0 ].SrcBlend				= D3D11_BLEND_SRC_ALPHA; // The blend factor is (As, As, As, As) , that is alpha data (A) from a pixel shader
+	blend_descripton.RenderTarget[ 0 ].DestBlend			= D3D11_BLEND_DEST_ALPHA; //****The blend factor is (Ad, Ad, Ad, Ad), that is alpha data from a render target.
+	blend_descripton.RenderTarget[ 0 ].BlendOp				= D3D11_BLEND_OP_ADD; //Add source 1 and source 2.
+	blend_descripton.RenderTarget[ 0 ].SrcBlendAlpha		= D3D11_BLEND_ZERO; //The blend factor is (0, 0, 0, 0)
+	blend_descripton.RenderTarget[ 0 ].DestBlendAlpha		= D3D11_BLEND_ZERO;
+	blend_descripton.RenderTarget[ 0 ].BlendOpAlpha			= D3D11_BLEND_OP_ADD;
+	blend_descripton.RenderTarget[ 0 ].RenderTargetWriteMask= D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	m_video_device->CreateBlendState( & m_blend_descripton , m_blend_state.ReleaseAndGetAddressOf() );
-	m_video_device_context->OMSetBlendState( m_blend_state.Get() , m_blend_factor , m_sample_mask );
-
+	video_device->CreateBlendState( & blend_descripton , & blend_state );
+	video_device_context->OMSetBlendState( blend_state.Get() , blend_factor , sample_mask );
 }
 
 //void DX11::update( ){	//float delta_time}
@@ -676,13 +657,13 @@ void DX11::clear()
 	// Clear the views.
 	float clear_colour[ 4 ] { 0.0f, 0.0f, 0.8f, 0.0f };
 
-	m_video_device_context->ClearRenderTargetView( m_render_target_view.Get() , 
-												   clear_colour );  // 4-component colour array color to fill // dx9 D3DCOLOR_RGBA() );
+	video_device_context->ClearRenderTargetView( render_target_view.Get() , 
+												 clear_colour );  // 4-component colour array color to fill // dx9 D3DCOLOR_RGBA() );
 
-	m_video_device_context->ClearDepthStencilView( m_depth_stencil_view.Get() ,
-												   D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL ,
-												   1.0f ,	// depth
-												   0 );		// stencil
+	video_device_context->ClearDepthStencilView( depth_stencil_view.Get() ,
+												 D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL ,
+												 1.0f ,	// depth
+												 0 );		// stencil
 }
 
 void DX11::clear(const XMFLOAT4 in_colour )
@@ -695,13 +676,13 @@ void DX11::clear(const XMFLOAT4 in_colour )
 	clear_colour[ 2 ] = in_colour.z;
 	clear_colour[ 3 ] = in_colour.w;
 
-	m_video_device_context->ClearRenderTargetView( m_render_target_view.Get() ,
-													 clear_colour );  // 4-component colour array color to fill // dx9 D3DCOLOR_RGBA() );
+	video_device_context->ClearRenderTargetView( render_target_view.Get() ,
+												 clear_colour );  // 4-component colour array color to fill // dx9 D3DCOLOR_RGBA() );
 
-	m_video_device_context->ClearDepthStencilView( m_depth_stencil_view.Get() ,
-													 D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL ,
-													 1.0f ,		// depth
-													 0 );		// stencil
+	video_device_context->ClearDepthStencilView( depth_stencil_view.Get() ,
+												 D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL ,
+												 1.0f ,	// depth
+												 0 );	// stencil
 }
 
 void DX11::present()
@@ -710,17 +691,17 @@ void DX11::present()
 	// to sleep until the next VSync. This ensures we don't waste any cycles rendering
 	// frames that will never be displayed to the screen.
 
-	HRESULT h_result = m_swap_chain->Present( 1u,	// sync interval
-											  0u ); // flags
+	HRESULT result = swap_chain->Present( 1u,	// sync interval
+										  0u ); // flags
 
 	// If the device was reset we must completely reinitialise the renderer.
-	if( h_result == DXGI_ERROR_DEVICE_REMOVED || h_result == DXGI_ERROR_DEVICE_RESET )
+	if( result == DXGI_ERROR_DEVICE_REMOVED || result == DXGI_ERROR_DEVICE_RESET )
 	{
 		window_size_update();
 	}
 	else
 	{
-		if( FAILED( h_result ) ) 
+		if( FAILED( result ) ) 
 			ErrorExit( L"Present() error; video device removed or reset" );
 	}
 }
@@ -776,9 +757,9 @@ void DX11::present()
 //    #endif
 //        
 //    ID3DBlob * error_buffer = nullptr;
-//    long h_result;
+//    long result;
 //
-//    h_result = D3DCompileFromFile( file_path,     // The name of the file that contains the shader code
+//    result = D3DCompileFromFile( file_path,     // The name of the file that contains the shader code
 //                                   nullptr,       // Optional. Pointer to an array of macro definitions 
 //                                   nullptr,       // Optional. Pointer to an interface for handling include files
 //                                   entry,         // Name of the shader-entry point function where shader execution begins.
@@ -788,51 +769,49 @@ void DX11::present()
 //                                   buffer,        // pointer to memory which contains the compiled shader
 //                                   &error_buffer ); // pointer to memory which contains a listing of errors and warnings that occurred during compilation
 //
-//    if( FAILED( h_result ) )
+//    if( FAILED( result ) )
 //    {
 //        if( error_buffer ) // != 0
 //        {
 //			ErrorExit( static_cast< LPCTSTR >( error_buffer->GetBufferPointer( ) ) );
 //        }
-//        return h_result;
+//        return result;
 //    }
 //    
 //    if( error_buffer != 0 ) error_buffer->Release( );
 //
-//    return h_result;
+//    return result;
 //}
 
-void DX11::gpu_device_lost( )
+void DX11::gpu_device_lost()
 {
 	// ComPtr::Reset = Release all pointer references to the associated interface
 
 	//m_map_cameras.clear();
 
-	m_sampler_state.Reset();
+	sampler_state.Reset();
 
-	m_vertex_buffer.Reset();
-	m_input_layout.Reset();
+	input_layout.Reset();
 
-	m_pixel_shader.Reset();
-	m_vertex_shader.Reset();
+	pixel_shader.Reset();
+	vertex_shader.Reset();
 	
 	//m_p_constant_buffer_projection.Reset();
 	//m_p_constant_buffer_view.Reset();	
 	//m_p_constant_buffer_world.Reset();
 	
-	m_depth_stencil_view.Reset();
-	m_depth_stencil_texture.Reset();
+	depth_stencil_view.Reset();
+	depth_stencil_texture.Reset();
 
-	m_render_target_view.Reset();
-	m_render_target_texture.Reset();
+	render_target_view.Reset();
+	render_target_texture.Reset();
 	
-	m_swap_chain.Reset();
+	swap_chain.Reset();
 
-	m_DX_debug.Reset();
+	DX_debug.Reset();
 
-	m_video_device_context.Reset();
-	m_video_device.Reset();
-
+	video_device_context.Reset();
+	video_device.Reset();
 
 	create_dx11_device();
 
@@ -842,8 +821,8 @@ void DX11::gpu_device_lost( )
 //------------ Compile VS ------------
 
 //ID3DBlob * vertex_shader_buffer = nullptr;
-//h_result = compile_shader( L"shaders/texture_map.fx" , "VS_Main" , "vs_4_0" , & vertex_shader_buffer );
-//if( FAILED( h_result ) ) { ErrorExit( L"compile_shader-vertex_shader error\n" ); }
+//result = compile_shader( L"shaders/texture_map.fx" , "VS_Main" , "vs_4_0" , & vertex_shader_buffer );
+//if( FAILED( result ) ) { ErrorExit( L"compile_shader-vertex_shader error\n" ); }
 
 ///*
 //ID3DBlob * vertex_shader_cso = nullptr;
@@ -851,13 +830,13 @@ void DX11::gpu_device_lost( )
 //*/
 
 ////------------ Create VS ------------
-//h_result = m_p_video_device->CreateVertexShader( vertex_shader_buffer->GetBufferPointer() ,	// A pointer to the compiled shader
+//result = m_p_video_device->CreateVertexShader( vertex_shader_buffer->GetBufferPointer() ,	// A pointer to the compiled shader
 //												 vertex_shader_buffer->GetBufferSize() ,		// Size of the compiled vertex shader
 //												 nullptr ,					 // A pointer to a class linkage interface, the value can be NULL
 //												 m_p_vertex_shader_solid_colour.GetAddressOf() );	// Address of a pointer to a ID3D11VertexShader interface
 //	
 
-//if ( FAILED( h_result ) ) { ErrorExit( L"CreateVertexShader error" ); }
+//if ( FAILED( result ) ) { ErrorExit( L"CreateVertexShader error" ); }
 ////if ( vertex_shader_buffer ) vertex_shader_buffer->Release( ); return false;
 
 ////------------ Compile PS ------------
@@ -866,31 +845,31 @@ void DX11::gpu_device_lost( )
 //// LPCSTR profile = ( device->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0 ) ? "cs_5_0" : "cs_4_0";
 //// Prefer higher CS shader profile when possible as CS 5.0 provides better performance on 11-class hardware.
 
-//h_result = compile_shader( L"shaders/texture_map.fx" , "PS_Main" , "ps_4_0" , & pixel_shader_buffer );
-//if ( FAILED( h_result ) ) { ErrorExit( L"compile_shader-pixel_shader error\n" ); }
+//result = compile_shader( L"shaders/texture_map.fx" , "PS_Main" , "ps_4_0" , & pixel_shader_buffer );
+//if ( FAILED( result ) ) { ErrorExit( L"compile_shader-pixel_shader error\n" ); }
 
 ////------------ Create PS  ------------
-//h_result = m_p_video_device->CreatePixelShader( pixel_shader_buffer->GetBufferPointer( ) ,	// compiled shader pointer
+//result = m_p_video_device->CreatePixelShader( pixel_shader_buffer->GetBufferPointer( ) ,	// compiled shader pointer
 //												pixel_shader_buffer->GetBufferSize( ) ,		// size of compiled pixel shader
 //												nullptr ,									// class linkage interface pointer, value can be NULL
 //												m_p_pixel_shader_solid_colour.GetAddressOf() );	// ID3D11PixelShader interface pointer address
 
 ////pixel_shader_buffer->Release( );
 
-//if ( FAILED( h_result ) ) {	ErrorExit( L"CreatePixelShader error\n" ); }
+//if ( FAILED( result ) ) {	ErrorExit( L"CreatePixelShader error\n" ); }
 
 ////------------ Create input layout ------------
 //// * * * * * * * * * * * * * * * * * * * * *
 //unsigned int total_layout_elements = ARRAYSIZE( input_layout_pos_texture );
 //// * * * * * * * * * * * * * * * * * * * * *
 
-//h_result = m_p_video_device->CreateInputLayout( input_layout_pos_texture ,	// input-assembler stage input data types array
+//result = m_p_video_device->CreateInputLayout( input_layout_pos_texture ,	// input-assembler stage input data types array
 //												total_layout_elements ,		// Total input-data types in array of input-elements
 //												vertex_shader_buffer->GetBufferPointer() ,	// compiled shader pointer
 //												vertex_shader_buffer->GetBufferSize() ,		// size of compiled shader
 //												m_p_input_layout.GetAddressOf() );		// output pointer to created input-layout object
 
-//if( FAILED( h_result ) )
+//if( FAILED( result ) )
 //{
 //	ErrorExit( L"CreateInputLayout error" );
 //}

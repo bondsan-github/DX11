@@ -23,7 +23,6 @@ using std::wstring;
 //using namespace DirectX;			// ONLY in CPP files <- ? include in header will pollute global namespace
 //using namespace Microsoft::WRL;
 
-
 // user defined literal
 //unsigned char operator "" _uc( char in_uc ) { return static_cast< unsigned char >( in_uc ); }
 
@@ -61,17 +60,56 @@ class Colour_rgba128bpp_float
 //template< typename pixel_format >
 class Texture : public Drawable
 {
+	private:
+
+		HRESULT result { E_FAIL };
+
+		void create_buffer( const uint in_width , const uint in_height , const XMFLOAT4 in_colour );
+		void create_buffer( const void * ptr_memory , DXGI_FORMAT pixel_format );
+
+		void set_PS_shader_resources();
+		void update_PS_buffer();
+
+		//type use { diffuse };
+		D3D11_USAGE	usage { D3D11_USAGE_DYNAMIC }; // _DEFAULT, _IMMUTABLE, _STAGING; 
+		DXGI_FORMAT	dxgi_format { DXGI_FORMAT_R8G8B8A8_UNORM }; //layout
+
+		uint		width {};
+		uint		height {};
+		XMFLOAT4	colour { 1.0f, 0.0f, 0.0f, 0.0f };
+
+		uchar		bytes_per_pixel { 4 }; // struct pixel_formats { DXGI_FORMAT ... , WIC , uchar bytespp };
+
+		vector< XMFLOAT4 > pixels {}; //_128bpp // two input format types :( // _int8
+
+		//XMFLOAT4 colour { };	
+
+		D3D11_TEXTURE2D_DESC				description_2d{};
+		D3D11_SUBRESOURCE_DATA				subresource_data{};
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC		view_description{};
+		ComPtr< ID3D11ShaderResourceView >  view_shader_resource{};
+
+		//ComPtr< ID3D11RenderTargetView >	render_target_view;
+		ComPtr< ID3D11Texture2D >			texture_2d{};
+
+		WICImage							image;
+
+		D3D11_MAPPED_SUBRESOURCE			subresource_mapped {};
+
 	public:
 
 		Texture();
 
 		//Texture( const uint in_width, const uint in_height , const XMFLOAT4 in_colour );
 		//Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_rgba );
-
 		//Texture( const wstring in_filename );
 
 		void create_blank( const uint in_width , const uint in_height , const XMFLOAT4 in_colour )
 		{
+			width = in_width;
+			height = in_height;
+			colour = in_colour;
 
 			#if defined(_DEBUG) || defined(DEBUG)
 				//texture_2d->SetPrivateData( WKPDID_D3DDebugObjectName , sizeof( "Texture 2d" ) - 1 , "Texture 2d" );
@@ -80,20 +118,20 @@ class Texture : public Drawable
 
 			pixels.clear();
 
-			pixels.resize( _width * _height , in_colour );
+			pixels.resize( width * height , colour );
 
-			create_buffer();
+			create_buffer( width , height , colour );
 		}
 
 		void load( const wstring in_filename )
 		{
 			image.load( in_filename );
 
-			_width = image.width();
-			_height = image.height();
+			width = image.get_width();
+			height = image.get_height();
 			//pixel_format = image.format();
 
-			create_buffer( image.pixels() , dxgi_format );  //image.format()
+			create_buffer( image.get_pixels() , dxgi_format );  //image.format()
 		}
 
 		//void clear( const Colour in_colour ) {}
@@ -103,55 +141,18 @@ class Texture : public Drawable
 		void line( const  XMFLOAT4 in_points , const  XMFLOAT4 in_colour );
 
 		// elipse( center_x, center_y, width, height, [pen] ) 
-
-		//const void * ptr_rgba() const { return m_rgba.data(); }
-		
+		//const void * ptr_rgba() const { return m_rgba.data(); }		
 		//void load( const wstring filename ) { m_wic_image.load();	}
 
-		uint width( void ) const	{ return _width; }
-		uint height( void ) const	{ return _height; }
+		uint get_width( void ) const	{ return width; } // ** get from view_description
+		uint get_height( void ) const	{ return height; }
 
-		void width( const uint in_width )	{ _width = in_width; }
-		void height( const uint in_height )	{ _height = in_height; }
+		void set_width( const uint in_width )	{ width = in_width; }
+		void set_height( const uint in_height )	{ height = in_height; }
 
 		void update( const double time_delta );
 
-	private:
-
-		HRESULT result { E_FAIL };
-		
-		void create_buffer();
-		void create_buffer( const void * ptr_memory , DXGI_FORMAT pixel_format );// pixel_format format );
-		void PSSetShaderResources();
-				
-		void update_PS_buffer();
-
-		//type use { diffuse };
-		D3D11_USAGE write_access	{ D3D11_USAGE_DYNAMIC }; // _DEFAULT, _IMMUTABLE, _STAGING; 
-		DXGI_FORMAT dxgi_format { DXGI_FORMAT_R8G8B8A8_UNORM }; //layout
-
-		uint _width {};
-		uint _height {};
-		uchar bytes_per_pixel { 4 };
-
-		//unique_ptr <
-		vector< XMFLOAT4 > pixels {}; //_128bpp // two input format types :( // _int8
-
-		//XMFLOAT4 m_colour { };	
-					
-		D3D11_TEXTURE2D_DESC				description_2d {};
-		D3D11_SUBRESOURCE_DATA				subresource_data {};
-		
-		D3D11_SHADER_RESOURCE_VIEW_DESC		view_description {};
-		ComPtr< ID3D11ShaderResourceView >  view_shader_resource {};
-
-		//ComPtr< ID3D11RenderTargetView >	render_target_view;
-		ComPtr< ID3D11Texture2D >			texture_2d {};
-
-		//unique_ptr< WICImage >			image {};
-		WICImage							image;
-
-		D3D11_MAPPED_SUBRESOURCE			subresource_mapped {};
+		void render();
 };
 
 //Pixel( x,y, const & Pixel ) { }

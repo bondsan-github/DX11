@@ -18,16 +18,50 @@ enum class Projection { perspective , orthographic };
 
 class Camera : public Drawable
 {
-	public:
-		//Camera() = delete;
+	private:
 
-		Camera( wstring name	= L"main",
+		HRESULT result{ E_FAIL };
+
+		ComPtr< ID3D11Device >			video_device;
+		ComPtr< ID3D11DeviceContext >	device_context_video;
+
+		wstring name;
+
+		XMVECTOR	position	= XMVectorSet( 0.0f , 0.0f , -1.0f , 0.0f );
+		XMVECTOR	target		= XMVectorSet( 0.0f , 0.0f , 0.0f , 0.0f );
+		XMVECTOR	up			= XMVectorSet( 0.0f , 1.0f , 0.0f , 0.0f );
+
+		float	distance		= 0.0f;
+		float	distance_min	= 0.0f;
+		float	distance_max	= 0.0f;
+
+		float	rotation_x		= 0.0f;
+		float	rotation_y		= 0.0f;
+
+		float	y_min			= 0.0f;
+		float	x_min			= 0.0f;
+
+		XMMATRIX				view_matrix {};
+		XMMATRIX				projection_matrix {};
+
+		Projection				projection_method = Projection::perspective;
+
+		D3D11_BUFFER_DESC		buffer_description{};
+
+		ComPtr< ID3D11Buffer >	view_matrix_buffer;
+		ComPtr< ID3D11Buffer >	projection_matrix_buffer;
+
+	public:
+		
+		//Camera() {}
+
+		Camera( wstring name		= L"main",
 				XMVECTOR position	= XMVectorSet( 0.0f , 0.0f , -1.0f , 0.0f ) ,
 				XMVECTOR target		= XMVectorSet( 0.0f , 0.0f ,  0.0f , 0.0f ) );
 
 		~Camera();	
 
-		void projection( const Projection in_projection = Projection::perspective )
+		void set_projection( const Projection in_projection = Projection::perspective )
 		{
 			D3D11_VIEWPORT viewport;
 			UINT           number_of_viewports = 1u;	
@@ -61,11 +95,11 @@ class Camera : public Drawable
 			//m_matrix_projection = projection_orthographic;
 		}
 		
-		void position( const XMVECTOR position );
-		void target( const XMVECTOR target );
+		void set_position( const XMVECTOR position );
+		void set_target( const XMVECTOR target );
 
-		void z( const float new_z );
-		void delta_z( const float delta_z );
+		void set_z( const float new_z );
+		void set_delta_z( const float delta_z );
 
 		// set_projection_matrix( XMMATRIX )
 
@@ -74,43 +108,5 @@ class Camera : public Drawable
 		// void target( Mesh * )
 
 		// update(event);
-		void render();		
-
-	private:
-
-		ComPtr< ID3D11Device >			video_device;
-		ComPtr< ID3D11DeviceContext >	device_context_video;
-
-		wstring m_string_name = L"camera_default";
-		
-		XMVECTOR	m_v_position	= XMVectorSet(  0.0f ,  0.0f ,  -1.0f ,  0.0f );
-		XMVECTOR	m_v_target		= XMVectorSet(  0.0f ,  0.0f ,   0.0f ,  0.0f );
-		XMVECTOR	m_v_up			= XMVectorSet(  0.0f ,  1.0f ,   0.0f ,  0.0f );
-
-		float	m_f_distance		= 0.0f;
-		float	m_f_distance_min	= 0.0f;
-		float	m_f_distance_max	= 0.0f;
-
-		float	m_f_rotation_x		= 0.0f;
-		float	m_f_rotation_y		= 0.0f;
-
-		float	m_f_y_min			= 0.0f;
-		float	m_f_x_min			= 0.0f;
-
-		XMMATRIX			view_matrix {};
-		XMMATRIX			projection_matrix {};
-
-		Projection			projection_method = Projection::perspective;
-		
-		D3D11_BUFFER_DESC						m_buffer_description {};
-
-		ComPtr< ID3D11Buffer >	buffer_matrix_view;
-		ComPtr< ID3D11Buffer >	buffer_matrix_projection;
-
+		void update();
 };
-
-/*
-XMFLOAT3	m_f3_position	= XMFLOAT3( 0.0 , 0.0 , -10.0  );
-XMFLOAT3	m_f3_target		= XMFLOAT3( 0.0 , 0.0 , 0.0 );
-XMFLOAT3	m_f3_up			= XMFLOAT3( 0.0 , 1.0 , 0.0 );
-*/

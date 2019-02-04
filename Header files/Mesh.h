@@ -21,70 +21,134 @@ using std::vector;
 using std::make_unique;
 using std::shared_ptr;
 
-//template< typename vertex_t > //= vertex >
-class Mesh : public Drawable//, public Texture // abstract
+//template< typename vertex_type > //= vertex >
+
+class Mesh : public Drawable // abstract
 {
-	public:
-		//Mesh_manager.add_mesh( wstring name, wstring filename );
-		Mesh( );
+	private:
 
-		void topology( const D3D11_PRIMITIVE_TOPOLOGY in_toplogy ) { m_primitive_topology = in_toplogy; }
-		
-		//void add_vertex( const vertex_t new_vertex )
-		void add_vertex( const vertex_rgba_uv new_vertex )
-		{
-			m_vector_vertices.push_back( new_vertex );
-			create_buffer_vertices();
-		}
+		HRESULT							result { E_FAIL }; // result
 
-		//void create_buffer_vertices( vertex_t * vertices , UINT number_of_vertcies );
-		//void set_vertices( std::vector< vertex_t > & new_vertices )
-		void vertices( const vector< vertex_rgba_uv > & new_vertices )
-		{
-			m_vector_vertices = new_vertices;
-			create_buffer_vertices();
-		}
-		void indices( const  vector< unsigned short > & vector_indices )
-		{
-			m_vector_indices = vector_indices;
-			create_buffer_indices();
-		}
+		ComPtr< ID3D11Device >			video_device;
+		ComPtr< ID3D11DeviceContext >	video_device_context;
 
-		void IASetVertexBuffers()
+		//vector< vertex_type >			vertices;
+		vector< vertex_rgba_uv >		vertices;
+		vector< ushort >				indices;
+
+		D3D11_PRIMITIVE_TOPOLOGY		primitive_topology;// = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		ComPtr< ID3D11Buffer >			vertex_buffer;
+		unsigned long					vertices_count {};
+
+		ComPtr< ID3D11Buffer >			index_buffer;
+		unsigned long					indices_count {};
+
+		XMFLOAT3						position {};
+		XMFLOAT3						rotation {};
+		XMFLOAT3						scale { 1.0f, 1.0f, 1.0f };
+
+		XMMATRIX						world_matrix		= XMMatrixIdentity();
+		//XMMATRIX						matrix_local		= XMMatrixIdentity();
+		XMMATRIX						scale_matrix		= XMMatrixIdentity();
+		XMMATRIX						rotation_matrix		= XMMatrixIdentity();
+		XMMATRIX						translation_matrix	= XMMatrixIdentity();
+
+		D3D11_BUFFER_DESC				world_buffer_description {};
+		//D3D11_SUBRESOURCE_DATA		subresource_data {};
+		ComPtr< ID3D11Buffer >			world_matrix_buffer;
+
+		//XMFLOAT2 texture2D_dimensions { };
+
+		// void - catch exceptions
+		void create_buffer_vertices();
+		void create_buffer_indices();
+
+		void create_buffer_matrix_world();
+
+		// void set_diffuse_map( Microsoft::WRL::ComPtr< ID3D11ShaderResourceView > view );
+
+		// void set_IA_vertex_buffer( Microsoft::WRL::ComPtr< ID3D11Buffer > verticies );
+		// void set_IA_index_buffer( );
+		// void set_PS_resource_diffuse_map( Microsoft::WRL::ComPtr< ID3D11Texture2D > map );
+		// void draw_indexed();
+
+		// void set_matrix_world_buffer( XMMATRIX world )
+		//		void update_matrix_world();
+		void update_matrix_world_buffer();
+		void set_VS_constant_buffers();
+
+		void set_IA_vertex_buffers() //
 		{
 			//unsigned int strides[ 1 ] { sizeof( vertex_t ) };
 			//unsigned int offsets[ 1 ] { 0u };
 
 			UINT stride = sizeof( vertex_rgba_uv );
 			UINT offset = 0u;
-			
-			mp_video_device_context->IASetVertexBuffers( 0 ,								// The first input slot for binding.
-														 1 ,								// The number of vertex buffers in the array.
-														 m_buffer_vertex.GetAddressOf() ,	// A pointer to an array of vertex buffers 
-														 &stride ,							// Pointer to an array of stride values
-														 &offset );							// Pointer to an array of offset values
+
+			video_device_context->IASetVertexBuffers( 0 ,								// first input slot for binding.
+													  1 ,								// number of vertex buffers in the array.
+													  vertex_buffer.GetAddressOf() ,	// pointer to vertex buffer array
+													  & stride ,						// pointer to stride values array
+													  & offset );						// pointer to offset values
 		}
 
-		void IASetIndexBuffer()
+	public:
+
+		//Mesh_manager.add_mesh( wstring name, wstring filename );
+
+		Mesh( );
+
+		void set_topology( const D3D11_PRIMITIVE_TOPOLOGY in_toplogy )
+		{ 
+			primitive_topology = in_toplogy;
+		}
+		
+		//void add_vertex( const vertex_type new_vertex )
+
+		void add_vertex( const vertex_rgba_uv new_vertex )
 		{
-			mp_video_device_context->IASetIndexBuffer( m_buffer_index.Get() ,	// A pointer to an ID3D11Buffer object   
-													   DXGI_FORMAT_R16_UINT ,	// 16-bit or 32-bit unsigned integers 
-													   0 );						// Offset (in bytes) from the start of the index buffer to the first index to use.
+			vertices.push_back( new_vertex );
+			create_buffer_vertices();
+		}
+
+		//void create_buffer_vertices( vertex_type * vertices , UINT vertcies_count );
+		//void vertices( std::vector< vertex_type > & new_vertices )
+
+		void set_vertices( const vector< vertex_rgba_uv > & new_vertices )
+		{
+			vertices = new_vertices;
+			create_buffer_vertices();
+		}
+
+		void set_indices( const vector< unsigned short > & vector_indices )
+		{
+			indices = vector_indices;
+			create_buffer_indices();
+		}
+		
+		void set_IA_index_buffer()
+		{
+			video_device_context->IASetIndexBuffer( index_buffer.Get() ,	// A pointer to an ID3D11Buffer object   
+													DXGI_FORMAT_R16_UINT ,	// 16-bit or 32-bit unsigned integers 
+													0 );						// Offset (in bytes) from the start of the index buffer to the first index to use.
 																				// short , unsigned short = 2 bytes = 8 * 2 = 16 bits
 																				// long  , unsigned long  = 4 bytes = 8 * 4 = 32 bits	
 		}
 
 		void submit_draw();
 
-		void position( const XMFLOAT3 in_position );
+		void set_position( const XMFLOAT3 in_position );
 
-		const XMFLOAT3 position( void ) const { return m_f3_position; }			
+		const XMFLOAT3 get_position( void ) const 
+		{ 
+			return position; 
+		}
 		
 		void translate_x( const float in_x );
 		void translate_y( const float in_y );
 		void translate_z( const float in_z );
 
-		//void x( const float in_x );
+		//void set_x( const float in_x );
 				
 		//void set_rotation( const XMFLOAT3 in_f3_rads );
 		//void set_angle_x( const float in_rad );
@@ -100,26 +164,26 @@ class Mesh : public Drawable//, public Texture // abstract
 
 		//void rotate_axis( const XMVECTOR in_axis , const float in_radians );
 
-		void scale( const XMFLOAT3 in_f3_scale );
+		void set_scale( const XMFLOAT3 in_f3_scale );
 		void delta_scale( const XMFLOAT3 in_f3_scale );
 
 		//std::shared_ptr<map> map( maps::diffuse )
 		
 		void update();
-		void update_matrix_world();
+		void update_world_matrix();
 
-		void matrix_world( const XMMATRIX in_world ) 
+		void set_world_matrix( const XMMATRIX in_world ) 
 		{ 
-			m_matrix_world = in_world; 
-			update_matrix_world();
+			world_matrix = in_world;
+			update_world_matrix();
 		}
 
-		void rotation( const XMFLOAT3 in_rotation ) 
+		void set_rotation( const XMFLOAT3 in_rotation ) 
 		{ 
-			m_f3_rotation = in_rotation; 
-			m_matrix_rotation = XMMatrixRotationRollPitchYaw( m_f3_rotation.x , m_f3_rotation.y , m_f3_rotation.z );
+			rotation = in_rotation; 
+			rotation_matrix = XMMatrixRotationRollPitchYaw( rotation.x , rotation.y , rotation.z );
 
-			update_matrix_world();
+			update_world_matrix();
 		}
 
 		//XMMATRIX get_matrix_world() const { return m_matrix_world; }	
@@ -154,7 +218,7 @@ class Mesh : public Drawable//, public Texture // abstract
 			//XMFLOAT2 pivot = current_pos - pivot;
 			XMFLOAT3 pivot { in_pivot.x , in_pivot.y , in_pivot.z };
 
-			XMFLOAT3 current_postion = m_f3_position;
+			XMFLOAT3 current_postion = position;
 
 			// negate pivot_vector
 			XMFLOAT3 pivot_to_origin = XMFLOAT3( current_postion.x - pivot.x , current_postion.y - pivot.y , current_postion.z - pivot.z );
@@ -170,80 +234,27 @@ class Mesh : public Drawable//, public Texture // abstract
 
 			XMMATRIX MMove_to_pivot = XMMatrixTranslation( origin_to_pivot.x , origin_to_pivot.y , origin_to_pivot.z );
 						
-			m_matrix_world = MMove_to_origin * MRotate * MMove_to_pivot;			
+			world_matrix = MMove_to_origin * MRotate * MMove_to_pivot;
 
 			XMVECTOR current_position { };
 			XMVECTOR scale { };
 			XMVECTOR rotation { };
 
-			XMMatrixDecompose( &scale , &rotation , &current_position , m_matrix_world );
+			XMMatrixDecompose( &scale , &rotation , &current_position , world_matrix );
 
-			m_f3_position.x = XMVectorGetX( current_position );
-			m_f3_position.y = XMVectorGetY( current_position );
-			m_f3_position.z = XMVectorGetZ( current_position );
+			position.x = XMVectorGetX( current_position );
+			position.y = XMVectorGetY( current_position );
+			position.z = XMVectorGetZ( current_position );
 
-			m_matrix_world = XMMatrixTranspose( m_matrix_world );
+			world_matrix = XMMatrixTranspose( world_matrix );
 
-			update_buffer_matrix_world();
+			set_position( position );
 
-			position( m_f3_position );			
+			update_matrix_world_buffer();
 		}
 
 		void render();
-
-	private:
-
-		HRESULT							mh_result { E_FAIL }; // result
-				
-		ComPtr< ID3D11Device >			mp_video_device;
-		ComPtr< ID3D11DeviceContext >	mp_video_device_context;
-
-		//vector< vertex_t >			m_vector_vertices;
-		vector< vertex_rgba_uv >		m_vector_vertices;
-		vector< ushort >				m_vector_indices;
-
-		D3D11_PRIMITIVE_TOPOLOGY		m_primitive_topology;// = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		ComPtr< ID3D11Buffer >			m_buffer_vertex;	// change name to m_p_buffer_vertices
-		unsigned long					mul_total_vertices {};
-
-		ComPtr< ID3D11Buffer >			m_buffer_index;
-		unsigned long					mul_total_indices {};
-
-		XMFLOAT3						m_f3_position {};
-		XMFLOAT3						m_f3_rotation {};
-		XMFLOAT3						m_f3_scale { 1.0f, 1.0f, 1.0f };
 		
-		XMMATRIX						m_matrix_world			= XMMatrixIdentity();
-		//XMMATRIX						matrix_local = XMMatrixIdentity();
-
-		XMMATRIX						m_matrix_scale			= XMMatrixIdentity();
-		XMMATRIX						m_matrix_rotation		= XMMatrixIdentity();
-		XMMATRIX						m_matrix_translation	= XMMatrixIdentity();
-
-		D3D11_BUFFER_DESC				m_buffer_world_description { };
-		//D3D11_SUBRESOURCE_DATA		m_struct_subresource_data {};
-		ComPtr< ID3D11Buffer >			mp_buffer_matrix_world;						
-		
-		//XMFLOAT2 texture2D_dimensions { };
-		
-		// void - catch exceptions
-		void create_buffer_vertices();
-		void create_buffer_indices();
-
-		void create_buffer_matrix_world();
-				
-		// void set_diffuse_map( Microsoft::WRL::ComPtr< ID3D11ShaderResourceView > in_shader_resource_view );
-
-		// void set_IA_vertex_buffer( Microsoft::WRL::ComPtr< ID3D11Buffer >	in_vertex_buffer );
-		// void set_IA_index_buffer( );
-		// void set_PS_resource_diffuse_map( Microsoft::WRL::ComPtr< ID3D11Texture2D > in_diffuse_map );
-		// void draw_indexed();
-
-		// void set_buffer_matrix_world( XMMATRIX in_matrix_world )
-//		void update_matrix_world();
-		void update_buffer_matrix_world(); 		
-		void VSSetConstantBuffers();
-
 	//protected:
-		//std::unique_ptr< Texture > m_texture;
+		//Texture texture;
 };

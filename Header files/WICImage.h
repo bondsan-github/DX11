@@ -40,21 +40,21 @@ class WICImage //: public Image
 
 		void load( const wstring in_filename );
 
-		uint width() const { return _width; }
-		uint height() const { return _height; }
+		uint get_width() const { return width; }
+		uint get_height() const { return height; }
 
 		//const DXGI_FORMAT pixel_format() const { return wic_pixel_format_guid; }
 
-		uchar * pixels()
+		uchar * get_pixels()
 		{ 
-			return _pixels.data();
+			return pixels.data();
 		}
 
 		//const Pixel_format pixel_format() const { return _pixel_format; }
 
 	private:
 
-		vector< uchar > _pixels;
+		vector< uchar > pixels;
 
 		HRESULT	result { E_FAIL };
 
@@ -86,6 +86,6 @@ class WICImage //: public Image
 
 		uint frame_count {};
 
-		uint _width {};
-		uint _height {};		
+		uint width {};
+		uint height {};		
 };
