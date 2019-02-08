@@ -13,7 +13,7 @@ Texture2D in_texture : register( t0 );
  Direct3D 10 and later supports: SamplerComparisonState. 
 */
 
-//SamplerState sampler0 : register( s0 );
+SamplerState sampler0 : register( s0 );
 /*{
 	Filter = ANISOTROPIC;
 	MaxAnisotropy = 4;
@@ -23,19 +23,19 @@ Texture2D in_texture : register( t0 );
 
 float4 main_PS( input_PS input ) : SV_TARGET
 {
-    //float4 texture0 = in_texture.Sample( sampler0, input.uv );
+    float4 texture0 = in_texture.Sample( sampler0, input.uv );
 
     //float4 texture0 = input.colour;
     //texture0.a = 0.3;
     
-	//return input.colour;
+	return input.colour + texture0;
     //return texture0;
-	return float4( 1.0f, 1.0f, 1.0f, 0.0f );
+	//return float4( 1.0f, 0.0f, 1.0f, 1.0f );
 }
 
 /*
  Pixel shader must always have float4 pos : SV_POSITION 
- semantics for input position of pixel( It is a one of the System Value semantics ).
+ semantics for input position of pixel ( it is a one of the System Value semantics ).
 
  The output value that will be stored in a render target.
  The index indicates which of the 8 possibly bound render targets to write to.

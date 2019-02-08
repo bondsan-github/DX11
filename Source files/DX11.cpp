@@ -489,7 +489,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 			// gpu_device_lost() will re-enter this method ( function ? ) and correctly set up the new device.
 			return;
 		}
-		else ErrorExit( L"window_size_update() error when resizing back buffer" ); 
+		else ErrorExit( L"window_size_update() error; ResizeBuffers()" ); 
 	}
 	else
 	{	
@@ -523,7 +523,9 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	rasteriser_description.MultisampleEnable		= false; //true;
 	rasteriser_description.AntialiasedLineEnable	= false; //true;	// Only applies if doing line drawing and MultisampleEnable is FALSE. 
 
-	video_device->CreateRasterizerState( & rasteriser_description , & rasteriser_state );
+	result = video_device->CreateRasterizerState( & rasteriser_description , & rasteriser_state );
+
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; CreateRasterizerState()" );
 
 	video_device_context->RSSetState( rasteriser_state.Get() );
 	
@@ -550,11 +552,15 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	//------------ create VS ------------//	
 	ID3DBlob * d3dBlob;
 	result = D3DReadFileToBlob( L".\\shaders\\VS_colour.cso" , & d3dBlob );
+
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; D3DReadFileToBlob()" );
 	
-	video_device->CreateVertexShader( d3dBlob->GetBufferPointer(),
-									  d3dBlob->GetBufferSize(),
-									  nullptr,
-									  & vertex_shader );
+	result = video_device->CreateVertexShader( d3dBlob->GetBufferPointer(),
+											   d3dBlob->GetBufferSize(),
+											   nullptr,
+											   & vertex_shader );
+
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; CreateVertexShader()" );
 
 	// ****  MOVE TO MESH ***** -> need VS shader compiled cso blob
 	//------------ create input layout ------------
@@ -568,7 +574,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 											  d3dBlob->GetBufferSize() ,	// size of compiled shader
 											  & input_layout );				// output pointer to created input-layout object
 
-	if( FAILED( result ) ) ErrorExit( L"CreateInputLayout error" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; CreateInputLayout()" );
 
 	
 	// *** MOVE TO MESH::Render()
@@ -581,12 +587,14 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	//------------ create PS  ------------//
 	result = D3DReadFileToBlob( L".\\shaders\\PS_colour.cso" , & d3dBlob );
 
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; D3DReadFileToBlob()" );
+
 	result = video_device->CreatePixelShader( d3dBlob->GetBufferPointer() ,
 											  d3dBlob->GetBufferSize() ,
 											  nullptr ,
 											  & pixel_shader );
 
-	if( FAILED( result ) ) ErrorExit( L"CreatePixelShader error" );
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; CreatePixelShader()" );
 
 	/*
 	File pixel_shader( L"shaders/PS_diffuse_map.hlsl" );
@@ -617,7 +625,8 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	sampler_description.MaxLOD				= D3D11_FLOAT32_MAX;// 0.0f;
 	
 	result = video_device->CreateSamplerState( & sampler_description , & sampler_state );
-	if( FAILED( result ) ) ErrorExit( L"window_size_update() CreateSamplerState error" );
+	
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() CreateSamplerState() error" );
 		
 	//------------ set pixel shader sampler/s ------------
 	video_device_context->PSSetSamplers( 0,									// start sampler/s slot // enum class { SAMPLER_SLOT0 , ... }
@@ -636,17 +645,26 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	blend_descripton.AlphaToCoverageEnable	= false;
 	blend_descripton.IndependentBlendEnable	= false; //FALSE, only the RenderTarget[0] members are used; RenderTarget[1..7] are ignored. 
 
+	// D3D11_BLEND_SRC_ALPHA		= blend factor (As, As, As, As) , alpha data (A) from a pixel shader. No pre-blend operation.
+	// D3D11_BLEND_INV_SRC_ALPHA	= blend factor (1 - Rs, 1 - Gs, 1 - Bs, 1 - As), colour data (RGB) from a pixel shader. The pre-blend operation inverts the data, generating 1 - RGB.
+
 	blend_descripton.RenderTarget[ 0 ].BlendEnable			= true;
-	blend_descripton.RenderTarget[ 0 ].SrcBlend				= D3D11_BLEND_SRC_ALPHA; // The blend factor is (As, As, As, As) , that is alpha data (A) from a pixel shader
-	blend_descripton.RenderTarget[ 0 ].DestBlend			= D3D11_BLEND_DEST_ALPHA; //****The blend factor is (Ad, Ad, Ad, Ad), that is alpha data from a render target.
-	blend_descripton.RenderTarget[ 0 ].BlendOp				= D3D11_BLEND_OP_ADD; //Add source 1 and source 2.
-	blend_descripton.RenderTarget[ 0 ].SrcBlendAlpha		= D3D11_BLEND_ZERO; //The blend factor is (0, 0, 0, 0)
-	blend_descripton.RenderTarget[ 0 ].DestBlendAlpha		= D3D11_BLEND_ZERO;
+	blend_descripton.RenderTarget[ 0 ].SrcBlend				= D3D11_BLEND_SRC_ALPHA; 
+	blend_descripton.RenderTarget[ 0 ].DestBlend			= D3D11_BLEND_INV_SRC_ALPHA; 
+	blend_descripton.RenderTarget[ 0 ].BlendOp				= D3D11_BLEND_OP_ADD;			//Add source 1 and source 2.
+	blend_descripton.RenderTarget[ 0 ].SrcBlendAlpha		= D3D11_BLEND_SRC_ALPHA;
+	blend_descripton.RenderTarget[ 0 ].DestBlendAlpha		= D3D11_BLEND_ZERO;// D3D11_BLEND_INV_SRC_ALPHA;
 	blend_descripton.RenderTarget[ 0 ].BlendOpAlpha			= D3D11_BLEND_OP_ADD;
 	blend_descripton.RenderTarget[ 0 ].RenderTargetWriteMask= D3D11_COLOR_WRITE_ENABLE_ALL;
 
-	video_device->CreateBlendState( & blend_descripton , & blend_state );
-	video_device_context->OMSetBlendState( blend_state.Get() , blend_factor , sample_mask );
+	result = video_device->CreateBlendState( & blend_descripton , & blend_state );
+	
+	if( FAILED( result ) ) ErrorExit( L"window_size_update() CreateBlendState() error" );
+
+	float	blend_factor1[ 4 ]{ 1.0f , 1.0f , 1.0f , 1.0f };
+	unsigned int sample_mask1 = 0xffffffff;
+
+	video_device_context->OMSetBlendState( blend_state.Get() , blend_factor1 , sample_mask1 );
 }
 
 //void DX11::update( ){	//float delta_time}
@@ -655,18 +673,18 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 void DX11::clear()
 {
 	// Clear the views.
-	float clear_colour[ 4 ] { 0.0f, 0.0f, 0.8f, 0.0f };
+	float colour[ 4 ] { 1.0f, 1.0f, 1.0f, 0.0f };
 
 	video_device_context->ClearRenderTargetView( render_target_view.Get() , 
-												 clear_colour );  // 4-component colour array color to fill // dx9 D3DCOLOR_RGBA() );
+												 colour );  // 4-component colour array color to fill // dx9 D3DCOLOR_RGBA() );
 
 	video_device_context->ClearDepthStencilView( depth_stencil_view.Get() ,
 												 D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL ,
 												 1.0f ,	// depth
-												 0 );		// stencil
+												 0 );	// stencil
 }
 
-void DX11::clear(const XMFLOAT4 in_colour )
+void DX11::clear( const XMFLOAT4 in_colour )
 {
 	// Clear the views.
 	float clear_colour[ 4 ];
@@ -691,8 +709,8 @@ void DX11::present()
 	// to sleep until the next VSync. This ensures we don't waste any cycles rendering
 	// frames that will never be displayed to the screen.
 
-	HRESULT result = swap_chain->Present( 1u,	// sync interval
-										  0u ); // flags
+	result = swap_chain->Present( 1u,	// sync interval
+								  0u ); // flags
 
 	// If the device was reset we must completely reinitialise the renderer.
 	if( result == DXGI_ERROR_DEVICE_REMOVED || result == DXGI_ERROR_DEVICE_RESET )

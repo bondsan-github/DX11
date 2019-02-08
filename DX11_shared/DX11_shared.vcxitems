@@ -14,6 +14,18 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\DDC\DDCAnim.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\DDC\DDCSurface.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\DX11_2D\DDSTextureLoader.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Bitmap.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -40,18 +52,16 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\WICImage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)..\Shaders\PS_colour.hlsl">
-      <EntryPointName>main_PS</EntryPointName>
-      <ShaderType>Pixel</ShaderType>
-      <ShaderModel>4.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)..\Shaders\VS_colour.hlsl">
-      <EntryPointName>main_VS</EntryPointName>
-      <ShaderType>Vertex</ShaderType>
-      <ShaderModel>4.0</ShaderModel>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP_BMP.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP_DataStructures.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP_VariousBMPutilities.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\DDC\DDCSurface.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\DX11_2D\DDSTextureLoader.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Camera.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Cube.h">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -78,13 +88,31 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Keyboard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Mesh.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Quad.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\sprite.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\sprite.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Texture.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Timer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Triangle.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\types.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Vertex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\WICImage.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Input_manager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Input_manager.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="$(MSBuildThisFileDirectory)..\Shaders\PS_colour.hlsl">
+      <EntryPointName>main_PS</EntryPointName>
+      <ShaderModel>4.0</ShaderModel>
+      <ShaderType>Pixel</ShaderType>
+      <ObjectFileOutput>shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="$(MSBuildThisFileDirectory)..\Shaders\VS_colour.hlsl">
+      <EntryPointName>main_VS</EntryPointName>
+      <ShaderType>Vertex</ShaderType>
+      <ShaderModel>4.0</ShaderModel>
+      <ObjectFileOutput>shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemGroup>
 </Project>

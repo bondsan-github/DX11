@@ -22,17 +22,17 @@ enum class VS_buffer { MESH, VIEW, PROJECTION };
 
 #include <wincodec.h>	// WICImage
 
-class pixel_format
-{
-	public:
-		pixel_format( DXGI_FORMAT _dxgi_id , WICPixelFormatGUID _wic_guid , uint _bytes_per_pixel ) : dxgi_id( _dxgi_id ) , wic_guid( _wic_guid ), bytes_per_pixel(_bytes_per_pixel) { }
-
-		DXGI_FORMAT dxgi_id{};
-		WICPixelFormatGUID wic_guid{};
-		uint bytes_per_pixel{};
-		//colour mask
-		//
-};
+//class pixel_format
+//{
+//	public:
+//		pixel_format( DXGI_FORMAT _dxgi_id , WICPixelFormatGUID _wic_guid , uint _bytes_per_pixel ) : dxgi_id( _dxgi_id ) , wic_guid( _wic_guid ), bytes_per_pixel(_bytes_per_pixel) { }
+//
+//		DXGI_FORMAT dxgi_id{};
+//		WICPixelFormatGUID wic_guid{};
+//		uint bytes_per_pixel{};
+//		//colour mask
+//		//
+//};
 
 //pixel_format unorm_32bpp{ DXGI_FORMAT_R8G8B8A8_UNORM, GUID_WICPixelFormat32bppRGBA, 1 };
 //pixel_format

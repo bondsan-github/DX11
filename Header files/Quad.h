@@ -1,6 +1,6 @@
 #pragma once
 
-#include <wrl/client.h> // unique_pointer
+//#include <wrl/client.h> // unique_pointer
 
 #include "Mesh.h"
 #include "Texture.h"
@@ -11,13 +11,13 @@ class Quad : public Mesh
 
 		uint width{};
 		uint height{};
-		XMFLOAT4 vertex_colour{ 1.0f , 0.0f , 0.0f , 1.0f };
+		XMFLOAT4 vertex_colour { 0.0f , 0.0f , 0.0f , 1.0f };
 
 		Texture texture_diffuse;
 
 		rectangle border;
 
-		// Mesh m_mesh;	
+		// Mesh mesh;	
 
 	public:
 
@@ -45,12 +45,9 @@ class Quad : public Mesh
 		}
 		
 		void create_blank( const uint in_width , const uint in_height , const XMFLOAT4 in_vertex_colour )
-			//: m_width(in_width) , m_height( in_height ) , m_vertex_colour( in_vertex_colour ) //Mesh( in_dimensions ),
+		//: width( in_width ) , height( in_height ) , vertex_colour( in_vertex_colour )
+		//error C2590 : only a constructor can have a base / member initializer list
 		{
-			width			= in_width;
-			height			= in_height;
-			vertex_colour	= in_vertex_colour;
-
 			float ½width	= in_width * 0.5f;
 			float ½height	= in_height * 0.5f;
 
@@ -99,8 +96,8 @@ class Quad : public Mesh
 			set_indices( quad_indices );
 		}
 
-		const uint get_width()	{ return texture_diffuse.get_width(); }
-		const uint get_height()	{ return texture_diffuse.get_height(); }
+		const uint get_width()	const { return texture_diffuse.get_width(); }
+		const uint get_height()	const { return texture_diffuse.get_height(); }
 
 		//void line( const XMFLOAT4 in_points , const Colour in_colour )	{ m_texture->line( in_points , in_colour );	}
 

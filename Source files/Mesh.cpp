@@ -1,4 +1,4 @@
-#include "Mesh.h"
+﻿#include "Mesh.h"
 
 //template< typename vertex_t >
 //Mesh< vertex_t >::Mesh(  ) 
@@ -75,13 +75,26 @@ void Mesh::create_buffer_matrix_world()
 	// and less than or equal to D3D11_REQ_CONSTANT_BUFFER_ELEMENT_COUNT = 4096	
 
 
-	result = video_device->CreateBuffer( &world_buffer_description ,					// buffer description
-										 nullptr,											// subresource data description
-										 world_matrix_buffer.ReleaseAndGetAddressOf() ); // ID3D11Buffer target
-
-	//set_VS_constant_buffers();
+	result = video_device->CreateBuffer( & world_buffer_description ,	// buffer description
+										 nullptr,						// subresource data description
+										 & world_matrix_buffer );		// ID3D11Buffer target
 
 	if( FAILED( result ) ) ErrorExit( L"Mesh error; create_buffer_matrix_world" );
+}
+
+void Mesh::set_IA_vertex_buffers()
+{
+	//unsigned int strides[ 1 ] { sizeof( vertex_t ) };
+	//unsigned int offsets[ 1 ] { 0u };
+
+	UINT stride = sizeof( vertex_rgba_uv );
+	UINT offset = 0u;
+
+	video_device_context->IASetVertexBuffers( 0 ,								// first input slot for binding.
+											  1 ,								// number of vertex buffers in the array.
+											  vertex_buffer.GetAddressOf() ,	// pointer to vertex buffer array
+											  & stride ,						// pointer to stride values array
+											  & offset );						// pointer to offset values
 }
 
 void Mesh::update_world_matrix()
@@ -89,11 +102,9 @@ void Mesh::update_world_matrix()
 	world_matrix = scale_matrix * rotation_matrix * translation_matrix;
 
 	world_matrix = XMMatrixTranspose( world_matrix );
-
-	//update_matrix_world_buffer();
 }
 
-void Mesh::update_matrix_world_buffer()
+void Mesh::update_world_matrix_buffer()
 {
 	//  ID3D11Buffer inherits from D3DResource 
 	video_device_context->UpdateSubresource( world_matrix_buffer.Get() ,	// ID3D11Resource destination
@@ -103,8 +114,6 @@ void Mesh::update_matrix_world_buffer()
 											 0 ,							// source data row size
 											 0 );							// source data depth slice.
 }
-
-// update_vertex_shader_buffer
 
 void Mesh::set_VS_constant_buffers()
 {
@@ -116,7 +125,7 @@ void Mesh::set_VS_constant_buffers()
 
 void Mesh::update()
 {
-	update_matrix_world_buffer();
+	//update_matrix_world_buffer();
 }
 
 void Mesh::set_position( const XMFLOAT3 in_position )
@@ -126,6 +135,22 @@ void Mesh::set_position( const XMFLOAT3 in_position )
 
 	update_world_matrix();
 };
+
+void Mesh::set_position( const XMVECTOR in_position )
+{
+	XMStoreFloat3( & position , in_position );
+	translation_matrix = XMMatrixTranslationFromVector( in_position );
+
+	update_world_matrix();
+}
+
+void Mesh::set_position( const float in_x , const float in_y , const float in_z )
+{
+	position = XMFLOAT3( in_x , in_y , in_z );
+	translation_matrix = XMMatrixTranslation( position.x , position.y , position.z );
+
+	update_world_matrix();
+}
 
 void Mesh::translate_x( const float in_x )
 {
@@ -175,20 +200,80 @@ void Mesh::rotate_y( const float in_angle_radians )
 
 void Mesh::rotate_z( const float in_angle_z ) 
 {	
-	debug_out( "\ndelta angle: %.20f" , rotation.z);
+	//debug_out( "\ndelta angle: %.20f" , rotation.z);
 
 	rotation.z += in_angle_z;
 
-	if( rotation.z > 2 * M_PI ) rotation.z = 0;
+	if( rotation.z > 2 * 3.14159265358979323846f ) rotation.z = 0;
 
 	rotation_matrix = XMMatrixRotationRollPitchYaw( rotation.x , rotation.y , rotation.z );
 
 	update_world_matrix();
 
-	debug_out( "\ndelta angle: %.20f" , rotation.z );
+	//debug_out( "\ndelta angle: %.20f" , rotation.z );
 }
 
-//void Mesh::rotate_axis( const XMVECTOR in_axis , const float in_radians ) {}
+void Mesh::rotate_point_z( const XMFLOAT3 in_point , const float in_angle_z )
+{
+	// capture current position
+	// matrix: translate - ( point to origin vector )
+	// matrix: rotate z
+	// matrix: translate + ( point to origin vector )
+	
+	// One revolution is equal to 2π
+
+	// input = radians ( per ms or seconds )
+
+	// tangential speed v = rotational speed ω * radial distance r
+	// v = rω
+
+	// r = pivot - position
+	// ω = 1 rotation (2π) per second
+
+	// full circle S = 2πr
+	// theta θ = S / r
+
+	// 1s / 2π  = 0.1591549437
+	//float full_rotation_1s = 1.0f / ( 2.0f * 3.1415926535f );// M_PI);
+
+	XMFLOAT3 point_to_origin_vector = position;
+	// position - point // add -/+/*/*= etc to XMFLOAT* - ? friend class
+
+	point_to_origin_vector = XMFLOAT3( position.x - in_point.x , position.y - in_point.y , position.z - in_point.z );
+
+	// move mesh to origin by point vector
+	///XMMATRIX move_to_origin = XMMatrixTranslation( - in_point.x , - in_point.y , - in_point.z );
+	XMMATRIX move_to_origin = XMMatrixTranslation( point_to_origin_vector.x , point_to_origin_vector.y , point_to_origin_vector.z );
+	
+	////set_position( -in_point.x , -in_point.y , -in_point.z );
+
+	rotation.z += in_angle_z;
+	XMMATRIX rotate = XMMatrixRotationZ( rotation.z );
+	////rotate_z( in_angle_z );
+	
+	// move/translate back to previous poistion
+	// position + point
+
+	XMMATRIX previous_position = XMMatrixTranslation( +point_to_origin_vector.x ,  +point_to_origin_vector.y ,  +point_to_origin_vector.z );
+	///set_position( + in_point.x , + in_point.y , + in_point.z );
+
+	world_matrix = move_to_origin * rotate * previous_position;
+
+	// find new position/centre
+	XMVECTOR new_position {};
+	XMVECTOR scale {};
+	XMVECTOR rotation {};
+
+	XMMatrixDecompose( & scale , & rotation , & new_position , world_matrix );
+
+	position.x = XMVectorGetX( new_position );
+	position.y = XMVectorGetY( new_position );
+	position.z = XMVectorGetZ( new_position );
+	
+	world_matrix = XMMatrixTranspose( world_matrix );
+
+	set_position( position );
+}
 
 void Mesh::set_scale( const XMFLOAT3 in_scale )
 {
@@ -210,11 +295,7 @@ void Mesh::delta_scale( const XMFLOAT3 in_scale )
 	update_world_matrix();
 }
 
-void Mesh::submit_draw()
-{
-	// void draw_point_list()
-	//m_p_video_device_context->Draw( m_ul_total_vertices , 0 );	
-}
+//void Mesh::submit_draw() { // void draw_point_list() //m_p_video_device_context->Draw( m_ul_total_vertices , 0 ); }
 
 void Mesh::render()
 {
@@ -222,7 +303,7 @@ void Mesh::render()
 
 	video_device_context->IASetPrimitiveTopology( primitive_topology );
 
-	update_matrix_world_buffer();
+	update_world_matrix_buffer();
 
 	set_IA_vertex_buffers();
 	set_IA_index_buffer();
