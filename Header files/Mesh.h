@@ -67,7 +67,7 @@ class Mesh : public Drawable // abstract
 
 		// void set_diffuse_map( Microsoft::WRL::ComPtr< ID3D11ShaderResourceView > view );
 
-		// void set_IA_vertex_buffer( Microsoft::WRL::ComPtr< ID3D11Buffer > verticies );
+		// void set_IA_vertex_buffer( ComPtr< ID3D11Buffer > verticies );
 		// void set_IA_index_buffer( );
 		// void set_PS_resource_diffuse_map( Microsoft::WRL::ComPtr< ID3D11Texture2D > map );
 		// void draw_indexed();
@@ -134,7 +134,13 @@ class Mesh : public Drawable // abstract
 
 		//void set_x( const float in_x );
 				
-		//void set_rotation( const XMFLOAT3 in_f3_radians/angle );
+		void set_rotation( const XMVECTOR in_rotation )
+		{
+			rotation.x = XMVectorGetX( in_rotation );
+			rotation.y = XMVectorGetY( in_rotation );
+			rotation.z = XMVectorGetZ( in_rotation );
+		}
+
 		//void set_angle_x( const float in_rad );
 		//void set_angle_y( const float in_rad );
 		//void set_angle_z( const float in_rad );

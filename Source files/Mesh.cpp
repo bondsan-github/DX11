@@ -110,7 +110,7 @@ void Mesh::update_world_matrix_buffer()
 	video_device_context->UpdateSubresource( world_matrix_buffer.Get() ,	// ID3D11Resource destination
 											 0 ,							// destination subresource
 											 nullptr ,						// destination subresource box to copy the resource data into
-											 &world_matrix ,				// source data
+											 & world_matrix ,				// source data
 											 0 ,							// source data row size
 											 0 );							// source data depth slice.
 }
@@ -181,10 +181,11 @@ void Mesh::translate_z( const float in_z )
 //void Mesh::set_angle_y( const float in_angle_radians ) { m_f3_rotation.y = in_angle_radians; }
 //void Mesh::set_angle_z( const float in_angle_radians ) { m_f3_rotation.z = in_angle_radians; }
 
+// rotate_absolute_
+// rotate_add_
 void Mesh::rotate_x( const float in_angle_radians ) 
 { 
 	rotation.x += in_angle_radians; 
-	//matrix_rotation = XMMatrixRotationX( m_f3_rotation.x );
 	rotation_matrix = XMMatrixRotationRollPitchYaw( rotation.x , rotation.y , rotation.z );
 
 	update_world_matrix();
@@ -209,8 +210,6 @@ void Mesh::rotate_z( const float in_angle_z )
 	rotation_matrix = XMMatrixRotationRollPitchYaw( rotation.x , rotation.y , rotation.z );
 
 	update_world_matrix();
-
-	//debug_out( "\ndelta angle: %.20f" , rotation.z );
 }
 
 void Mesh::rotate_point_z( const XMFLOAT3 in_point , const float in_angle_z )
@@ -219,6 +218,18 @@ void Mesh::rotate_point_z( const XMFLOAT3 in_point , const float in_angle_z )
 	// matrix: translate - ( point to origin vector )
 	// matrix: rotate z
 	// matrix: translate + ( point to origin vector )
+
+	/*
+
+	-|----(axis_x)-----(ox)-----
+
+	If you rotate point( px , py ) around axis( axis_x , axis_y ) by angle theta you'll get:
+
+							move( - 
+		p'x = cos(theta) * (p_x - axis_x) - sin(theta) * (p_y - axis_y) + axis_x
+
+		p'y = sin(theta) * (px-ox) + cos(theta) * (py-oy) + oy
+	*/
 	
 	// One revolution is equal to 2π
 
@@ -236,50 +247,58 @@ void Mesh::rotate_point_z( const XMFLOAT3 in_point , const float in_angle_z )
 	// 1s / 2π  = 0.1591549437
 	//float full_rotation_1s = 1.0f / ( 2.0f * 3.1415926535f );// M_PI);
 
-	XMFLOAT3 point_to_origin_vector = position;
-	// position - point // add -/+/*/*= etc to XMFLOAT* - ? friend class
+	XMFLOAT3 original_position = position;
+	// position - point // add operator -/+/*/*= etc to XMFLOAT* - ? friend class
 
-	point_to_origin_vector = XMFLOAT3( position.x - in_point.x , position.y - in_point.y , position.z - in_point.z );
+	XMFLOAT3 point_to_origin_vector = XMFLOAT3( original_position.x - in_point.x , original_position.y - in_point.y , original_position.z - in_point.z );
 
 	// move mesh to origin by point vector
-	///XMMATRIX move_to_origin = XMMatrixTranslation( - in_point.x , - in_point.y , - in_point.z );
 	XMMATRIX move_to_origin = XMMatrixTranslation( point_to_origin_vector.x , point_to_origin_vector.y , point_to_origin_vector.z );
 	
-	////set_position( -in_point.x , -in_point.y , -in_point.z );
+	//set_position( point_to_origin_vector );
 
 	rotation.z += in_angle_z;
-	XMMATRIX rotate = XMMatrixRotationZ( rotation.z );
-	////rotate_z( in_angle_z );
+	//XMMATRIX rotate = XMMatrixRotationZ( rotation.z );
+
+	//XMMATRIX rotate = XMMatrixRotationZ( in_angle_z );
+	//XMMATRIX rotate = XMMatrixRotationRollPitchYaw( rotation.x , rotation.y , in_angle_z );
+	rotation_matrix = XMMatrixRotationRollPitchYaw( rotation.x , rotation.y , in_angle_z );
+
+	//rotate_z( in_angle_z );
+
 	
 	// move/translate back to previous poistion
 	// position + point
 
-	XMMATRIX previous_position = XMMatrixTranslation( +point_to_origin_vector.x ,  +point_to_origin_vector.y ,  +point_to_origin_vector.z );
-	///set_position( + in_point.x , + in_point.y , + in_point.z );
+	XMMATRIX previous_position = XMMatrixTranslation( in_point.x , in_point.y , in_point.z );
+	//set_position( + in_point.x , + in_point.y , + in_point.z );
 
-	world_matrix = move_to_origin * rotate * previous_position;
+	// matrix multiplications are additive?
+	world_matrix = move_to_origin * rotation_matrix * previous_position; //* rotation_matrix 
 
-	// find new position/centre
+	// find new position/centre	
 	XMVECTOR new_position {};
-	XMVECTOR scale {};
-	XMVECTOR rotation {};
+	XMVECTOR new_scale {};
+	XMVECTOR new_rotation {};
 
-	XMMatrixDecompose( & scale , & rotation , & new_position , world_matrix );
+	XMMatrixDecompose( & new_scale , & new_rotation , & new_position , world_matrix );
 
 	position.x = XMVectorGetX( new_position );
 	position.y = XMVectorGetY( new_position );
 	position.z = XMVectorGetZ( new_position );
+
+	//set_rotation( new_rotation ); //quaternion
+	// set_scale( new_scale );
 	
 	world_matrix = XMMatrixTranspose( world_matrix );
-
-	set_position( position );
 }
 
 void Mesh::set_scale( const XMFLOAT3 in_scale )
 {
 	scale = in_scale;
 	scale_matrix = XMMatrixScaling( scale.x , scale.y , scale.z );
-	//m_matrix_world *= XMMatrixScaling( XMVectorGetX( in_scale_x ) , XMVectorGetY( in_scale_y ) , XMVectorGetZ( in_scale_z ) )
+
+	//world_matrix *= XMMatrixScaling( XMVectorGetX( in_scale_x ) , XMVectorGetY( in_scale_y ) , XMVectorGetZ( in_scale_z ) )
 
 	update_world_matrix();
 }
