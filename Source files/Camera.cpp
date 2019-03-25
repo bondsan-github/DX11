@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+using namespace DirectX;
+
 //Camera::Camera( ){}
 
 Camera::Camera( std::wstring in_name , XMVECTOR in_position , XMVECTOR in_target ) : position( in_position ) , target( in_target ) , name( in_name )
@@ -15,14 +17,16 @@ Camera::Camera( std::wstring in_name , XMVECTOR in_position , XMVECTOR in_target
 	set_projection( Projection::perspective );
 	
 	buffer_description.ByteWidth						= sizeof( XMMATRIX );
-	buffer_description.Usage							= D3D11_USAGE_DEFAULT;	//D3D11_USAGE_DYNAMIC;
+	buffer_description.Usage							= D3D11_USAGE_DEFAULT;	//D3D11_USAGE_DYNAMIC; ***
 	buffer_description.BindFlags						= D3D11_BIND_CONSTANT_BUFFER;
 	//m_buffer_description.CPUAccessFlags				= 0;//D3D11_CPU_ACCESS_WRITE;
 	//m_struct_buffer_description.MiscFlags				= 0;
 	//m_struct_buffer_description.StructureByteStride	= sizeof( XMMATRIX );
 
+	// ************************************************************************************************
 	// " D3D11_USAGE_DYNAMIC is typically used on resources with vertex data and on constant buffers.
 	//   Use the ID3D11DeviceContext::Map and ID3D11DeviceContext::Unmap methods to write data to these resources. "
+	// ************************************************************************************************
 
 	// Pay attention to the size of the constant buffers, 
 	// if they are not multiples of 16 you need to pad extra space on to the end
@@ -67,7 +71,7 @@ void Camera::update()
 											 0 ,						// size of one row of the source data.
 											 0 );						// size of one depth slice of source data.
 
-	//----------------------update subresource----------------------// ie a buffer ( inherits from D3DResource )
+	//----------------------update projection_matrix_buffer----------------------// ie a buffer ( inherits from D3DResource )
 	device_context_video->UpdateSubresource( projection_matrix_buffer.Get() ,	// ID3D11Resource destination
 											 0 ,								// zero-based index of destination subresource
 											 nullptr ,							// box portion of destination subresource to copy the resource data into

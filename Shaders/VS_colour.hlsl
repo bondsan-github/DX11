@@ -6,7 +6,7 @@ cbuffer matrix_WVP_cb : register( b0 )
 	matrix m_projection;
 };
 */
-cbuffer world : register( b0 )// VS_BUFFER_MESH
+cbuffer world : register( b0 )// VS_BUFFER_WORLD
 {
 	matrix world;
 };

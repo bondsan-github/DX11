@@ -6,7 +6,16 @@
 #include <Windows.h>
 #include <wrl/client.h>
 #include <d3d11.h>
-#include <DirectXMath.h>
+
+// check for processor support by calling XMVerifyCPUSupport() before using the DirectXMath Library.
+
+// When you call XMVerifyCPUSupport, include <windows.h> before you include <DirectXMath.h>. 
+// This is the only function in the library that requires any content from <windows.h> 
+// so you aren't required to include <windows.h> in every module that uses <DirectXMath.h>.
+
+
+// Windows 10 October 2018 Update SDK DirectXMath 3.13
+#include <DirectXMath.h> // DIRECTX_MATH_VERSION 307
 
 #pragma comment( lib , "d3d11.lib" )
 //#pragma comment( lib , "dxgi.lib" )
@@ -21,10 +30,12 @@
 //#include "Vertex.h"
 #include "Timer.h"
 
-#include "Keyboard.h"
+#include "MS_Keyboard.h"
 
-using namespace DirectX;
 using Microsoft::WRL::ComPtr;
+using DirectX::Keyboard;
+
+
 /*
 class DX11Game
 {
@@ -43,6 +54,59 @@ class DX11Game
 
 class DX11 //abstract
 {
+	public:
+		//DX11( ); // override default constructor
+
+		DX11( const HINSTANCE h_win_instance , const UINT window_width = 800u , const UINT window_height = 600u ); // int window_display_options );
+																											   //~DX11();  // virutal = this and derived classes, member data destruction
+
+		WPARAM	message_loop();
+		LRESULT window_messaging( HWND hwnd , UINT msg , WPARAM wParam , LPARAM lParam );
+		HWND	create_window( const HINSTANCE in_h_instance , const UINT in_client_width , const UINT in_client_height , RECT * out_client_size ); // int window_display_options )
+
+		void	create_dx11_device();
+
+		void	window_size_update();
+		void	gpu_device_lost();
+
+		//virtual void on_key_down( const WPARAM wParam , const LPARAM lParam ) {}
+		//void input_keyboard();
+
+		// void load_shader(LCTSTR filename);
+		// LPCSTR Type can be either unicode or ANSI
+		//HRESULT compile_shader( LPCTSTR file_path , LPCSTR entry , LPCSTR shader_model , ID3DBlob** buffer );
+
+		//void load_vertex_shader( const LPWSTR filename );
+		//void load_pixel_shader( const LPWSTR filename );
+
+		//virtual bool load_content( );
+		//virtual void unload_content( );
+
+		//ID3D11Device * const get_p_video_device( void ) { return m_p_video_device; }; 
+		//ComPtr<ID3D11Device> & get_p_video_device()	{ return m_p_video_device; };
+		//ComPtr<ID3D11DeviceContext> & get_p_video_device_context() { return m_p_video_device_context; }
+
+		void clear();
+		void clear( const XMFLOAT4 in_colour );
+
+		void present();
+
+		//virtual void load_content();
+		virtual void update( const long double time_delta ) = 0;	// pure virtual must be implemented // float delta_time
+		virtual void render() = 0;
+
+		const RECT get_client_area() const { return client_area; }
+
+		std::unique_ptr< Keyboard > keyboard = std::make_unique< Keyboard >();
+
+		//m_mouse = make_unique<Mouse>();
+		//m_mouse->SetWindow( window );
+
+		const HWND get_window_handle() const
+		{
+			return window;
+		}
+
 	private:
 
 		HRESULT result { E_FAIL };
@@ -109,58 +173,6 @@ class DX11 //abstract
 
 		float								blend_factor[ 4 ] { 1.0f , 1.0f , 1.0f , 1.0f };
 		unsigned int						sample_mask = 0xffffffff;
-
-		Timer m_timer;
-
-	public:
-		//DX11( ); // override default constructor
-
-		DX11( const HINSTANCE h_win_instance , const UINT window_width = 800u , const UINT window_height = 600u ); // int window_display_options );
-		//~DX11();  // virutal = this and derived classes, member data destruction
-		
-		WPARAM	message_loop();
-		LRESULT window_messaging( HWND hwnd , UINT msg , WPARAM wParam , LPARAM lParam );
-		HWND	create_window( const HINSTANCE in_h_instance , const UINT in_client_width , const UINT in_client_height , RECT * out_client_size ); // int window_display_options )
-
-		void	create_dx11_device();
-
-		void	window_size_update();
-		void	gpu_device_lost();
-
-		//virtual void on_key_down( const WPARAM wParam , const LPARAM lParam ) {}
-		//void input_keyboard();
-
-		// void load_shader(LCTSTR filename);
-		// LPCSTR Type can be either unicode or ANSI
-		//HRESULT compile_shader( LPCTSTR file_path , LPCSTR entry , LPCSTR shader_model , ID3DBlob** buffer );
-
-		//void load_vertex_shader( const LPWSTR filename );
-		//void load_pixel_shader( const LPWSTR filename );
-
-		//virtual bool load_content( );
-		//virtual void unload_content( );
-
-		//ID3D11Device * const get_p_video_device( void ) { return m_p_video_device; }; 
-		//ComPtr<ID3D11Device> & get_p_video_device()	{ return m_p_video_device; };
-		//ComPtr<ID3D11DeviceContext> & get_p_video_device_context() { return m_p_video_device_context; }
-
-		void clear();
-		void clear( const XMFLOAT4 in_colour );
-
-		void present();
-
-		//virtual void load_content();
-		virtual void update( const double time_delta ) = 0;	// pure virtual must be implemented // float delta_time
-		virtual void render() = 0;
-
-		const RECT get_client_area() const { return client_area; }
-
-		std::unique_ptr< Keyboard > keyboard = std::make_unique< Keyboard >();
-
-		//m_mouse = make_unique<Mouse>();
-		//m_mouse->SetWindow( window );
-
-
 };
 
 /*

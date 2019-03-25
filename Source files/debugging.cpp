@@ -16,6 +16,8 @@ void debug_out(const char * format, ...)
     va_end( args );
 }
 
+void debug_out( std::wstring ouput_string , ... ) {}
+
 void debug_out( wchar_t * ouput_string , ... )
 {
 	va_list arguments;
@@ -36,7 +38,7 @@ void debug_out( wchar_t * ouput_string , ... )
 
 void ErrorExit( LPCTSTR lpszFunction )
 {
-	// Retrieve the system error message for the last-error code
+	// Retrieve the system error message for the last error code
 
 	LPVOID	lpMsgBuf;
 	LPVOID	lpDisplayBuf;

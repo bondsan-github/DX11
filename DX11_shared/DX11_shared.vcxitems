@@ -14,7 +14,14 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP.cpp">
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\SDK\Microsoft DirectX SDK (June 2010)\Samples\C++\Direct3D11\Tutorials\Tutorial05\Tutorial05.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+      <DeploymentContent>false</DeploymentContent>
+    </None>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Learning c++\Testing\command pattern\command.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Learning c++\Testing\Timer QPC\timer.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\DDC\DDCAnim.cpp">
@@ -43,8 +50,8 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Image.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Keyboard.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Mesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\MS_Keyboard.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Sphere.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -52,10 +59,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\WICImage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP_BMP.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP_DataStructures.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP_VariousBMPutilities.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\DDC\DDCSurface.h">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
@@ -63,6 +66,7 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Camera.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Command.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Cube.h">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
@@ -85,8 +89,8 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\input_layouts.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Keyboard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Mesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\MS_Keyboard.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Quad.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\sprite.h">
       <ExcludedFromBuild>true</ExcludedFromBuild>

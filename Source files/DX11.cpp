@@ -79,10 +79,11 @@ LRESULT DX11::window_messaging( HWND hwnd , uint message , WPARAM wParam , LPARA
 		}
 
 		case WM_KEYDOWN:
-		case WM_SYSKEYDOWN:
 		case WM_KEYUP:
+		case WM_SYSKEYDOWN:
 		case WM_SYSKEYUP:
 		{			
+			//
 			Keyboard::ProcessMessage( message , wParam , lParam );
 			//input_keyboard();
 			break;
@@ -161,8 +162,6 @@ WPARAM DX11::message_loop()
 {
 	MSG win_msg { };
 	
-	m_timer.reset();
-
 	while ( win_msg.message != WM_QUIT )
 	{
 		if ( PeekMessage( &win_msg , nullptr , 0 , 0 , PM_REMOVE ) )
@@ -172,9 +171,7 @@ WPARAM DX11::message_loop()
 		}
 		else
 		{
-			m_timer.tick();
-
-			update( m_timer.delta() );
+			update( 0.0 ); //timer.delta()
 			render();
 		}
 	}
@@ -241,7 +238,7 @@ void DX11::create_dx11_device()
 	// long width	= dimensions.right - dimensions.left;
 	// long height	= dimensions.bottom - dimensions.top;
 
-	unsigned int creation_flags{ 0 };
+	unsigned int creation_flags {};
 
 #ifdef _DEBUG
 	creation_flags |= D3D11_CREATE_DEVICE_DEBUG;
@@ -401,7 +398,7 @@ void DX11::create_render_target_view()
 	if( FAILED( result ) ) ErrorExit( L"Failed to get a swap chain buffer" );
 
 
-	//------------ Create Render Target View ---------//
+	//------------ create_render_target_view ---------//
 	// Create the render target view with the back buffer pointer.
 
 	// resources must use a view to access resource data
@@ -549,7 +546,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	
 	// * Initialise windows-size dependent objects here. * 
 
-	//------------ create VS ------------//	
+	//------------ create_vertex_shader( wstring filename ) ------------//	
 	ID3DBlob * d3dBlob;
 	result = D3DReadFileToBlob( L".\\shaders\\VS_colour.cso" , & d3dBlob );
 
@@ -563,7 +560,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; CreateVertexShader()" );
 
 	// ****  MOVE TO MESH ***** -> need VS shader compiled cso blob
-	//------------ create input layout ------------
+	//------------ create_input_layout( ------------
 	// * * * * * * * * * * * * * * * * * * * * *
 	unsigned int total_layout_elements = ARRAYSIZE( input_layout_xyz_rgba_uv );
 	// * * * * * * * * * * * * * * * * * * * * *
@@ -584,7 +581,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 
 	//-------------------------------------------------------------------------//
 	
-	//------------ create PS  ------------//
+	//------------ create_pixel_shader  ------------//
 	result = D3DReadFileToBlob( L".\\shaders\\PS_colour.cso" , & d3dBlob );
 
 	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; D3DReadFileToBlob()" );
@@ -661,10 +658,10 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	
 	if( FAILED( result ) ) ErrorExit( L"window_size_update() CreateBlendState() error" );
 
-	float	blend_factor1[ 4 ]{ 1.0f , 1.0f , 1.0f , 1.0f };
-	unsigned int sample_mask1 = 0xffffffff;
+	float	blend_factor[ 4 ] { 1.0f , 1.0f , 1.0f , 1.0f };
+	unsigned int sample_mask = 0xffffffff;
 
-	video_device_context->OMSetBlendState( blend_state.Get() , blend_factor1 , sample_mask1 );
+	video_device_context->OMSetBlendState( blend_state.Get() , blend_factor , sample_mask );
 }
 
 //void DX11::update( ){	//float delta_time}
@@ -684,7 +681,7 @@ void DX11::clear()
 												 0 );	// stencil
 }
 
-void DX11::clear( const XMFLOAT4 in_colour )
+void DX11::clear( const XMFLOAT4 in_colour ) // vector DirectX::Colors
 {
 	// Clear the views.
 	float clear_colour[ 4 ];

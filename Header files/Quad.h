@@ -9,8 +9,8 @@ class Quad : public Mesh
 {
 	private:
 
-		uint width{};
-		uint height{};
+		float width {};
+		float height {};
 		XMFLOAT4 vertex_colour { 0.0f , 0.0f , 0.0f , 1.0f };
 
 		Texture texture_diffuse;
@@ -48,8 +48,12 @@ class Quad : public Mesh
 		//: width( in_width ) , height( in_height ) , vertex_colour( in_vertex_colour )
 		//error C2590 : only a constructor can have a base / member initializer list
 		{
-			float ½width	= in_width * 0.5f;
-			float ½height	= in_height * 0.5f;
+			height			= in_height;
+			width			= in_width;
+			vertex_colour	= in_vertex_colour;
+
+			float ½width	= in_width / 2.0f;
+			float ½height	= in_height / 2.0f;
 
 			vector< vertex_rgba_uv > quad_vertices
 			{
@@ -62,7 +66,7 @@ class Quad : public Mesh
 
 			vector< ushort > quad_indices { 0u , 1u , 2u , 0u , 2u , 3u };
 
-			// set_input_layout
+			// set_input_layout()
 			set_topology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 			set_vertices( quad_vertices );
 			set_indices( quad_indices );
@@ -77,12 +81,12 @@ class Quad : public Mesh
 			width	= texture_diffuse.get_width();
 			height	= texture_diffuse.get_height();
 
-			float ½width  = 0.5f * texture_diffuse.get_width();
-			float ½height = 0.5f * texture_diffuse.get_height();
+			float ½width  = texture_diffuse.get_width() / 2.0f;
+			float ½height = texture_diffuse.get_height() / 2.0f;
 
 			vector< vertex_rgba_uv > quad_vertices
 			{
-				//					   position																  texture u , v
+				//			   position												  texture u , v
 				vertex_rgba_uv( XMFLOAT3( -½width , -½height , 0.0f ) , vertex_colour , XMFLOAT2( 0.0f , 1.0f ) ) ,// bottom left
 				vertex_rgba_uv( XMFLOAT3( -½width ,  ½height , 0.0f ) , vertex_colour , XMFLOAT2( 0.0f , 0.0f ) ) ,// top left
 				vertex_rgba_uv( XMFLOAT3(  ½width ,  ½height , 0.0f ) , vertex_colour , XMFLOAT2( 1.0f , 0.0f ) ) ,// top right
@@ -96,15 +100,15 @@ class Quad : public Mesh
 			set_indices( quad_indices );
 		}
 
-		const uint get_width()	const { return texture_diffuse.get_width(); }
-		const uint get_height()	const { return texture_diffuse.get_height(); }
+		const float get_width()	 const { return texture_diffuse.get_width(); }
+		const float get_height() const { return texture_diffuse.get_height(); }
 
 		//void line( const XMFLOAT4 in_points , const Colour in_colour )	{ m_texture->line( in_points , in_colour );	}
 
-		void update() 
+		void update( double time_delta ) 
 		{
-			texture_diffuse.update( 0.0 );
-			Mesh::update();			
+			texture_diffuse.update( time_delta );
+			Mesh::update( time_delta );
 		}
 
 		void render()
@@ -113,15 +117,19 @@ class Quad : public Mesh
 			Mesh::render();
 		}
 
-		rectangle get_border()
-		{
-			border.top		= get_position().y + ( height * 0.5f );
-			border.bottom	= get_position().y - ( height * 0.5f );
-			border.left		= get_position().x - ( width  * 0.5f );
-			border.right	= get_position().x + ( width  * 0.5f );
+		//rectangle get_border() 
+		//{
+		//	// find min x,y,z & max x,y,z
 
-			return border;
-		}
+		//	//min.x = a.x < b.x ? a.x : b.x;  
+
+		//	border.top		= get_position().y + ( height / 2.0f );
+		//	border.bottom	= get_position().y - ( height / 2.0f );
+		//	border.left		= get_position().x - ( width  / 2.0f );
+		//	border.right	= get_position().x + ( width  / 2.0f );
+
+		//	return border;
+		//}
 };
 
 //normals required ?

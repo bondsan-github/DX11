@@ -26,11 +26,9 @@ float4 main_PS( input_PS input ) : SV_TARGET
     float4 texture0 = in_texture.Sample( sampler0, input.uv );
 
     //float4 texture0 = input.colour;
-    //texture0.a = 0.3;
     
 	return input.colour + texture0;
     //return texture0;
-	//return float4( 1.0f, 0.0f, 1.0f, 1.0f );
 }
 
 /*

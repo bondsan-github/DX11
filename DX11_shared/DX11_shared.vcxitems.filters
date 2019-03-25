@@ -25,9 +25,6 @@
     <Filter Include="Reference sources\DDS">
       <UniqueIdentifier>{cc66176a-90e0-42cd-a9c9-cd1a92ce42d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Reference sources\EasyBMP">
-      <UniqueIdentifier>{68c25861-5fde-403e-bfbd-e2abb3181835}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Bitmap.cpp">
@@ -54,9 +51,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Keyboard.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,8 +75,14 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\DX11_2D\DDSTextureLoader.cpp">
       <Filter>Reference sources\DDS</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP.cpp">
-      <Filter>Reference sources\EasyBMP</Filter>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Learning c++\Testing\command pattern\command.cpp">
+      <Filter>Reference sources\Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\Learning c++\Testing\Timer QPC\timer.cpp">
+      <Filter>Reference sources\Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\Source files\MS_Keyboard.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,9 +114,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\input_layouts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Keyboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Mesh.h">
@@ -158,17 +155,11 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\DX11_2D\DDSTextureLoader.h">
       <Filter>Reference sources\DDS</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP.h">
-      <Filter>Reference sources\EasyBMP</Filter>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\Command.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP_BMP.h">
-      <Filter>Reference sources\EasyBMP</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP_DataStructures.h">
-      <Filter>Reference sources\EasyBMP</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\Sources\EasyBMP\EasyBMP_VariousBMPutilities.h">
-      <Filter>Reference sources\EasyBMP</Filter>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\Header files\MS_Keyboard.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -178,5 +169,8 @@
     <FxCompile Include="$(MSBuildThisFileDirectory)..\Shaders\VS_colour.hlsl">
       <Filter>HLSL</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\SDK\Microsoft DirectX SDK (June 2010)\Samples\C++\Direct3D11\Tutorials\Tutorial05\Tutorial05.cpp" />
   </ItemGroup>
 </Project>

@@ -64,7 +64,7 @@ void Texture::create_buffer( const void * in_pixels , DXGI_FORMAT pixel_format )
 	if( FAILED( result ) ) ErrorExit( L"Texture::create_buffer() error; CreateShaderResourceView" );
 }
 
-void Texture::create_buffer( const uint in_width , const uint in_height , const XMFLOAT4 in_colour )
+void Texture::create_buffer( const uint in_width , const uint in_height )//, const XMFLOAT4 in_colour )
 {
 	//bytes_per_pixel = sizeof( XMFLOAT4 );
 	//uchar sizeoffloat = sizeof( float );
@@ -87,12 +87,12 @@ void Texture::create_buffer( const uint in_width , const uint in_height , const 
 	//		You set SysMemSlicePitch to the size of the entire 2D surface in bytes. 
 	//		To access a specific pixel, you use: (const char*)pSysMem + SysMemPitch*y + (x * BytesPerPixel)
 
-	unsigned char array_rgba[ 100 * 100 * 4 ];// = { 255u , 0u , 0u , 0u };
-	memset( array_rgba , 255 , 100 * 100 * 4 );  // 255+255+255+255
+	//unsigned char array_rgba[ 100 * 100 * 4 ];// = { 255u , 0u , 0u , 0u };
+	//memset( array_rgba , 255 , 100 * 100 * 4 );  // 255+255+255+255
 
-	subresource_data.pSysMem = array_rgba;// pixels.data();
-	subresource_data.SysMemPitch = width * 4;// sizeof( XMFLOAT4 ); //bytes_per_pixel; //sizeof( uint ); 
-	subresource_data.SysMemSlicePitch = height * ( width * 4 );// sizeof( XMFLOAT4 ) ) *; //bytes_per_pixel );
+	subresource_data.pSysMem = pixels.data(); //array_rgba;
+	subresource_data.SysMemPitch = width * bytes_per_pixel;// sizeof( XMFLOAT4 ); //bytes_per_pixel; //sizeof( uint ); 
+	subresource_data.SysMemSlicePitch = height * ( width * bytes_per_pixel );// sizeof( XMFLOAT4 ) ) *; //bytes_per_pixel );
 
 	result = Drawable::get_video_device()->CreateTexture2D( & description_2d ,
 															& subresource_data , // initial data

@@ -5,7 +5,7 @@
 #include <d3d11.h>
 
 #include <DirectXMath.h>
-using namespace DirectX;  // for DirectXMath.h
+//using namespace DirectX;  // for DirectXMath.h
 
 #include "debugging.h"
 #include "Drawable.h"
@@ -13,6 +13,15 @@ using namespace DirectX;  // for DirectXMath.h
 
 using std::wstring;
 using Microsoft::WRL::ComPtr;
+
+using DirectX::XMVECTOR;
+using DirectX::XMFLOAT4;
+using DirectX::XMVectorSet;
+using DirectX::XMFLOAT4X4;
+using DirectX::XMMATRIX;
+using DirectX::XMMatrixPerspectiveFovLH;
+using DirectX::XMMatrixOrthographicLH;
+using DirectX::XM_PIDIV2;
 
 enum class Projection { perspective , orthographic };
 
