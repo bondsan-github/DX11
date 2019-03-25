@@ -153,6 +153,21 @@ void Mesh::set_position( const float in_x , const float in_y , const float in_z 
 	update_world_matrix();
 }
 
+const XMFLOAT3 Mesh::get_position( void ) const
+{
+	float x , y , z = 0.0f;
+
+	XMMATRIX temp_matrix = XMMatrixTranspose( world_matrix );
+
+	x = XMVectorGetX( temp_matrix.r[ 3 ] );
+	y = XMVectorGetY( temp_matrix.r[ 3 ] );
+	z = XMVectorGetZ( temp_matrix.r[ 3 ] );
+
+	XMFLOAT3 position( x , y , z );
+
+	return position;
+}
+
 //void Mesh::translate_world_z( const float in_x )
 //{
 //	//m = 
@@ -322,23 +337,65 @@ p'y = sin(theta) * (px - axis_x) + cos(theta) * (py - axis_y) + axis_y
 void Mesh::set_scale( const XMFLOAT3 in_scale )
 {
 	scale_matrix = XMMatrixScaling( in_scale.x , in_scale.y , in_scale.z );
+
+	update_world_matrix();
 }
 
-//void Mesh::set_scale( const XMFLOAT3 in_scale )
-//{
-//	scale_matrix = XMMatrixScaling( scale.x , scale.y , scale.z );
-//
-//	update_world_matrix();
-//}
-//
-//void Mesh::delta_scale( const XMFLOAT3 in_scale )
-//{
-//	scale_matrix *= XMMatrixScaling( scale.x , scale.y , scale.z );
-//
-//	update_world_matrix();
-//}
+void Mesh::delta_scale( const XMFLOAT3 in_scale )
+{
+	scale_matrix *= XMMatrixScaling( in_scale.x , in_scale.y , in_scale.z );
+
+	update_world_matrix();
+}
 
 //void Mesh::submit_draw() { // void draw_point_list() //m_p_video_device_context->Draw( m_ul_total_vertices , 0 ); }
+
+vector<vertex_rgba_uv> Mesh::get_world_vertices() const
+{
+	vector<vertex_rgba_uv> world_vertices;
+	vertex_rgba_uv world_transformed;
+	XMMATRIX world_matrix_transposed = XMMatrixTranspose( world_matrix );
+
+	//XMFLOAT3 test_vertex = vertices.at( 0 ).point;
+	//debug_out( "\nobject.x = %.2f , y = %.2f" , test_vertex.x , test_vertex.y );
+
+	for( const auto & vertex : vertices )
+	{
+		XMVECTOR vertex_world = XMVector3Transform( XMLoadFloat3( &XMFLOAT3( vertex.point.x , vertex.point.y , vertex.point.z ) ) , world_matrix_transposed );
+
+		world_transformed.point.x = XMVectorGetX( vertex_world );
+		world_transformed.point.y = XMVectorGetY( vertex_world );
+		world_transformed.point.z = XMVectorGetZ( vertex_world );
+
+		world_vertices.push_back( world_transformed );
+	}
+
+	return world_vertices;
+}
+
+Bounding_box Mesh::get_bounding_box() // (world coordinates)
+{
+	Bounding_box box;
+
+	vector<vertex_rgba_uv> world_vertices = get_world_vertices();
+
+	box.min = XMFLOAT3( FLT_MAX , FLT_MAX , FLT_MAX );  //vertices.front().point;
+	box.max = XMFLOAT3( FLT_MIN , FLT_MIN , FLT_MIN );//vertices.front().point;
+
+	for( const auto & vertex : world_vertices )
+	{
+		if( vertex.point.x < box.min.x ) box.min.x = vertex.point.x;
+		if( vertex.point.x > box.max.x ) box.max.x = vertex.point.x;
+
+		if( vertex.point.y < box.min.y ) box.min.y = vertex.point.y;
+		if( vertex.point.y > box.max.y ) box.max.y = vertex.point.y;
+
+		if( vertex.point.z < box.min.z ) box.min.z = vertex.point.z;
+		if( vertex.point.z > box.max.z ) box.max.z = vertex.point.z;
+	}
+
+	return box;
+}
 
 void Mesh::render()
 {

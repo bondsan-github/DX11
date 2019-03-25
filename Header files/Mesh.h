@@ -75,30 +75,7 @@ class Mesh : public Drawable // abstract
 		void set_position( const XMVECTOR in_position );
 		void set_position( const float in_x , const float in_y , const float in_z );
 
-		const XMFLOAT3 get_position( void ) const 
-		{ 
-			float x , y , z = 0.0f;
-
-			XMMATRIX temp_matrix = XMMatrixTranspose( world_matrix );
-
-			x = XMVectorGetX( temp_matrix.r[ 3 ] );
-			y = XMVectorGetY( temp_matrix.r[ 3 ] );
-			z = XMVectorGetZ( temp_matrix.r[ 3 ] );
-
-			/*XMVECTOR new_position {};
-			XMVECTOR new_scale {};
-			XMVECTOR new_rotation {};
-			
-			XMMatrixDecompose( & new_scale , & new_rotation , & new_position , world_matrix );
-			
-			x = XMVectorGetX( new_position );
-			y = XMVectorGetY( new_position );
-			z = XMVectorGetZ( new_position );*/
-
-			XMFLOAT3 position( x , y , z );
-
-			return position;
-		}
+		const XMFLOAT3 get_position( void ) const;
 
 		//const XMVECTOR get_position()
 		//{
@@ -109,7 +86,6 @@ class Mesh : public Drawable // abstract
 		void translate_x( const float in_x );
 		void translate_y( const float in_y );
 		void translate_z( const float in_z );
-
 		//void set_x( const float in_x );
 				
 		void set_rotation( const XMFLOAT3 in_rotation );
@@ -142,7 +118,7 @@ class Mesh : public Drawable // abstract
 		void orbit_z( const float in_radians_z );
 
 		void set_scale( const XMFLOAT3 in_scale );
-		//void delta_scale( const XMFLOAT3 in_f3_scale );
+		void delta_scale( const XMFLOAT3 in_f3_scale );
 				
 		void update( double time_delta );
 		void update_world_matrix();
@@ -153,135 +129,12 @@ class Mesh : public Drawable // abstract
 			update_world_matrix();
 		}
 
-		XMMATRIX get_world_matrix() const
-		{
-			return world_matrix;
-		}
+		XMMATRIX get_world_matrix() const { return world_matrix; }
 
-		vector<vertex_rgba_uv> get_world_vertices() const
-		{
-			vector<vertex_rgba_uv> world_vertices;
-			vertex_rgba_uv world_transformed;
-			XMMATRIX world_matrix_transposed = XMMatrixTranspose( world_matrix );
-
-			//XMFLOAT3 test_vertex = vertices.at( 0 ).point;
-			//debug_out( "\nobject.x = %.2f , y = %.2f" , test_vertex.x , test_vertex.y );
-			
-			for( const auto & vertex : vertices )
-			{
-				XMVECTOR vertex_world = XMVector3Transform( XMLoadFloat3( &XMFLOAT3( vertex.point.x , vertex.point.y , vertex.point.z ) ) , world_matrix_transposed );
-
-				world_transformed.point.x = XMVectorGetX( vertex_world );
-				world_transformed.point.y = XMVectorGetY( vertex_world );
-				world_transformed.point.z = XMVectorGetZ( vertex_world );
-
-				world_vertices.push_back( world_transformed );
-			}
-
-			return world_vertices;
-		}
-
-		//void set_rotation( const XMFLOAT3 in_rotation ) 
-		//{ 
-		//	rotation = in_rotation; 
-		//	rotation_matrix = XMMatrixRotationRollPitchYaw( rotation.x , rotation.y , rotation.z );
-
-		//	update_world_matrix();
-		//}
-
-		//XMFLOAT3 get_centre()
-		//{
-			//XMVECTOR vertex_world{};
-			//XMFLOAT3 centre {};
-
-			//for( auto & vertex : vertices )
-			//{
-			//	vertex_world = XMVector3Transform( XMLoadFloat3( &XMFLOAT3( vertex.point.x , vertex.point.y , vertex.point.z ) ) , world_matrix );
-
-			//	centre.x += XMVectorGetX( vertex_world );
-			//	centre.y += XMVectorGetY( vertex_world );
-			//	centre.z += XMVectorGetZ( vertex_world );
-			//}
-
-			//centre.x /= vertices.size();
-			//centre.y /= vertices.size();
-			//centre.z /= vertices.size();
-
-			//return centre;
-		//}
-
-		// get_AABB
-		Bounding_box get_bounding_box() // (world coordinates)
-		{
-			Bounding_box box;
-
-			vector<vertex_rgba_uv> world_vertices = get_world_vertices();
-			
-			box.min = XMFLOAT3( FLT_MAX , FLT_MAX , FLT_MAX );  //vertices.front().point;
-			box.max = XMFLOAT3( FLT_MIN , FLT_MIN , FLT_MIN );//vertices.front().point;
-
-			for( const auto & vertex : world_vertices )
-			{
-				if( vertex.point.x < box.min.x ) box.min.x = vertex.point.x;
-				if( vertex.point.x > box.max.x ) box.max.x = vertex.point.x;
-
-				if( vertex.point.y < box.min.y ) box.min.y = vertex.point.y;
-				if( vertex.point.y > box.max.y ) box.max.y = vertex.point.y;
-
-				if( vertex.point.z < box.min.z ) box.min.z = vertex.point.z;
-				if( vertex.point.z > box.max.z ) box.max.z = vertex.point.z;
-			}
-
-			return box;
-			// for each vertex
-			//   world_vertex = vertex[i] *= world_matrix;
-
-			//vector< XMFLOAT3 > world_vertices;
-
-			////XMFLOAT3 point{};
-			////float x , y , z = 0; // ! ;)
-
-			////AABB bob_test {};
-			////
-			////for( auto & vertex : vertices )
-			////{
-	
-			////	XMVECTOR vertex_world = XMVector3Transform( XMLoadFloat3( &XMFLOAT3( vertex.point.x , vertex.point.y , vertex.point.z ) ) , world_matrix );
-			////	
-			////	x = XMVectorGetX( vertex_world );
-			////	y = XMVectorGetY( vertex_world );
-			////	z = XMVectorGetZ( vertex_world );
-
-			////	debug_out( "\nvertex.x = %.2f , y = %.2f" , vertex.point.x , vertex.point.y );
-			////	debug_out( "   _world.x = %.2f , y = %.2f" , x , y );
-			////}
-			////
-			////debug_out( "\n" );
-			
-			//D3D11_MAPPED_SUBRESOURCE mapped_buffer;
-			//result = video_device_context->Map( vertex_buffer.Get() , 0 , D3D11_MAP_READ , 0 , &mapped_buffer );
-			//vertex_rgba_uv * world_verticies = reinterpret_cast< vertex_rgba_uv * >( mapped_buffer.pData );
-			//AABB bounding_box;
-			//bounding_box.min.x = world_vertices			
-			//for( uint i = 0; i < vertices.size(); ++i )
-			//{
-			//	//temp_verticies[ i ].Pos = mWaves[ i ];
-			//}
-			//video_device_context->Unmap( vertex_buffer.Get() , 0 );
-
-			//ID3D11Buffer * staging_vertex_buffer;
-			//D3D11_BUFFER_DESC staging_vertex_buffer_description{};
-			//staging_vertex_buffer_description.ByteWidth = sizeof( XMMATRIX );
-			//staging_vertex_buffer_description.Usage = D3D11_USAGE_STAGING;
-			//staging_vertex_buffer_description.BindFlags = D3D11_BIND_CONSTANT_BUFFER;			
-			////D3D11_USAGE_STAGING = A resource that supports data transfer (copy) from the GPU to the CPU.
-			//video_device_context->CopyResource( vertex_buffer.Get() , &staging_vertex_buffer );
-			////Create a 2nd buffer with D3D11_USAGE_STAGING; fill the second buffer using ID3D11DeviceContext::Map , ID3D11DeviceContext::Unmap; 
-			////use ID3D11DeviceContext::CopyResource to copy from the staging buffer to the default buffer.
+		vector<vertex_rgba_uv> get_world_vertices() const;
 		
-		}
-
-		//rectangle get_AABB() {}
+		// get_AABB
+		Bounding_box get_bounding_box(); // (world coordinates)
 
 		void render();
 		
@@ -351,3 +204,89 @@ class Mesh : public Drawable // abstract
 																				// long  , unsigned long  = 4 bytes = 8 * 4 = 32 bits	
 		}
 };
+
+// get_AABB
+// for each vertex
+//   world_vertex = vertex[i] *= world_matrix;
+
+//vector< XMFLOAT3 > world_vertices;
+
+////XMFLOAT3 point{};
+////float x , y , z = 0; // ! ;)
+
+////AABB bob_test {};
+////
+////for( auto & vertex : vertices )
+////{
+
+////	XMVECTOR vertex_world = XMVector3Transform( XMLoadFloat3( &XMFLOAT3( vertex.point.x , vertex.point.y , vertex.point.z ) ) , world_matrix );
+////	
+////	x = XMVectorGetX( vertex_world );
+////	y = XMVectorGetY( vertex_world );
+////	z = XMVectorGetZ( vertex_world );
+
+////	debug_out( "\nvertex.x = %.2f , y = %.2f" , vertex.point.x , vertex.point.y );
+////	debug_out( "   _world.x = %.2f , y = %.2f" , x , y );
+////}
+////
+////debug_out( "\n" );
+
+//D3D11_MAPPED_SUBRESOURCE mapped_buffer;
+//result = video_device_context->Map( vertex_buffer.Get() , 0 , D3D11_MAP_READ , 0 , &mapped_buffer );
+//vertex_rgba_uv * world_verticies = reinterpret_cast< vertex_rgba_uv * >( mapped_buffer.pData );
+//AABB bounding_box;
+//bounding_box.min.x = world_vertices			
+//for( uint i = 0; i < vertices.size(); ++i )
+//{
+//	//temp_verticies[ i ].Pos = mWaves[ i ];
+//}
+//video_device_context->Unmap( vertex_buffer.Get() , 0 );
+
+//ID3D11Buffer * staging_vertex_buffer;
+//D3D11_BUFFER_DESC staging_vertex_buffer_description{};
+//staging_vertex_buffer_description.ByteWidth = sizeof( XMMATRIX );
+//staging_vertex_buffer_description.Usage = D3D11_USAGE_STAGING;
+//staging_vertex_buffer_description.BindFlags = D3D11_BIND_CONSTANT_BUFFER;			
+////D3D11_USAGE_STAGING = A resource that supports data transfer (copy) from the GPU to the CPU.
+//video_device_context->CopyResource( vertex_buffer.Get() , &staging_vertex_buffer );
+////Create a 2nd buffer with D3D11_USAGE_STAGING; fill the second buffer using ID3D11DeviceContext::Map , ID3D11DeviceContext::Unmap; 
+////use ID3D11DeviceContext::CopyResource to copy from the staging buffer to the default buffer.
+
+//void set_rotation( const XMFLOAT3 in_rotation ) 
+//{ 
+//	rotation = in_rotation; 
+//	rotation_matrix = XMMatrixRotationRollPitchYaw( rotation.x , rotation.y , rotation.z );
+
+//	update_world_matrix();
+//}
+
+//XMFLOAT3 get_centre()
+//{
+//XMVECTOR vertex_world{};
+//XMFLOAT3 centre {};
+
+//for( auto & vertex : vertices )
+//{
+//	vertex_world = XMVector3Transform( XMLoadFloat3( &XMFLOAT3( vertex.point.x , vertex.point.y , vertex.point.z ) ) , world_matrix );
+
+//	centre.x += XMVectorGetX( vertex_world );
+//	centre.y += XMVectorGetY( vertex_world );
+//	centre.z += XMVectorGetZ( vertex_world );
+//}
+
+//centre.x /= vertices.size();
+//centre.y /= vertices.size();
+//centre.z /= vertices.size();
+
+//return centre;
+//}
+
+/*XMVECTOR new_position {};
+XMVECTOR new_scale {};
+XMVECTOR new_rotation {};
+
+XMMatrixDecompose( & new_scale , & new_rotation , & new_position , world_matrix );
+
+x = XMVectorGetX( new_position );
+y = XMVectorGetY( new_position );
+z = XMVectorGetZ( new_position );*/

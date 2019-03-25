@@ -9,7 +9,7 @@
 *.userosscache
 *.sln.docstates
 Models/
-Class diagrams/
+#Class diagrams/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
