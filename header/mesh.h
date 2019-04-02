@@ -8,8 +8,8 @@
 //#include <DXGI.h>
 #include <DirectXMath.h>
 
-#include "Drawable.h"
-#include "Vertex.h"
+#include "Graphics_component.h"
+#include "vertex.h"
 #include "debugging.h"
 #include "types.h"
 #include "DX11_math.h"
@@ -33,7 +33,7 @@ using DirectX::XMVectorGetZ;
 
 //template< typename vertex_type > //= vertex >
 
-class Mesh : public Drawable // abstract
+class Mesh : public Graphics_component
 {
 	public:
 
@@ -102,11 +102,11 @@ class Mesh : public Drawable // abstract
 
 		void rotate_x( const float in_rad );
 		void rotate_y( const float in_rad );
-		void rotate_z( const float in_rad );
+		void rotation_z( const float in_rad );
 		
 		//void Mesh::rotate_axis( const XMVECTOR in_axis , const float in_radians ) {}
 
-		void rotate_point_z( const XMFLOAT3 in_pivot , const float in_angle_z );
+		void rotation_z_about_point( const XMFLOAT3 in_pivot , const float in_angle_z );
 		//void rotate_point_z( const XMFLOAT3 in_pivot , const float in_angle_z , const XMFLOAT3 in_translation );
 
 		void orbit_point_z( const XMFLOAT3 in_point , const float in_angle_z );
@@ -146,7 +146,7 @@ class Mesh : public Drawable // abstract
 
 		HRESULT							result { E_FAIL };
 
-		ComPtr< ID3D11Device >			video_device;
+		//ComPtr< ID3D11Device >			video_device;
 		ComPtr< ID3D11DeviceContext >	video_device_context;
 
 		//vector< vertex_type >			vertices;

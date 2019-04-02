@@ -5,11 +5,11 @@
 #include <d3d11.h>
 
 #include <DirectXMath.h>
-//using namespace DirectX;  // for DirectXMath.h
 
 #include "debugging.h"
-#include "Drawable.h"
+#include "Graphics_component.h"
 #include "types.h"
+
 
 using std::wstring;
 using Microsoft::WRL::ComPtr;
@@ -25,13 +25,13 @@ using DirectX::XM_PIDIV2;
 
 enum class Projection { perspective , orthographic };
 
-class Camera : public Drawable
+class Camera : public Graphics_component
 {
 	private:
 
 		HRESULT result{ E_FAIL };
 
-		ComPtr< ID3D11Device >			video_device;
+		//ComPtr< ID3D11Device >			video_device;
 		ComPtr< ID3D11DeviceContext >	device_context_video;
 
 		wstring name;

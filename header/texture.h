@@ -2,7 +2,7 @@
 
 //#include "..\DX11\debugging.h"
 #include "types.h"
-#include "Drawable.h"
+#include "Graphics_component.h"
 #include "WICImage.h"
 
 #include <d3d11.h>
@@ -14,7 +14,7 @@
 #include <wincodec.h>	// WICImage
 #include <memory>		// unique_ptr
 
-using std::vector;
+using std::vector;  // pollutes global namespace
 using DirectX::XMFLOAT4;
 using Microsoft::WRL::ComPtr;
 using std::unique_ptr;
@@ -55,13 +55,14 @@ class Colour_rgba128bpp_float
 //void line( std::shared_pointer<Texture> in_texture, XMFLOAT4 in_points , colour in_colour );
 
 //template< typename pixel_format >
-class Texture : public Drawable
+class Texture : public Graphics_component
 {
-	
-
 	public:
 
-		Texture();
+		Texture() 
+		{
+			video_device->GetImmediateContext( &device_context_video );
+		}
 
 		//Texture( const uint in_width, const uint in_height , const XMFLOAT4 in_colour );
 		//Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_rgba );
@@ -120,6 +121,8 @@ class Texture : public Drawable
 	private:
 
 		HRESULT result{ E_FAIL };
+
+		ComPtr< ID3D11DeviceContext >	device_context_video;
 
 		void create_buffer( const uint in_width , const uint in_height );// , const XMFLOAT4 in_colour );
 		void create_buffer( const void * ptr_memory , DXGI_FORMAT pixel_format );

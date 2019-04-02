@@ -1,4 +1,4 @@
-﻿#include "Mesh.h"
+﻿#include "mesh.h"
 
 //template< typename vertex_t >
 //Mesh< vertex_t >::Mesh(  ) 
@@ -7,9 +7,9 @@ using namespace DirectX;
 
 Mesh::Mesh() //: texture2D_dimensions( in_dimensions )
 {
-	video_device = get_video_device();
+	//video_device = get_video_device();
 
-	video_device->GetImmediateContext( video_device_context.ReleaseAndGetAddressOf() );
+	video_device->GetImmediateContext( video_device_context.ReleaseAndGetAddressOf() ); //GetAddressOf()
 
 	create_buffer_matrix_world();	
 }
@@ -43,8 +43,7 @@ void Mesh::create_buffer_vertices()
 	if( FAILED( result ) ) ErrorExit( L"Mesh error; create vertices buffer" );
 }
 
-// create_buffer( enum class { vertex , index , constant , shader , stream , render , depth } , const & data ) 
-// passing address and pointer differences
+// create_buffer( enum class { vertex , index , constant , shader , stream , render , depth } , const<type> * data ) 
 
 void Mesh::create_buffer_indices()
 {
@@ -168,11 +167,6 @@ const XMFLOAT3 Mesh::get_position( void ) const
 	return position;
 }
 
-//void Mesh::translate_world_z( const float in_x )
-//{
-//	//m = 
-//}
-
 void Mesh::translate_x( const float in_x ) // translate_local_z
 {
 	// "XMLoadFloat3 = The w member of the returned XMVECTOR is initialized to 0."
@@ -218,62 +212,12 @@ void Mesh::rotate_y( const float in_radians )
 	update_world_matrix();
 }
 
-void Mesh::rotate_z( const float in_radians ) 
+void Mesh::rotation_z( const float in_radians ) 
 {	
 	rotation_matrix *= XMMatrixRotationZ( in_radians );
 
 	update_world_matrix();
 }
-
-// orbit_and_rotate_point_z
-
-//void Mesh::orbit_point_z( const XMFLOAT3 in_point , const float in_angle_z )
-//{
-//	XMVECTOR scale =	XMLoadFloat3( & XMFLOAT3( 1.0f , 1.0f , 1.0f ) );	
-//	XMVECTOR origin =	XMLoadFloat3( & XMFLOAT3( in_point.x , in_point.y , in_point.z ) );
-//	XMVECTOR axis_z =	XMLoadFloat4( & XMFLOAT4( 0.0f , 0.0f , 1.0f , 0.0f ) ); // Z-axis
-//
-//	XMVECTOR rotation_quaternion = XMQuaternionRotationAxis( axis_z , in_angle_z ); //XMMatrixRotationQuaternion
-//
-//	//XMVECTOR translation = XMLoadFloat3( & XMFLOAT3( in_translation.x , in_translation.y , in_translation.z ) );
-//	XMVECTOR translation = XMLoadFloat3( & XMFLOAT3( 0 , 0 , 0 ) );
-//
-//	world_matrix = XMMatrixTranspose( world_matrix );
-//
-//	world_matrix *= XMMatrixAffineTransformation(
-//		scale ,
-//		origin ,
-//		rotation_quaternion ,
-//		translation	);
-//
-//	world_matrix = XMMatrixTranspose( world_matrix );
-//
-//	update_world_matrix_buffer();
-//	//update_world_matrix();
-//}
-
-//void Mesh::orbit_point_z( const XMFLOAT3 in_point , const float in_angle_z )
-//{
-//	XMVECTOR Scaling =				XMLoadFloat3( & XMFLOAT3( 0 , 0 , 0 ) );
-//	XMVECTOR RotationOrigin =		XMLoadFloat3( & XMFLOAT3( 0 , 0 , 0 ) );
-//	XMVECTOR RotationQuaternion =	XMLoadFloat4( & XMFLOAT4( 0 , 0 , 0 , 0 ) );
-//	XMVECTOR Translation =			XMLoadFloat3( & XMFLOAT3( 0 , 0 , 0 ) );
-//
-//	// M = MScaling * Inverse(MRotationOrigin) * MRotation * MRotationOrigin * MTranslation;
-//
-//	XMMATRIX MScaling = XMMatrixScalingFromVector( Scaling );
-//	XMVECTOR VRotationOrigin = XMVectorSelect( g_XMSelect1110.v , RotationOrigin , g_XMSelect1110.v ); // select x,y,z only from RotationOrigin
-//	XMMATRIX MRotation = XMMatrixRotationQuaternion( RotationQuaternion );
-//	XMVECTOR VTranslation = XMVectorSelect( g_XMSelect1110.v , Translation , g_XMSelect1110.v );// select x,y,z only from Translation
-//
-//	XMMATRIX M;
-//	M =			MScaling;
-//	M.r[ 3 ] =	XMVectorSubtract( M.r[ 3 ] , VRotationOrigin );	// position -= VRotationOrigin
-//	M =			XMMatrixMultiply( M , MRotation );				// M *= MRotation
-//	M.r[ 3 ] =	XMVectorAdd( M.r[ 3 ] , VRotationOrigin );		// position += VRotationOrigin
-//	M.r[ 3 ] =	XMVectorAdd( M.r[ 3 ] , VTranslation );			// ( position += VTranslation )
-//	return M;
-//}
 
 void Mesh::orbit_z( const float in_radians_z )
 {
@@ -282,12 +226,9 @@ void Mesh::orbit_z( const float in_radians_z )
 	update_world_matrix();
 }
 
-void Mesh::orbit_point_z( const XMVECTOR in_point , const float in_angle_z )
-{
+void Mesh::orbit_point_z( const XMVECTOR in_point , const float in_angle_z ) {}
 
-}
-
-void Mesh::rotate_point_z( const XMFLOAT3 in_point , const float in_angle_z )
+void Mesh::rotation_z_about_point( const XMFLOAT3 in_point , const float in_angle_z )
 {
 	world_matrix = XMMatrixTranspose( world_matrix );
 
@@ -298,6 +239,7 @@ void Mesh::rotate_point_z( const XMFLOAT3 in_point , const float in_angle_z )
 	world_matrix.r[ 3 ] += XMVectorSet( in_point.x , in_point.y , in_point.z , 0 );
 
 	translation_matrix.r[ 3 ] = world_matrix.r[ 3 ];
+
 	rotation_matrix.r[ 0 ] = world_matrix.r[ 0 ];
 	rotation_matrix.r[ 1 ] = world_matrix.r[ 1 ];
 	rotation_matrix.r[ 2 ] = world_matrix.r[ 2 ];
@@ -379,8 +321,8 @@ Bounding_box Mesh::get_bounding_box() // (world coordinates)
 
 	vector<vertex_rgba_uv> world_vertices = get_world_vertices();
 
-	box.min = XMFLOAT3( FLT_MAX , FLT_MAX , FLT_MAX );  //vertices.front().point;
-	box.max = XMFLOAT3( FLT_MIN , FLT_MIN , FLT_MIN );//vertices.front().point;
+	box.min = XMFLOAT3(  FLT_MAX ,  FLT_MAX ,  FLT_MAX );
+	box.max = XMFLOAT3( -FLT_MAX , -FLT_MAX , -FLT_MAX );
 
 	for( const auto & vertex : world_vertices )
 	{
@@ -435,3 +377,53 @@ void Mesh< vertex_t >::update()
 	md3dImmediateContext->Unmap( mWavesVB , 0 );
 }
 */
+
+// orbit_and_rotate_point_z
+
+//void Mesh::orbit_point_z( const XMFLOAT3 in_point , const float in_angle_z )
+//{
+//	XMVECTOR scale =	XMLoadFloat3( & XMFLOAT3( 1.0f , 1.0f , 1.0f ) );	
+//	XMVECTOR origin =	XMLoadFloat3( & XMFLOAT3( in_point.x , in_point.y , in_point.z ) );
+//	XMVECTOR axis_z =	XMLoadFloat4( & XMFLOAT4( 0.0f , 0.0f , 1.0f , 0.0f ) ); // Z-axis
+//
+//	XMVECTOR rotation_quaternion = XMQuaternionRotationAxis( axis_z , in_angle_z ); //XMMatrixRotationQuaternion
+//
+//	//XMVECTOR translation = XMLoadFloat3( & XMFLOAT3( in_translation.x , in_translation.y , in_translation.z ) );
+//	XMVECTOR translation = XMLoadFloat3( & XMFLOAT3( 0 , 0 , 0 ) );
+//
+//	world_matrix = XMMatrixTranspose( world_matrix );
+//
+//	world_matrix *= XMMatrixAffineTransformation(
+//		scale ,
+//		origin ,
+//		rotation_quaternion ,
+//		translation	);
+//
+//	world_matrix = XMMatrixTranspose( world_matrix );
+//
+//	update_world_matrix_buffer();
+//	//update_world_matrix();
+//}
+
+//void Mesh::orbit_point_z( const XMFLOAT3 in_point , const float in_angle_z )
+//{
+//	XMVECTOR Scaling =				XMLoadFloat3( & XMFLOAT3( 0 , 0 , 0 ) );
+//	XMVECTOR RotationOrigin =		XMLoadFloat3( & XMFLOAT3( 0 , 0 , 0 ) );
+//	XMVECTOR RotationQuaternion =	XMLoadFloat4( & XMFLOAT4( 0 , 0 , 0 , 0 ) );
+//	XMVECTOR Translation =			XMLoadFloat3( & XMFLOAT3( 0 , 0 , 0 ) );
+//
+//	// M = MScaling * Inverse(MRotationOrigin) * MRotation * MRotationOrigin * MTranslation;
+//
+//	XMMATRIX MScaling = XMMatrixScalingFromVector( Scaling );
+//	XMVECTOR VRotationOrigin = XMVectorSelect( g_XMSelect1110.v , RotationOrigin , g_XMSelect1110.v ); // select x,y,z only from RotationOrigin
+//	XMMATRIX MRotation = XMMatrixRotationQuaternion( RotationQuaternion );
+//	XMVECTOR VTranslation = XMVectorSelect( g_XMSelect1110.v , Translation , g_XMSelect1110.v );// select x,y,z only from Translation
+//
+//	XMMATRIX M;
+//	M =			MScaling;
+//	M.r[ 3 ] =	XMVectorSubtract( M.r[ 3 ] , VRotationOrigin );	// position -= VRotationOrigin
+//	M =			XMMatrixMultiply( M , MRotation );				// M *= MRotation
+//	M.r[ 3 ] =	XMVectorAdd( M.r[ 3 ] , VRotationOrigin );		// position += VRotationOrigin
+//	M.r[ 3 ] =	XMVectorAdd( M.r[ 3 ] , VTranslation );			// ( position += VTranslation )
+//	return M;
+//}

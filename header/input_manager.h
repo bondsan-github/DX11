@@ -2,19 +2,21 @@
 
 #include <memory>
 
+class Tetrimino;
+
 class Command
 {
 	public:
 	virtual ~Command() {};
-	virtual void exectute( shared_ptr< void > active_tetri ) = 0;
+	virtual void exectute( void active_tetri ) = 0;
 };
 
 class RotateCommand : public Command
 {
 	public:
-	virtual void execute( shared_ptr< Tetrimino > active_tetri )
+	virtual void execute( Tetrimino & active_tetri )
 	{
-		active_tetri->rotate( direction::clock_wise );
+		active_tetri.rotate( direction::clock_wise );
 	}
 };
 
@@ -29,5 +31,6 @@ class InputHandler
 	}
 
 	private:
-	shared_ptr< Command > m_button_X;
+		//shared_ptr< Command > m_button_X;
+		Command * button_x;
 };

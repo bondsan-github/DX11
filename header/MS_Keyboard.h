@@ -15,9 +15,11 @@
 
 #include <memory>
 #include <stdint.h>
-#include <wrl/client.h>
 
-#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
+#include <Windows.h>
+#include <wrl/client.h> // for ComPtr
+
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
 namespace ABI { namespace Windows { namespace UI { namespace Core { struct ICoreWindow; } } } }
 #endif
 
@@ -405,7 +407,7 @@ namespace DirectX
 
             bool __cdecl IsKeyDown(Keys key) const
             {
-                if (key >= 0 && key <= 0xfe)
+                if (key >= 0 && key <= 0xff)
                 {
                     auto ptr = reinterpret_cast<const uint32_t*>(this);
                     unsigned int bf = 1u << (key & 0x1f);
@@ -453,14 +455,11 @@ namespace DirectX
         // Reset the keyboard state
         void __cdecl Reset();
 
-        // Feature detection
-        bool __cdecl IsConnected() const;
-
 #if !defined(WINAPI_FAMILY) || (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP) && defined(WM_USER)
-        static void __cdecl ProcessMessage(unsigned int message, WPARAM wParam, LPARAM lParam);
+        static void __cdecl ProcessMessage(UINT message, WPARAM wParam, LPARAM lParam);
 #endif
 
-#if (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)) || (defined(_XBOX_ONE) && defined(_TITLE))
+#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
         void __cdecl SetWindow(ABI::Windows::UI::Core::ICoreWindow* window);
 #ifdef __cplusplus_winrt
         void __cdecl SetWindow(Windows::UI::Core::CoreWindow^ window)

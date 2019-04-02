@@ -13,7 +13,6 @@
 // This is the only function in the library that requires any content from <windows.h> 
 // so you aren't required to include <windows.h> in every module that uses <DirectXMath.h>.
 
-
 // Windows 10 October 2018 Update SDK DirectXMath 3.13
 #include <DirectXMath.h> // DIRECTX_MATH_VERSION 307
 
@@ -26,43 +25,26 @@
 #include "debugging.h"
 #include "input_layouts.h"
 //#include "window.h"
-#include "Mesh.h"
+#include "mesh.h"
 //#include "Vertex.h"
-#include "Timer.h"
+#include "timer.h"
 
-#include "MS_Keyboard.h"
+#include "MS_keyboard.h"
 
 using Microsoft::WRL::ComPtr;
 using DirectX::Keyboard;
 
-
-/*
-class DX11Game
-{
-	private:
-
-		DX11Window m_window
-		DX11Swap_chain m_swap_chain
-		
-		class graphics_manager
-			DX11_Device;
-			DX11_setup;
-			
-		class sound_manager
-};
-*/
-
-class DX11 //abstract
+class DX11 abstract
 {
 	public:
-		//DX11( ); // override default constructor
+		//DX11( ); // over-ride default constructor
 
 		DX11( const HINSTANCE h_win_instance , const UINT window_width = 800u , const UINT window_height = 600u ); // int window_display_options );
 																											   //~DX11();  // virutal = this and derived classes, member data destruction
 
 		WPARAM	message_loop();
-		LRESULT window_messaging( HWND hwnd , UINT msg , WPARAM wParam , LPARAM lParam );
-		HWND	create_window( const HINSTANCE in_h_instance , const UINT in_client_width , const UINT in_client_height , RECT * out_client_size ); // int window_display_options )
+		LRESULT window_messaging( HWND hwnd , unsigned int msg , WPARAM wParam , LPARAM lParam );
+		HWND	create_window( const HINSTANCE in_h_instance , const unsigned int in_client_width , const unsigned int in_client_height , RECT * out_client_size ); // int window_display_options )
 
 		void	create_dx11_device();
 

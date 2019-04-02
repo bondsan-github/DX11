@@ -2,8 +2,8 @@
 
 //#include <wrl/client.h> // unique_pointer
 
-#include "Mesh.h"
-#include "Texture.h"
+#include "mesh.h"
+#include "texture.h"
 
 class Quad : public Mesh
 {
@@ -102,6 +102,11 @@ class Quad : public Mesh
 
 		const float get_width()	 const { return texture_diffuse.get_width(); }
 		const float get_height() const { return texture_diffuse.get_height(); }
+
+		const XMFLOAT2 get_size() const 
+		{
+			return XMFLOAT2( texture_diffuse.get_width() , texture_diffuse.get_height() );
+		}
 
 		//void line( const XMFLOAT4 in_points , const Colour in_colour )	{ m_texture->line( in_points , in_colour );	}
 

@@ -2,14 +2,14 @@
 
 using namespace DirectX;
 
-//Camera::Camera( ){}
 
-Camera::Camera( std::wstring in_name , XMVECTOR in_position , XMVECTOR in_target ) : position( in_position ) , target( in_target ) , name( in_name )
+Camera::Camera( std::wstring in_name , XMVECTOR in_position , XMVECTOR in_target ) 
+	: position( in_position ) , target( in_target ) , name( in_name )
 {
 
-	video_device = get_video_device();
+	//video_device = get_video_device();
 
-	video_device->GetImmediateContext( & device_context_video );
+	Graphics_component::video_device->GetImmediateContext( & device_context_video );
 	
 	view_matrix = XMMatrixLookAtLH( position , target , up );
 	view_matrix = XMMatrixTranspose( view_matrix );
@@ -53,7 +53,7 @@ Camera::Camera( std::wstring in_name , XMVECTOR in_position , XMVECTOR in_target
 												1 ,	// Number of buffers to set
 												view_matrix_buffer.GetAddressOf() ); // Array of constant buffers	
 
-																							 //----------------update VS buffer projection----------------
+	//----------------update VS buffer projection----------------
 	device_context_video->VSSetConstantBuffers( 2 ,//VS_BUFFER_CAMERA_PROJECTION , // Index into the device's zero-based array to begin setting constant buffers to
 												1 ,	// Number of buffers to set
 												projection_matrix_buffer.GetAddressOf() ); // Array of constant buffers	

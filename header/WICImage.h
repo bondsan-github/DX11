@@ -14,7 +14,6 @@ using Microsoft::WRL::ComPtr;
 #include <string>
 using std::wstring;
 
-
 #include "debugging.h"
 #include "types.h"
 

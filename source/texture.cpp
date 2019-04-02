@@ -1,4 +1,4 @@
-#include "Texture.h"
+#include "texture.h"
 
 using std::wstring;
 using std::make_unique;
@@ -8,8 +8,7 @@ using std::vector;
 using DirectX::XMFLOAT4;
 using Microsoft::WRL::ComPtr;
 
-Texture::Texture() {}
-
+//Texture::Texture() {}
 //Texture::Texture( const uint in_width , const uint in_height , const XMFLOAT4 in_colour ) : _width( in_width ) , _height( in_height ) {}
 //Texture::Texture( const wstring in_filename ) {}
 
@@ -46,9 +45,9 @@ void Texture::create_buffer( const void * in_pixels , DXGI_FORMAT pixel_format )
 	7/8
 	*/
 
-	result = get_video_device()->CreateTexture2D( & description_2d ,
-												  & subresource_data ,	// initial data
-												  & texture_2d );
+	result = video_device->CreateTexture2D( & description_2d ,
+											& subresource_data ,	// initial data
+											& texture_2d );
 
 	if( FAILED( result ) ) ErrorExit( L"Texture::create_buffer() error; CreateTexture2D" );
 
@@ -57,7 +56,7 @@ void Texture::create_buffer( const void * in_pixels , DXGI_FORMAT pixel_format )
 	view_description.Texture2D.MostDetailedMip	= 0u;	// number of mips - 1;
 	view_description.Texture2D.MipLevels		= 1u;
 	
-	result = Drawable::get_video_device()->CreateShaderResourceView( texture_2d.Get() ,
+	result = video_device->CreateShaderResourceView( texture_2d.Get() ,
 																	 & view_description ,
 																	 & view_shader_resource );
 
@@ -94,7 +93,7 @@ void Texture::create_buffer( const uint in_width , const uint in_height )//, con
 	subresource_data.SysMemPitch = width * bytes_per_pixel;// sizeof( XMFLOAT4 ); //bytes_per_pixel; //sizeof( uint ); 
 	subresource_data.SysMemSlicePitch = height * ( width * bytes_per_pixel );// sizeof( XMFLOAT4 ) ) *; //bytes_per_pixel );
 
-	result = Drawable::get_video_device()->CreateTexture2D( & description_2d ,
+	result = video_device->CreateTexture2D( & description_2d ,
 															& subresource_data , // initial data
 															& texture_2d );
 
@@ -106,7 +105,7 @@ void Texture::create_buffer( const uint in_width , const uint in_height )//, con
 	view_description.Texture2D.MipLevels		= 1u;
 
 	//
-	result = Drawable::get_video_device()->CreateShaderResourceView( texture_2d.Get() ,
+	result = video_device->CreateShaderResourceView( texture_2d.Get() ,
 																	 & view_description ,
 																	 & view_shader_resource );
 
@@ -181,11 +180,11 @@ void Texture::line( const XMFLOAT4 in_points , const XMFLOAT4 in_colour )
 
 void Texture::set_PS_shader_resources()
 {
-	ComPtr< ID3D11DeviceContext > video_device_context;
-	get_video_device()->GetImmediateContext( & video_device_context );
+	//ComPtr< ID3D11DeviceContext > video_device_context;
+	//get_video_device()->GetImmediateContext( & video_device_context );
 
 	// void set_diffuse_map( diffuse_map );
-	video_device_context->PSSetShaderResources( 0 ,					// PS resource slot
+	device_context_video->PSSetShaderResources( 0 ,					// PS resource slot
 												1 ,					// count of resources
 												view_shader_resource.GetAddressOf() );	// shader resource view
 }
@@ -202,10 +201,10 @@ void Texture::render()
 
 void Texture::update_PS_buffer()
 {
-	ComPtr< ID3D11DeviceContext > video_device_context;
-	get_video_device()->GetImmediateContext( & video_device_context );
+	//ComPtr< ID3D11DeviceContext > video_device_context;
+	//get_video_device()->GetImmediateContext( & video_device_context );
 
-	video_device_context->Map( texture_2d.Get() , 0 , D3D11_MAP_WRITE_DISCARD , 0 , & subresource_mapped );
+	device_context_video->Map( texture_2d.Get() , 0 , D3D11_MAP_WRITE_DISCARD , 0 , & subresource_mapped );
 	//D3D11_MAP_FLAG_DO_NOT_WAIT 
 
 	unsigned int pitch_row		= subresource_mapped.RowPitch;
@@ -221,5 +220,5 @@ void Texture::update_PS_buffer()
 		memcpy( ptr_dest + ( row * pitch_row ) , pixels.data() + ( row * static_cast< int >( width ) ) , static_cast< int >( width ) * bytes_per_pixel ); // bytespp
 	}
 
-	video_device_context->Unmap( texture_2d.Get() , 0 );
+	device_context_video->Unmap( texture_2d.Get() , 0 );
 }

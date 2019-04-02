@@ -11,7 +11,7 @@ DX11::DX11( const HINSTANCE h_win_instance , const uint window_width , const uin
 		//m_i_window_display_options( window_display_options )
 {
 	g_dx11 = this;
-	//							**** receive as constants ****
+	
 	window = create_window( instance , window_width , window_height, & client_area ); // , window_display_options );
 	create_dx11_device( );
 	window_size_update();
@@ -33,6 +33,8 @@ LRESULT CALLBACK global_window_messaging( HWND hwnd , uint message , WPARAM wPar
 	// before CreateWindow returns, and thus before mhMainWnd is valid.
 	return g_dx11->window_messaging( hwnd , message , wParam , lParam );
 }
+
+//LRESULT Window::messaging( HWND hwnd , uint message , WPARAM wParam , LPARAM lParam )
 
 LRESULT DX11::window_messaging( HWND hwnd , uint message , WPARAM wParam , LPARAM lParam )
 {
@@ -96,7 +98,7 @@ LRESULT DX11::window_messaging( HWND hwnd , uint message , WPARAM wParam , LPARA
 	return 0;
 }
 
-HWND DX11::create_window( const HINSTANCE in_h_instance , const UINT in_client_width , const UINT in_client_height , RECT * out_client_size ) // int window_display_options )
+HWND DX11::create_window( const HINSTANCE in_h_instance , const uint in_client_width , const uint in_client_height , RECT * out_client_size ) // int window_display_options )
 {
 	//debug_out( "\n***create window debug out ***\n" ); 
 	//CBrush brush_background( 0x00ff0000 );  //0x00bbggrr
@@ -249,7 +251,6 @@ void DX11::create_dx11_device()
 
 	static const D3D_FEATURE_LEVEL feature_levels[ ]
 	{
-		//D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
@@ -386,7 +387,7 @@ void DX11::create_render_target_view()
 	// Obtain the backbuffer for this window which will be the final 3D render target.
 	// Textures cannot be bound directly to the pipeline; instead, a view must be created and bound.
 
-	// ComPtr< ID3D11Texture2D > swap_chain_texture;
+	// ComPtr< ID3D11Texture2D > swap_chain_target;
 	result = swap_chain->GetBuffer( 0 , IID_PPV_ARGS( & render_target_texture ) );
 
 	// IID_PPV_ARGS macro
@@ -461,6 +462,9 @@ void DX11::create_depth_stencil_view()
 
 void DX11::window_size_update() // Allocate all memory resources that change on a window SizeChanged event.
 {
+
+	// graphics->size_update();
+
 	HRESULT result { E_FAIL };
 
 	// Clear the previous window size specific context.
@@ -503,6 +507,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	//ID3D11Device::CreateDepthStencilState 
 	create_depth_stencil_view();	
 
+	// 
 	//------------ attach the render target view to the output merger state ------------//
 	// Bind the render target view and depth/stencil texture view to the Output Merger pipeline.
 	video_device_context->OMSetRenderTargets( 1 ,									// number of render targets to bind 
@@ -526,10 +531,9 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 
 	video_device_context->RSSetState( rasteriser_state.Get() );
 	
-	// A viewport is a way of translating pixel coordinates to normalized coordinates.
+	// A viewport is a way of translating pixel coordinates to normalised coordinates.
 	// pixel coordinates start at 0, 0 in the upper-left corner, and increase one pixel at a time. 
-	// Normalized coordinates start at -1, -1 and increase to 1, 1, no matter the size of the back buffer. 
-	// The word normalized means that a value is adjusted until it equals 1.
+	// Normalised coordinates start at -1, -1 and increase to 1, 1, no matter the size of the back buffer. 
 	
 	//------------ create a viewport same size as backbuffer ------------
 	D3D11_VIEWPORT		  viewport { };
@@ -546,7 +550,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	
 	// * Initialise windows-size dependent objects here. * 
 
-	//------------ create_vertex_shader( wstring filename ) ------------//	
+	//------------ create_vertex_shader( wstring filename *.cso ) ------------//	
 	ID3DBlob * d3dBlob;
 	result = D3DReadFileToBlob( L".\\shaders\\VS_colour.cso" , & d3dBlob );
 
@@ -560,7 +564,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; CreateVertexShader()" );
 
 	// ****  MOVE TO MESH ***** -> need VS shader compiled cso blob
-	//------------ create_input_layout( ------------
+	//------------ create_input_layout() ------------
 	// * * * * * * * * * * * * * * * * * * * * *
 	unsigned int total_layout_elements = ARRAYSIZE( input_layout_xyz_rgba_uv );
 	// * * * * * * * * * * * * * * * * * * * * *
@@ -581,7 +585,7 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 
 	//-------------------------------------------------------------------------//
 	
-	//------------ create_pixel_shader  ------------//
+	//------------ create_pixel_shader( wstring filename *.cso )  ------------//
 	result = D3DReadFileToBlob( L".\\shaders\\PS_colour.cso" , & d3dBlob );
 
 	if( FAILED( result ) ) ErrorExit( L"window_size_update() error; D3DReadFileToBlob()" );
@@ -602,6 +606,8 @@ void DX11::window_size_update() // Allocate all memory resources that change on 
 										 & m_p_pixel_shader );
 	*/
 		
+	// set_vertex_shader()
+	// set_pixel_shader()
 	video_device_context->VSSetShader( vertex_shader.Get() , nullptr , 0 );
 	video_device_context->PSSetShader( pixel_shader.Get() , nullptr , 0 );
 
