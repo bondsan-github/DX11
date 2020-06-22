@@ -54,7 +54,7 @@ Camera::Camera( std::wstring in_name , XMVECTOR in_position , XMVECTOR in_target
 												view_matrix_buffer.GetAddressOf() ); // Array of constant buffers	
 
 	//----------------update VS buffer projection----------------
-	device_context_video->VSSetConstantBuffers( 2 ,//VS_BUFFER_CAMERA_PROJECTION , // Index into the device's zero-based array to begin setting constant buffers to
+	device_context_video->VSSetConstantBuffers( 2 ,// VS_BUFFER_CAMERA_PROJECTION , // Index into the device's zero-based array to begin setting constant buffers to
 												1 ,	// Number of buffers to set
 												projection_matrix_buffer.GetAddressOf() ); // Array of constant buffers	
 }

@@ -18,21 +18,23 @@ using ulong		= unsigned long;
 //#include <d3dcommon.h>
 //D3D_PRIMITIVE_TOPOLOGY triangle_list = D3D_PRIMITIVE_TOPOLOGY::D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-typedef struct rectangle
+namespace DX11
 {
-	rectangle() {}
+	typedef struct Rectangle
+	{
+		Rectangle() {}
 
-	rectangle( float in_top , float in_left , float in_right , float in_bottom )
-		: top( in_top ) , left( in_left ) , right( in_right ) , bottom( in_bottom )
-	{}
+		Rectangle( float in_top , float in_left , float in_right , float in_bottom )
+			: top( in_top ) , left( in_left ) , right( in_right ) , bottom( in_bottom )
+		{}
 
-	float top		= 0.0f;
-	float left		= 0.0f;
-	float right		= 0.0f;
-	float bottom	= 0.0f;
+		float top = 0.0f;
+		float left = 0.0f;
+		float right = 0.0f;
+		float bottom = 0.0f;
 
-} rectangle;
-
+	} Rectangle;
+}
 // minwindef.h
 #undef min
 #undef max
@@ -59,6 +61,7 @@ typedef struct Bounding_box
 	//{
 	//	min = rhs.min;
 	//	max = rhs.max;
+	// centre = rhs.centre;
 
 	//	return * this;
 	//}
@@ -84,8 +87,9 @@ typedef struct Bounding_box
 		max.x += rhs.x;
 		max.y += rhs.y;
 
-		return *this;  // dereference this ( get address )
+		return * this;  // dereference this ( get address )
 	}
+
 	/*
 	void swap( float & lhs , float & rhs )
 	{
@@ -152,8 +156,6 @@ typedef struct Bounding_box
 		//XMVECTOR * XMATRIX;
 	}
 	*/
-
-
 } Bounding_box;
 
 enum class VS_buffer { MESH, VIEW, PROJECTION };
@@ -176,3 +178,29 @@ enum class VS_buffer { MESH, VIEW, PROJECTION };
 
 //pixel_format unorm_32bpp{ DXGI_FORMAT_R8G8B8A8_UNORM, GUID_WICPixelFormat32bppRGBA, 1 };
 //pixel_format
+
+/*
+class Colour_rgba128bpp_float
+{
+public:
+Colour_rgba128bpp_float() {}
+
+Colour_rgba128bpp_float( const float in_red,  // ? change to unsigned float (PS input) + normalise ?
+const float in_green,
+const float in_blue,
+const float in_alpha )
+: m_red( in_red ) , m_green( in_green ) , m_blue( in_blue ) , m_alpha( in_alpha ) { }
+
+//operator *
+// return int = m_red << 24 &&
+//get ? ((DWORD)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff)))
+//unsigned int as_int() {	//int pixel = ( m_red << 24u ) | ( m_green << 16u ) | ( m_blue << 8u ) | m_alpha ) ; }
+
+private:
+float m_red { };	// 4 byte
+float m_green { };	// 4 byte
+float m_blue { };	// 4 byte
+float m_alpha { };	// 4 byte
+};
+*/
+//static Colour_8bit_rgba white( 1.0f , 1.0f , 1.0f , 1.0f ); #define white

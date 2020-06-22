@@ -1,6 +1,8 @@
-#include "game.h"
+#include "Application.h"
 
-Game::Game( const HWND in_window , const unsigned int in_resolution_width , const unsigned int in_resolution_height )
+//template Game< Tetrimino >
+
+Application::Application( const HWND in_window , const unsigned int in_resolution_width , const unsigned int in_resolution_height )
 	:window( in_window )
 {
 	//window_handle = window.initialise( in_instance , in_resolution_width , in_resolution_height );
@@ -23,7 +25,7 @@ Game::Game( const HWND in_window , const unsigned int in_resolution_width , cons
 //	
 //	//State< Game > * new_state = state->update( * this , 0.0 );
 //
-//	//if( new_state != nullptr )
+//	//if( new_state )
 //	//{
 //	//	delete state;
 //	//	state = new_state;

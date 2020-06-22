@@ -59,7 +59,14 @@ void Graphics::create_swap_chain()
 	ComPtr< IDXGIFactory1 > dxgi_factory1;
 	dxgi_adapter->GetParent( IID_PPV_ARGS( dxgi_factory1.GetAddressOf() ) ); // Obtain the factory object that created it.
 
+	unsigned int support = 0;
+	bool format_supported = false;
+	video_device->CheckFormatSupport( DXGI_FORMAT_R8G8B8A8_UNORM , &support );
 
+	if( support & D3D11_FORMAT_SUPPORT_DISPLAY ) 
+	{ 
+		format_supported = true; // hardware supports backbuffer format 
+	} 
 
 	GetClientRect( window , & client_size ); // upper-left corner = (0,0).
 
@@ -69,18 +76,22 @@ void Graphics::create_swap_chain()
 	swap_chain_description.BufferDesc.Format	= swap_chain_format;
 
 	//enumerate display modes -> if( v_sync ) Numerator = monitor refresh rate;
-	swap_chain_description.BufferDesc.RefreshRate.Numerator		= 60;	// 60hz refresh rate
-	swap_chain_description.BufferDesc.RefreshRate.Denominator	= 1;
+	//swap_chain_description.BufferDesc.RefreshRate.Numerator		= 60;	// 60hz refresh rate
+	//swap_chain_description.BufferDesc.RefreshRate.Denominator	= 1;
 
-	//swap_chain_description.BufferDesc.Scaling				= DXGI_MODE_SCALING_STRETCHED;
+	swap_chain_description.BufferDesc.Scaling				= DXGI_MODE_SCALING_CENTERED; //DXGI_MODE_SCALING_STRETCHED;
 	//swap_chain_description.BufferDesc.ScanlineOrdering	= DXGI_MODE_SCANLINE_ORDER_UPPER_FIELD_FIRST;
 
 	swap_chain_description.BufferUsage			= DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swap_chain_description.OutputWindow			= window;
 	swap_chain_description.Windowed				= true;
 
-	swap_chain_description.SampleDesc.Count		= 1;
-	swap_chain_description.SampleDesc.Quality	= 0; // No multisampling
+	//D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT = 32
+	unsigned int quality_level_count = 0; // 1 = supported
+	video_device->CheckMultisampleQualityLevels( swap_chain_format , 8 , &quality_level_count );
+
+	swap_chain_description.SampleDesc.Count		= 1;// 1 = No multisampling
+	swap_chain_description.SampleDesc.Quality	= 0; 
 	swap_chain_description.SwapEffect = DXGI_SWAP_EFFECT_DISCARD; // _SEQUENTIAL 
 
 	dxgi_factory1->CreateSwapChain( video_device.Get() , &swap_chain_description , & swap_chain );
@@ -142,9 +153,11 @@ void Graphics::create_depth_stencil()
 
 void Graphics::create_depth_stencil_view()
 {
+	// if( SampleDesc.Count > 1 ) // multisampling enabled
+	//		.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 	
 	depth_stencil_view_description.Format				= depth_buffer_format;
-	depth_stencil_view_description.ViewDimension		= D3D11_DSV_DIMENSION_TEXTURE2D;
+	depth_stencil_view_description.ViewDimension		= D3D11_DSV_DIMENSION_TEXTURE2D; //D3D11_DSV_DIMENSION_TEXTURE2DMS;
 	depth_stencil_view_description.Texture2D.MipSlice	= 0;
 	//D3D11_DSV_DIMENSION_TEXTURE2DMS = The resource will be accessed as a 2D texture with multisampling.
 
@@ -168,9 +181,7 @@ void Graphics::window_size_update()
 	
 	// If the swap chain already exists, resize it, otherwise create one.
 	if( swap_chain ) // .Get()? nope
-	{
-		HRESULT result { E_FAIL };
-		
+	{		
 		GetClientRect( window , & client_size );
 
 		swap_chain->ResizeBuffers( swap_chain_count , client_size.right , client_size.bottom , swap_chain_format , 0 );
@@ -233,27 +244,38 @@ void Graphics::window_size_update()
 
 	// * Initialise windows-size dependent objects here. *
 
+	WCHAR exe_path[ 100 ] = { 0 };
+	GetModuleFileNameW( NULL , exe_path , 100 );
+
 	//------------ create_vertex_shader( wstring filename *.cso ) ------------//	
-	D3DReadFileToBlob( L".\\shaders\\VS_colour.cso" , & d3d_blob);
+	result = D3DReadFileToBlob( L"shaders\\VS_colour.cso" , & d3d_blob);
+
+	if( result != S_OK ) ErrorExit( TEXT( "Error loading vertex shader (VS_colour.cso) " ) );
 	
 	video_device->CreateVertexShader( d3d_blob->GetBufferPointer() ,
 									  d3d_blob->GetBufferSize() ,
 									  nullptr ,
 									  & vertex_shader );
 
-	unsigned int total_layout_elements = _ARRAYSIZE( input_layout_xyz_rgba_uv );
+	
 
-	video_device->CreateInputLayout( input_layout_xyz_rgba_uv ,		// input-assembler stage input data types array
+	unsigned int total_layout_elements = _ARRAYSIZE( input_layout_xyz_uv );
+
+	result = video_device->CreateInputLayout( input_layout_xyz_uv ,			// input-assembler stage input data types array
 									 total_layout_elements ,		// Total input-data types in array of input-elements
 									 d3d_blob->GetBufferPointer() ,	// compiled shader pointer
 									 d3d_blob->GetBufferSize() ,	// size of compiled shader
 									 & input_layout );				// output pointer to created input-layout object
 
+	if( FAILED( result ) ) ErrorExit( L"CreateInputLayout" );
+
 	// Bind an input-layout object to the input-assembler stage
 	video_device_context->IASetInputLayout( input_layout.Get() );
 
 	//------------ create_pixel_shader( wstring filename *.cso )  ------------//
-	D3DReadFileToBlob( L".\\shaders\\PS_colour.cso" , & d3d_blob );
+	result = D3DReadFileToBlob( L"shaders\\PS_colour.cso" , & d3d_blob );
+
+
 	
 	video_device->CreatePixelShader( d3d_blob->GetBufferPointer() ,
 									 d3d_blob->GetBufferSize() ,
@@ -264,10 +286,11 @@ void Graphics::window_size_update()
 	video_device_context->PSSetShader( pixel_shader.Get() , nullptr , 0 );
 
 	//------------ create the sample state ------------
-	sampler_description.Filter			= D3D11_FILTER_MIN_MAG_MIP_LINEAR;	// _ANISOTROPIC /_MIN_MAG_MIP_POINT
+	sampler_description.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;// D3D11_FILTER_ANISOTROPIC;//	// _ANISOTROPIC / _MIP_POINT / _LINEAR //D3D11_FILTER_MAXIMUM_ANISOTROPIC
+
 	sampler_description.AddressU		= D3D11_TEXTURE_ADDRESS_CLAMP;		// _WRAP / _BORDER
-	sampler_description.AddressV		= D3D11_TEXTURE_ADDRESS_BORDER;		// _CLAMP / _WRAP
-	sampler_description.AddressW		= D3D11_TEXTURE_ADDRESS_BORDER;		// _CLAMP / _WRAP
+	sampler_description.AddressV		= D3D11_TEXTURE_ADDRESS_CLAMP;		// _CLAMP / _WRAP / _BORDER
+	sampler_description.AddressW		= D3D11_TEXTURE_ADDRESS_CLAMP;		// _CLAMP / _WRAP / _BORDER
 	sampler_description.MipLODBias		= 0.0f;
 	sampler_description.MaxAnisotropy	= 1u;
 	sampler_description.ComparisonFunc	= D3D11_COMPARISON_LESS; // _NEVER // pixels closest to the camera will overwrite the pixels behind them
@@ -362,7 +385,7 @@ void Graphics::present()
 	// to sleep until the next VSync. This ensures we don't waste any cycles rendering
 	// frames that will never be displayed to the screen.
 
-	HRESULT result = swap_chain->Present( 1u ,	// sync interval
+	HRESULT result = swap_chain->Present( 0u ,	// sync interval
 										  0u ); // flags
 
 	// If the device was reset we must completely re-initialise the renderer.

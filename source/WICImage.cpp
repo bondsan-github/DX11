@@ -50,11 +50,14 @@ void WICImage::load( const wstring filename )
 	{
 		case 24:
 		{
+			// format.dxgi = DXGI_FORMAT_
 		}
 		case 32:
 		{
+			//DXGI_FORMAT_R8G8B8A8_UINT
 		}
-		default: {}
+		default: 
+		{}
 	}
 	
 	// _pixel_format.dxgi_format = pixel_format_wic;
@@ -66,7 +69,7 @@ void WICImage::load( const wstring filename )
 	result = format_converter->CanConvert( wic_pixel_format_guid , GUID_WICPixelFormat32bppRGBA , & can_convert );
 
 	result = format_converter->Initialize( bitmap_frame_decode.Get() ,
-										   GUID_WICPixelFormat32bppRGBA , //wic_pixel_format_guid // = DXGI_FORMAT_R8G8B8A8_UINT
+										   GUID_WICPixelFormat32bppRGBA , //wic_pixel_format_guid // = DXGI_FORMAT_R8G8B8A8_UNORM
 										   WICBitmapDitherTypeNone ,
 										   nullptr ,
 										   0.0f , // alphaThresholdPercent
@@ -79,23 +82,34 @@ void WICImage::load( const wstring filename )
 	int bytesPerPixel = (bitsPerPixel + 7) / 8;
 	int stride = 4 * ((width * bytesPerPixel + 3) / 4);
 	*/
+	// ? must be padded or multiple of 4 , row_pitch = ( width * bitspp + 7 ) / 8;
 
-	row_byte_pitch = width * 4; //(bits_per_pixel / 8);// (_width * bits_per_pixel + 7 )/ 8 ; // ? must be padded or multiple of 4 , row_pitch = ( width * bitspp + 7 ) / 8;
+	// cbStride defines the count of bytes between two vertically adjacent pixels in the output buffer.
+
+	// The callee must only write to the first( prc->Width*bitsperpixel + 7 ) / 8 bytes
+	// of each line of the output buffer( in this case , a line is a consecutive string of cbStride bytes ).
+
+	row_byte_pitch = ( ( width * bits_per_pixel ) + 7u ) / 8u; // width * ( bits_per_pixel / 4u);
 	size_bytes		= row_byte_pitch * height;
 
 	pixels.reserve( size_bytes );	
 
-	// copy pixels is where the image format conversion executes
-	result = format_converter->CopyPixels(	nullptr, // rectangle to copy, null = entire bitmap
-											row_byte_pitch, // bitmap stride
-											size_bytes, // size buffer
-										    pixels.data() ); // buffer pointer // BYTE == uchar
+	// no conversion required
+	//bitmap_frame_decode->CopyPixels( nullptr , row_byte_pitch , size_bytes , pixels.data() );
+
+	result = format_converter->CopyPixels( nullptr,		// rectangle to copy, null = entire bitmap
+										   row_byte_pitch, // bitmap stride
+										   size_bytes,		// size buffer
+										   pixels.data() );// buffer pointer // BYTE == uchar
+
+	//uchar image[ 100 ] = { 0 };
+	//memcpy( image , pixels.data() , 100 );
 
 	if( FAILED( result ) ) ErrorExit( L"WICImage::load() error; CopyPixels" );
 
 	bitmap_frame_decode.Reset();
-	bitmap_decoder.Reset();
 	format_converter.Reset();
+	bitmap_decoder.Reset();	
 }
 
 //DXGI_FORMAT _WICToDXGI( const GUID& guid )

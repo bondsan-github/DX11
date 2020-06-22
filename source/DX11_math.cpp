@@ -28,7 +28,7 @@ namespace DirectX
 		return addition;
 	}
 
-	XMFLOAT3 & operator += ( XMFLOAT3 & in_lhs , XMFLOAT3 & in_rhs )
+	XMFLOAT3 & operator += ( XMFLOAT3 & in_lhs , const XMFLOAT3 & in_rhs )
 	{
 		// lhs += rhs;
 		// lhs.operator += ( rhs )
@@ -40,7 +40,7 @@ namespace DirectX
 		return in_lhs;
 	}
 
-	XMFLOAT3 & operator -= ( XMFLOAT3 & in_lhs , XMFLOAT3 & in_rhs )	// compound_assignment 
+	XMFLOAT3 & operator -= ( XMFLOAT3 & in_lhs , const XMFLOAT3 & in_rhs )	// compound_assignment 
 	{
 		in_lhs.x -= in_rhs.x;
 		in_lhs.y -= in_rhs.y;
@@ -60,14 +60,21 @@ namespace DirectX
 	//	return divide_and_assign;
 	//}
 
+	// return combined minimum components
 	XMFLOAT3 minimum( XMFLOAT3 lhs , XMFLOAT3 rhs )
 	{
-		XMFLOAT3 min( 0.0f , 0.0f , 0.0f );
-		// if lhs < rhs == true return lhs else return rhs
-		min.x = lhs.x < rhs.x ? lhs.x : rhs.x; // lhs(1) , rhs(2) = 1 
-		min.y = lhs.y < rhs.y ? lhs.y : rhs.y; // lhs(2) , rhs(1) = 1 
-		min.z = lhs.z < rhs.z ? lhs.z : rhs.z;
+		// if( lhs < rhs ) x = lhs else x = rhs
 
+		XMFLOAT3 min( 0.0f , 0.0f , 0.0f );
+
+		if( lhs.x < rhs.x ) min.x = lhs.x; else min.x = rhs.x;
+		if( lhs.y < rhs.y ) min.y = lhs.y; else min.y = rhs.y;
+		if( lhs.z < rhs.z ) min.z = lhs.z; else min.z = rhs.z;
+		
+		//min.x = lhs.x < rhs.x ? lhs.x : rhs.x; // lhs(1) , rhs(2) , x = 1 
+		//min.y = lhs.y < rhs.y ? lhs.y : rhs.y; // lhs(2) , rhs(1) , x = 1 
+		//min.z = lhs.z < rhs.z ? lhs.z : rhs.z;
+		
 		return min;
 	}
 
@@ -125,6 +132,22 @@ namespace DirectX
 	}
 
 	// 2 & 2
+	XMFLOAT2 & operator += ( XMFLOAT2 & in_lhs , const XMFLOAT2 & in_rhs )
+	{
+		in_lhs.x += in_rhs.x;
+		in_lhs.y += in_rhs.y;
+
+		return in_lhs;
+	}
+
+	XMFLOAT2 & operator -= ( XMFLOAT2 & in_lhs , const XMFLOAT2 & in_rhs )
+	{
+		in_lhs.x -= in_rhs.x;
+		in_lhs.y -= in_rhs.y;
+
+		return in_lhs;
+	}
+
 	XMFLOAT2 operator * ( XMFLOAT2 in_lhs , XMFLOAT2 in_rhs )
 	{
 		XMFLOAT2 mulitple( 0.0f , 0.0f );

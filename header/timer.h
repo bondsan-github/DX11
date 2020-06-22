@@ -38,7 +38,7 @@ class Timer
 
 		double get_delta()
 		{ 
-			LARGE_INTEGER ticks_delta{ 0 };
+			LARGE_INTEGER ticks_delta { 0 };
 
 			ticks_delta.QuadPart = ticks_current.QuadPart - ticks_previous.QuadPart;
 
@@ -73,14 +73,14 @@ class Timer
 
 	private:
 
-		LARGE_INTEGER	ticks_per_second {0};
+		LARGE_INTEGER	ticks_per_second { 0 };
 		//const double	one_second = 1.0;
-		double			seconds_per_tick {0};
+		double			seconds_per_tick { 0 };
 
-		LARGE_INTEGER	ticks_start{0} ,
-						ticks_current{0},
-						ticks_previous{ 0 },
-						ticks_elapsed {0};
+		LARGE_INTEGER	ticks_start { 0 } ,
+						ticks_current { 0 },
+						ticks_previous { 0 },
+						ticks_elapsed { 0 };
 
 		
 		// frames_last_main_loop

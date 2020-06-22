@@ -13,6 +13,7 @@ using Microsoft::WRL::ComPtr;
 
 #include <string>
 using std::wstring;
+#include <cstring> // memcopy
 
 #include "debugging.h"
 #include "types.h"
@@ -44,7 +45,7 @@ class WICImage //: public Image
 
 		//const DXGI_FORMAT pixel_format() const { return wic_pixel_format_guid; }
 
-		uchar * get_pixels()
+		unsigned char * get_pixels()
 		{ 
 			return pixels.data();
 		}
@@ -53,7 +54,7 @@ class WICImage //: public Image
 
 	private:
 
-		vector< uchar > pixels;
+		vector< unsigned char > pixels;
 
 		HRESULT	result { E_FAIL };
 

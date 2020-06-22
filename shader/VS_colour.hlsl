@@ -24,7 +24,7 @@ cbuffer projection : register( b2 ) // VS_BUFFER_PROJECTION
 struct input_VS //VS_XYZ_RGBA_UV
 {
 	float4 position	: POSITION;
-    float4 colour	: COLOR;
+    //float4 colour	: COLOR;
     float2 uv		: TEXCOORD;
 };
 
@@ -33,7 +33,7 @@ struct input_VS //VS_XYZ_RGBA_UV
 struct output_VS // Pixel shader input
 {
 	float4 position	: SV_POSITION;
-    float4 colour	: COLOR;
+   // float4 colour	: COLOR;
     float2 uv		: TEXCOORD;
 };
 
@@ -52,7 +52,7 @@ output_VS main_VS( input_VS input )
 
     output.uv = input.uv;
 
-    output.colour = input.colour;
+   // output.colour = input.colour;
 
 	return output;
 }

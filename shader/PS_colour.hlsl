@@ -1,7 +1,6 @@
 struct input_PS
 {
-	float4 position	: SV_POSITION;
-    float4 colour	: COLOR;
+	float4 position : SV_POSITION;
 	float2 uv		: TEXCOORD;
 };
 
@@ -27,8 +26,8 @@ float4 main_PS( input_PS input ) : SV_TARGET
 
     //float4 texture0 = input.colour;
     
-	return input.colour + texture0;
-    //return texture0;
+	//return input.colour + texture0;
+    return texture0;
 }
 
 /*

@@ -21,10 +21,10 @@ void Mesh::create_buffer_vertices()
 	D3D11_BUFFER_DESC buffer_description { };
 
 	// buffer size in bytes 
-	buffer_description.ByteWidth	= sizeof( vertex_rgba_uv ) * static_cast< unsigned long >( vertices.size() );
+	buffer_description.ByteWidth	= sizeof( vertex_uv ) * static_cast< unsigned long >( vertices.size() );
 	// 48 bytes = struct 12 ( 3 floats * 4 bytes ) * verts 4
 
-	buffer_description.Usage = D3D11_USAGE_DEFAULT; //D3D11_USAGE_DYNAMIC;// 
+	buffer_description.Usage		= D3D11_USAGE_DEFAULT; //D3D11_USAGE_DYNAMIC;// 
 	buffer_description.BindFlags	= D3D11_BIND_VERTEX_BUFFER;
 	//buffer_description.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 
@@ -90,7 +90,7 @@ void Mesh::set_IA_vertex_buffers()
 	//unsigned int strides[ 1 ] { sizeof( vertex_t ) };
 	//unsigned int offsets[ 1 ] { 0u };
 
-	UINT stride = sizeof( vertex_rgba_uv );
+	UINT stride = sizeof( vertex_uv );
 	UINT offset = 0u;
 
 	video_device_context->IASetVertexBuffers( 0 ,								// first input slot for binding.
@@ -292,10 +292,10 @@ void Mesh::delta_scale( const XMFLOAT3 in_scale )
 
 //void Mesh::submit_draw() { // void draw_point_list() //m_p_video_device_context->Draw( m_ul_total_vertices , 0 ); }
 
-vector<vertex_rgba_uv> Mesh::get_world_vertices() const
+vector< vertex_uv > Mesh::get_world_vertices() const
 {
-	vector<vertex_rgba_uv> world_vertices;
-	vertex_rgba_uv world_transformed;
+	vector< vertex_uv > world_vertices;
+	vertex_uv world_transformed;
 	XMMATRIX world_matrix_transposed = XMMatrixTranspose( world_matrix );
 
 	//XMFLOAT3 test_vertex = vertices.at( 0 ).point;
@@ -315,17 +315,20 @@ vector<vertex_rgba_uv> Mesh::get_world_vertices() const
 	return world_vertices;
 }
 
-Bounding_box Mesh::get_bounding_box() // (world coordinates)
+Bounding_box Mesh::get_bounding_box() const // (world coordinates)
 {
 	Bounding_box box;
 
-	vector<vertex_rgba_uv> world_vertices = get_world_vertices();
+	vector< vertex_uv > world_vertices = get_world_vertices();
 
 	box.min = XMFLOAT3(  FLT_MAX ,  FLT_MAX ,  FLT_MAX );
 	box.max = XMFLOAT3( -FLT_MAX , -FLT_MAX , -FLT_MAX );
 
 	for( const auto & vertex : world_vertices )
 	{
+		//box.min = minimum( block_box.min , tetri_box.min );	// always returns a value
+		//box.max = maximum( block_box.max , tetri_box.max );
+
 		if( vertex.point.x < box.min.x ) box.min.x = vertex.point.x;
 		if( vertex.point.x > box.max.x ) box.max.x = vertex.point.x;
 

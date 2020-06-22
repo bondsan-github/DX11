@@ -101,7 +101,7 @@ class Camera : public Graphics_component
 				0 , 0 , 0 , 1 );
 
 			projection_matrix = XMMatrixTranspose( projection_matrix );
-			//m_matrix_projection = projection_orthographic;
+			//matrix_projection = projection_orthographic;
 		}
 		
 		void set_position( const XMVECTOR position );

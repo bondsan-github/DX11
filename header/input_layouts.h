@@ -21,7 +21,7 @@ DXGI_FORMAT_R32G32B32A32_FLOAT = +16 = XMFLOAT4 = 4 bytes (= 32bits) x 4 values 
 // Without const;
 // "if you include the file in multiple compilation units, you are declaring a variable of that name in each unit"
 
-//const unsigned int offset_32_bits_pp = +4;	// +4 bytes
+const unsigned int offset_32_bits_pp = +4;	// +4 bytes
 //const unsigned int offset_128_bits_pp = +16;// +16 bytes
 
 const D3D11_INPUT_ELEMENT_DESC input_layout_xyz[ 1 ]
@@ -35,11 +35,17 @@ const D3D11_INPUT_ELEMENT_DESC input_layout_xyz_rgba[ 2 ]
 	{ "COLOR",		0,	DXGI_FORMAT_R8G8B8A8_UNORM,		0,	12,		D3D11_INPUT_PER_VERTEX_DATA,	0 }, // what format does GPU expect? same as back buffer?
 };
 
+const D3D11_INPUT_ELEMENT_DESC input_layout_xyz_uv[ 2 ]
+{
+	{ "POSITION",	0,	DXGI_FORMAT_R32G32B32_FLOAT,	0,	0,		D3D11_INPUT_PER_VERTEX_DATA,	0 },
+	{ "TEXCOORD",	0,	DXGI_FORMAT_R32G32_FLOAT,		0,	D3D11_APPEND_ALIGNED_ELEMENT,		D3D11_INPUT_PER_VERTEX_DATA,	0 },
+};
+
 const D3D11_INPUT_ELEMENT_DESC input_layout_xyz_rgba_uv[ 3 ]
 {
 	{ "POSITION",	0,	DXGI_FORMAT_R32G32B32_FLOAT,	0,	0,		D3D11_INPUT_PER_VERTEX_DATA,	0 },
 	//{ "COLOR",		0,	DXGI_FORMAT_R8G8B8A8_UNORM,		0,	12,		D3D11_INPUT_PER_VERTEX_DATA,	0 }, // not working ?
 	{ "COLOR",		0,	DXGI_FORMAT_R32G32B32A32_FLOAT,	0,	12,		D3D11_INPUT_PER_VERTEX_DATA,	0 },
-	//{ "TEXCOORD",	0,	DXGI_FORMAT_R32G32_FLOAT,		0,	12 + offset_128_bits_pp ,	D3D11_INPUT_PER_VERTEX_DATA,	0 },
+	//{ "TEXCOORD",	0,	DXGI_FORMAT_R32G32_FLOAT,		0,	12 + offset_32_bits_pp ,	D3D11_INPUT_PER_VERTEX_DATA,	0 },
 	{ "TEXCOORD",	0,	DXGI_FORMAT_R32G32_FLOAT,		0,	12 + 16 ,	D3D11_INPUT_PER_VERTEX_DATA,	0 },
 };

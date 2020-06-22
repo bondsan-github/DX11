@@ -33,6 +33,8 @@ using DirectX::XMVectorGetZ;
 
 //template< typename vertex_type > //= vertex >
 
+//using vertex = vertex_uv;
+
 class Mesh : public Graphics_component
 {
 	public:
@@ -48,7 +50,7 @@ class Mesh : public Graphics_component
 		
 		//void add_vertex( const vertex_type new_vertex )
 
-		void add_vertex( const vertex_rgba_uv new_vertex )
+		void add_vertex( const vertex_uv new_vertex )
 		{
 			vertices.push_back( new_vertex );
 			create_buffer_vertices();
@@ -57,7 +59,7 @@ class Mesh : public Graphics_component
 		//void create_buffer_vertices( vertex_type * vertices , UINT vertcies_count );
 		//void vertices( std::vector< vertex_type > & new_vertices )
 
-		void set_vertices( const vector< vertex_rgba_uv > & new_vertices )
+		void set_vertices( const vector< vertex_uv > & new_vertices )
 		{
 			vertices = new_vertices;
 			create_buffer_vertices();
@@ -131,10 +133,10 @@ class Mesh : public Graphics_component
 
 		XMMATRIX get_world_matrix() const { return world_matrix; }
 
-		vector<vertex_rgba_uv> get_world_vertices() const;
+		vector< vertex_uv > get_world_vertices() const;
 		
-		// get_AABB
-		Bounding_box get_bounding_box(); // (world coordinates)
+		// world coordinates 
+		Bounding_box get_bounding_box() const; // get_AABB
 
 		void render();
 		
@@ -151,7 +153,7 @@ class Mesh : public Graphics_component
 
 		//vector< vertex_type >			vertices;
 
-		vector< vertex_rgba_uv >		vertices;
+		vector< vertex_uv >				vertices;
 		vector< ushort >				indices;
 
 		D3D11_PRIMITIVE_TOPOLOGY		primitive_topology;// = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

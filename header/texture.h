@@ -16,41 +16,17 @@
 
 using std::vector;  // pollutes global namespace
 using DirectX::XMFLOAT4;
+using DirectX::XMUINT4;
 using Microsoft::WRL::ComPtr;
 using std::unique_ptr;
 using std::wstring;
+
 
 //using namespace DirectX;			// ONLY in CPP files <- include in header will pollute global namespace
 //using namespace Microsoft::WRL;
 
 // material
 //enum class texture_type { diffuse , alpha , specular , displacement };
-
-/*
-class Colour_rgba128bpp_float
-{
-	public:
-		Colour_rgba128bpp_float() {}		
-
-		Colour_rgba128bpp_float( const float in_red,  // ? change to unsigned float (PS input) + normalise ?
-								 const float in_green,
-								 const float in_blue,
-								 const float in_alpha ) 
-			: m_red( in_red ) , m_green( in_green ) , m_blue( in_blue ) , m_alpha( in_alpha ) { }
-
-		//operator *
-		// return int = m_red << 24 && 
-		//get ? ((DWORD)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff)))
-		//unsigned int as_int() {	//int pixel = ( m_red << 24u ) | ( m_green << 16u ) | ( m_blue << 8u ) | m_alpha ) ; }	
-		
-	private:
-		float m_red { };	// 4 byte
-		float m_green { };	// 4 byte
-		float m_blue { };	// 4 byte
-		float m_alpha { };	// 4 byte
-};
-*/
-//static Colour_8bit_rgba white( 1.0f , 1.0f , 1.0f , 1.0f ); #define white
 
 //void line( std::shared_pointer<Texture> in_texture, XMFLOAT4 in_points , colour in_colour );
 
@@ -59,33 +35,14 @@ class Texture : public Graphics_component
 {
 	public:
 
-		Texture() 
-		{
-			video_device->GetImmediateContext( &device_context_video );
-		}
+		Texture();
 
+		Texture( vector< XMUINT4 > in_data, const uint in_width, const uint in_height ); // , const uint bits_per_pixel );
 		//Texture( const uint in_width, const uint in_height , const XMFLOAT4 in_colour );
 		//Texture( const XMFLOAT2 in_dimensions , const XMFLOAT4 in_rgba );
 		//Texture( const wstring in_filename );
 
-		void create_blank( const uint in_width , const uint in_height , const XMFLOAT4 in_colour )
-		{
-			width = in_width;
-			height = in_height;
-			// bytespp = 4;
-			colour = in_colour;
-
-			#if defined(_DEBUG) || defined(DEBUG)
-				//texture_2d->SetPrivateData( WKPDID_D3DDebugObjectName , sizeof( "Texture 2d" ) - 1 , "Texture 2d" );
-				//D3D_SET_OBJECT_NAME_A( texture_2d , "Texture 2d" );
-			#endif	
-
-			pixels.clear();
-
-			pixels.resize( width * height , colour );
-
-			create_buffer( width , height );// , colour );
-		}
+		void create_blank( const uint in_width , const uint in_height , const XMUINT4 in_colour );// const DirectX::XMUINT4 in_colour );
 
 		void load( const wstring in_filename )
 		{
@@ -100,9 +57,9 @@ class Texture : public Graphics_component
 
 		//void clear( const Colour in_colour ) {}
 
-		void plot( const uint in_x , const uint in_y , const  XMFLOAT4 in_colour );
+		void plot( const uint in_x , const uint in_y , const XMUINT4 in_colour );// const DirectX::XMUINT4 in_colour );
 
-		void line( const  XMFLOAT4 in_points , const  XMFLOAT4 in_colour );
+		void line( const  XMFLOAT4 in_points , const XMUINT4 in_colour );// const DirectX::XMUINT4 in_colour );
 
 		// elipse( center_x, center_y, width, height, [pen] ) 
 		//const void * ptr_rgba() const { return m_rgba.data(); }		
@@ -115,8 +72,16 @@ class Texture : public Graphics_component
 		void set_height( const uint in_height )	{ height = in_height; }
 
 		void update( const double time_delta );
+		void update_PS_buffer();
 
 		void render();
+
+	private:
+	   
+		void create_buffer( const uint in_width , const uint in_height , const XMUINT4 in_colour ); //const DirectX::XMUINT4 in_colour );
+		void create_buffer( const void * ptr_memory , DXGI_FORMAT pixel_format );
+
+		void set_PS_shader_resources();
 
 	private:
 
@@ -124,25 +89,21 @@ class Texture : public Graphics_component
 
 		ComPtr< ID3D11DeviceContext >	device_context_video;
 
-		void create_buffer( const uint in_width , const uint in_height );// , const XMFLOAT4 in_colour );
-		void create_buffer( const void * ptr_memory , DXGI_FORMAT pixel_format );
-
-		void set_PS_shader_resources();
-		void update_PS_buffer();
-
 		//type use { diffuse };
-		D3D11_USAGE	usage{ D3D11_USAGE_DYNAMIC }; // _DEFAULT, _IMMUTABLE, _STAGING; 
-		DXGI_FORMAT	dxgi_format{ DXGI_FORMAT_R8G8B8A8_UNORM }; //layout
+		D3D11_USAGE	usage		{ D3D11_USAGE_DYNAMIC }; // _DEFAULT, _IMMUTABLE, _STAGING; 
+		DXGI_FORMAT	dxgi_format	{ DXGI_FORMAT_R8G8B8A8_UNORM }; //layout
 
-		uint		width {};
-		uint		height {};
-		XMFLOAT4	colour { 1.0f, 0.0f, 0.0f, 0.0f };
+		uint		width	{};
+		uint		height	{};
 
 		uchar		bytes_per_pixel { 4 }; // struct pixel_formats { DXGI_FORMAT ... , WIC , uchar bytespp };
 
-		vector< XMFLOAT4 > pixels{}; //_128bpp // two input format types :( // _int8
+		// 1 float = 1 pixel component e.g. at(0) = R , at(1) = G
 
-									 //XMFLOAT4 colour { };	
+		//vector< unsigned char > pixels;
+		XMUINT4								colour{};
+		//vector< unsigned char >			pixels;
+		unsigned char *						pixels;
 
 		D3D11_TEXTURE2D_DESC				description_2d {};
 		D3D11_SUBRESOURCE_DATA				subresource_data {};

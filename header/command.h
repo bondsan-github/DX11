@@ -2,12 +2,13 @@
 
 #include <map>
 
-#include "game_actor.h"
-
-//template< typename type >
+template< typename Type >
 class Command abstract
 {
 	public:
 
-		virtual void execute( Game_actor & actor ) = 0;
+		virtual void execute( Type & actor, const double delta ) = 0;
+
+	//private:
+		//float delay;
 };

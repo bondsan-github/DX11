@@ -1,12 +1,82 @@
 #pragma once
 
 #include <Windows.h>
+#include <string>
+
 #include "MS_keyboard.h"
-#include "game.h"
-		
-inline LRESULT CALLBACK window_procedure( HWND hwnd , unsigned int message , WPARAM wParam , LPARAM lParam )
+#include "Application.h"
+
+template < typename window >
+class Window_base abstract //
 {
-	auto game = reinterpret_cast<Game*>(GetWindowLongPtr( hwnd , GWLP_USERDATA));
+	public:
+
+		Window() = delete;
+
+		bool create( std::string name  )
+		{
+			return true;
+		}
+
+		static LRESULT CALLBACK window_procedure( HWND in_window_handle , unsigned int message , WPARAM wParam , LPARAM lParam )
+		{
+			window * this_pointer = nullptr;
+
+			if( uMsg == WM_NCCREATE )
+			{
+				CREATESTRUCT * pCreate = static_cast< CREATESTRUCT *>( lParam );
+
+				this_pointer = static_cast< window * >( pCreate->lpCreateParams );
+
+				SetWindowLongPtr( hwnd , GWLP_USERDATA , static_cast< LONG_PTR >( this_pointer ) );
+
+				this_pointer->window_handle = hwnd;
+			}
+			else
+			{
+				this_pointer = static_cast< window * >( GetWindowLongPtr( in_window_handle , GWLP_USERDATA ) );
+			}
+
+			if( this_pointer )
+			{
+				return this_pointer->handle_message( message , wParam , lParam );
+			}
+			else
+			{
+				return DefWindowProc( in_window_handle , message , wParam , lParam );
+			}
+		}
+
+		LRESULT handle_message( unsigned int message , WPARAM wParam , LPARAM lParam ) = 0;
+
+		HWND get_handle() const { return handle; }
+
+	private:
+
+		HWND window_handle = nullptr;
+		
+};
+
+//inline LRESULT CALLBACK window_procedure( HWND hwnd , unsigned int message , WPARAM wParam , LPARAM lParam )
+//{
+	//Application * application = reinterpret_cast< Application * >( GetWindowLongPtr( hwnd , GWLP_USERDATA ) );
+
+	//bool key_pressed = false;
+
+//class MainWindow : public BaseWindow<MainWindow>
+//{
+//	public:
+//	PCWSTR  ClassName() const { return L"Sample Window Class"; }
+//	LRESULT HandleMessage( UINT uMsg , WPARAM wParam , LPARAM lParam );
+//};
+
+class Window : public Window_base< Window >
+{
+	LRESULT handle_message( unsigned int message , WPARAM wParam , LPARAM lParam );
+};
+
+LRESULT Window::handle_message( unsigned int message , WPARAM wParam , LPARAM lParam )
+{
 
 	switch( message )
 	{
@@ -18,8 +88,11 @@ inline LRESULT CALLBACK window_procedure( HWND hwnd , unsigned int message , WPA
 
 		case WM_ACTIVATEAPP:
 		{
-			DirectX::Keyboard::ProcessMessage( message , wParam , lParam );			
+			//DirectX::Keyboard::ProcessMessage( message , wParam , lParam );			
 			//DirectX::Mouse::ProcessMessage(message, wParam, lParam);
+
+			//game.input.keyboard->Proc();
+
 			return 0;
 		}
 
@@ -41,12 +114,24 @@ inline LRESULT CALLBACK window_procedure( HWND hwnd , unsigned int message , WPA
 		}
 
 		case WM_KEYDOWN:
+		{
+			application->input( static_cast< int >( wParam ) );
+			return 0;
+			// difference between break and return in a switch statement?
+		}
+
 		case WM_KEYUP:
 		case WM_SYSKEYDOWN:
 		case WM_SYSKEYUP:
-		{
-			game->input( static_cast< int >( wParam ) );
-			//DirectX::Keyboard::ProcessMessage( message , wParam , lParam );
+		{			
+			// BOOL GetKeyboardState( PBYTE lpKeyState );// PBYTE = The 256 - byte array that receives the status data for each virtual key.
+						
+			// The previous key state (bit 30) can be used to determine whether the WM_KEYDOWN message indicates the first down transition or a repeated down transition.
+			// KF_REPEAT ==  0x4000
+			
+			//if( !( lParam & 0x40000000 ) ) // bit 30 test
+				//game->input( static_cast< int >( wParam ) );
+			
 			return 0;
 		}
 
@@ -59,23 +144,23 @@ inline LRESULT CALLBACK window_procedure( HWND hwnd , unsigned int message , WPA
 
 inline HWND initialise( const HINSTANCE in_instance , const unsigned int in_width , const unsigned int in_height )
 {
-	WNDCLASSEX		classex{};
-	LPTSTR			name = TEXT( "DX11 game" );
-	RECT			size{};
-	HWND			window{};
+	WNDCLASSEX	classex {};
+	auto		name = L"DX11 game";
+	RECT		size {};
+	HWND		window {};
 
-	classex.cbSize = sizeof( WNDCLASSEX );
-	classex.style = CS_HREDRAW | CS_VREDRAW;
-	classex.lpfnWndProc = window_procedure;
-	classex.cbClsExtra = 0;									// extra bytes to allocate following the window-class structure
-	classex.cbWndExtra = 0;									// extra bytes to allocate following the window instance
-	classex.hInstance = in_instance;
-	classex.hIcon = LoadIcon( in_instance , L"IDI_ICON" );// a handle to an icon resource
-	classex.hCursor = LoadCursor( nullptr , IDC_ARROW );
-	classex.hbrBackground = ( HBRUSH )( COLOR_GRAYTEXT + 1 );		// brush_background;
-	classex.lpszMenuName = nullptr;								// name of the class menu, as the name appears in the resource file
-	classex.lpszClassName = name;									// * Must match CreateWindowEx 2nd arg = lpClassName
-	classex.hIconSm = LoadIcon( in_instance , L"IDI_ICON" );// small icon
+	classex.cbSize			= sizeof( WNDCLASSEX );
+	classex.style			= CS_HREDRAW | CS_VREDRAW;
+	classex.lpfnWndProc		= Window::window_procedure;
+	classex.cbClsExtra		= 0;									// extra bytes to allocate following the window-class structure
+	classex.cbWndExtra		= 0;									// extra bytes to allocate following the window instance
+	classex.hInstance		= in_instance;
+	classex.hIcon			= LoadIcon( in_instance , L"IDI_ICON" );// a handle to an icon resource
+	classex.hCursor			= LoadCursor( nullptr , IDC_ARROW );
+	classex.hbrBackground = ( HBRUSH )( COLOR_GRAYTEXT );// +1 );		// brush_background; / static_cast<HBRUSH>
+	classex.lpszMenuName	= nullptr;								// name of the class menu, as the name appears in the resource file
+	classex.lpszClassName	= name;									// * Must match CreateWindowEx 2nd arg = lpClassName
+	classex.hIconSm			= LoadIcon( in_instance , L"IDI_ICON" );// small icon
 
 	RegisterClassEx( &classex );
 

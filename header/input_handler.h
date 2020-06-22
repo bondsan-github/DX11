@@ -3,23 +3,16 @@
 #include <map>
 
 #include "command.h"
-//#include "MS_Keyboard.h"
 #include "types.h"
 
-//template< typename type >
+template< typename Type >
 class Input_handler
 {
 	public:
 
-		Input_handler()
-		{
-			// Methods to bind commands...
-			//command_map.insert( make_pair( DirectX::Keyboard::Keys::Z , new Rotate_command( Rotation::clock_wise ) ) );
-			//command_map.insert( make_pair( DirectX::Keyboard::Keys::X , new Rotate_command( Rotation::counter_clock_wise ) ) );
-		}
+		Input_handler()	{}
 	
-		//Command<type> * handle_input( const  unsigned int in_key )
-		Command * handle_input( const unsigned int in_key )
+		Command< Type > * handle_input( const unsigned int in_key )
 		{
 			const auto result = command_map.find( in_key );
 
@@ -27,14 +20,12 @@ class Input_handler
 			else return nullptr;
 		}
 
-		//void add_command( unsigned int in_key , Command<type> in_command )
-		void add_command( unsigned int in_key , Command * in_command )
+		void add_command( unsigned int in_key , Command< Type > * in_command )
 		{
 			command_map.insert( std::make_pair( in_key , in_command ) ); 
 		}
 
 	private:
 
-		//std::map< unsigned int , Command<type> * > command_map;
-		std::map< unsigned int , Command * > command_map;
+		std::map< unsigned int , Command< Type > * > command_map;
 };

@@ -10,10 +10,12 @@
 
 #include <wrl/client.h>
 using Microsoft::WRL::ComPtr;
-
 #include <DirectXColors.h>
 
+#include "debugging.h"
 #include "input_layouts.h"
+
+//using input_layout = input_layout_xyz_uv;
 
 class Graphics
 {
@@ -41,6 +43,7 @@ class Graphics
 
 	private:
 
+		HRESULT							result { E_FAIL };
 		HWND							window {};
 		RECT							client_size {};
 
